@@ -2,15 +2,19 @@
 Calculates and compares the radiance of a thermal LANSAT scene to the "ground truth"
 radiance as measured by a NOAA buoy. Based on work by Frank Padula and Monica Cook at RIT.
 
-If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on armstrong or related servers for best results. Developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu).
+If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on armstrong or related servers for best results. Original version developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu) available at https://github.com/natedileas/Landsat-Buoy-Calibration.
 Copyright RIT 2015-2018
+
+Current version contains multiple enhancements of the Landsat and Buoy processing implementation and was done by Benjamin Kleynhans (bxk8027@g.rit.edu).  The MODIS implementation remains original.  The enchancements are described below
 
 ## OVERVIEW:
 This code essentially has two funtions: calculating the radiance from the landsat image 
 provided, and calculating the corresponding ground truth radiance from outside data,
 atmospheric (NARR or MERRA-2), NOAA buoy data, and MODTRAN. If atmospheric
 data or landsat images need to be downloaded, it will take between 5-7 minutes
-for NARR, and 2-3 for MERRA. Use the file forward_model.py as a convinient command line interface:
+for NARR, and 2-3 for MERRA. 
+
+A menu has been implemented to replace the original command line interface:
 
 ```
 $ python forward_model.py -h
@@ -33,6 +37,14 @@ optional arguments:
   -v, --verbose
   -b BANDS [BANDS ...], --bands BANDS [BANDS ...]
 ```
+
+### Enhancements
+
+- Menu driven operation
+- No more issues related to path variables, this is now calculated automatically
+- Batch processing which was originally implemented but problematic has been improved
+- 
+
 
 ### Installing
 See INSTALL.txt

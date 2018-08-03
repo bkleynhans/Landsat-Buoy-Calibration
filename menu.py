@@ -47,22 +47,24 @@ def set_path_variables():
     sys.path.append(path + "/processed_images")
 
 
+# Create any folders that are required and not currently available
+def check_required_directories():
+    
+    import test_paths
+    
+    required_folders = {'output', 'processed_images'}
+    
+    for folder in required_folders:
+        if not test_paths.testDirectory(folder):
+            test_paths.createDirectory(folder)
+    
+
 # Request name of text file containing batch process scene IDs
 def f_model_batch_merra():
     
     import test_paths
     
-    display_images = input("\n Do you want to display each image after it has been processed? (Y/N): ")
-    display_images = display_images.upper()
-    
-    while display_images[0] != "Y" and display_images[0] != "N":
-        display_images = input(" Your entry is invalid, please select Y for YES or N for NO : ")
-        display_images = display_images.upper()
-    
-    if display_images[0] == "Y":
-        display_images = '-ntrue'
-    else:
-        display_images = '-nfalse'
+    display_images = display_processed_images()
     
     batchFile = input("\n Please enter the name of the batch file : ")
     valid_data = test_paths.main([batchFile, "-tfile"])
@@ -78,6 +80,8 @@ def f_model_batch_merra():
 # Request Scene ID for single scene to calculate
 def f_model():
     
+    display_images = display_processed_images()
+    
     sceneId = input("\n Please enter the Scene ID to continue : ")
     valid_data = test_input_format(sceneId)
 
@@ -87,7 +91,7 @@ def f_model():
             valid_data = test_input_format(sceneId)
 
     # Launch single scene ID process job
-    forward_model.main([sceneId])
+    forward_model.main([sceneId, display_images])
 
 
 # Test if the input format matches the required input format
@@ -217,7 +221,41 @@ def check_sources():
         sources_available = False
         
     return sources_available, missing_sources
+
+# Test if the terminal session allows export of display
+def export_display_available():
     
+    returnValue = False
+    
+    if "DISPLAY" in os.environ:
+        returnValue = True
+    
+    return returnValue
+
+# Ask the user if they want to display each image as it is processed
+def display_processed_images():
+    
+    display_images = None
+    
+    if export_display_available():
+        display_images = input("\n Do you want to display each image after it has been processed? (Y/N): ")
+        display_images = display_images.upper()
+        
+        while display_images[0] != "Y" and display_images[0] != "N":
+            display_images = input(" Your entry is invalid, please select Y for YES or N for NO : ")
+            display_images = display_images.upper()
+        
+        if display_images[0] == "Y":
+            display_images = '-ntrue'
+        else:
+            display_images = '-nfalse'
+    else:
+        print("\n Your terminal session does not support images.  If you want to see processed \n images please launch the program from a terminal that has X display support.")
+        display_images = '-nfalse'
+        
+    return display_images
+
+
 # Display main menu
 def menu():
 
@@ -273,8 +311,10 @@ if __name__ == '__main__':
     print()
     
     data_sources_available, missing_sources = check_sources()
-
+    
     if (data_sources_available):
+        
+        check_required_directories()
         
         sys.stdout.write(ERASE_LINE)
         sys.stdout.write("\r     --> All data sources are accounted for <--")

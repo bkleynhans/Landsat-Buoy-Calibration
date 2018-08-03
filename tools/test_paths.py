@@ -22,7 +22,7 @@ import requests
 
 ERASE_LINE = '\x1b[2K'
 
-# Tests a file
+# Tests a Directory
 def testDirectory(tdirectory):
 
     import os.path
@@ -36,6 +36,15 @@ def testDirectory(tdirectory):
 
     return returnValue
 
+
+# Create a folder relative to current execution path
+def createDirectory(cdirectory):
+        
+    import os.path
+
+    if not os.path.exists(cdirectory):
+        os.makedirs(cdirectory)      
+        
 
 # Tests a file
 def testFile(tfile):

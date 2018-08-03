@@ -31,7 +31,7 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
 
     fileExists = test_paths.testFile(output_txt)
 
-    if (fileExists):
+    if not (fileExists):
         f = open(output_txt, 'w+')
         f.close()
 

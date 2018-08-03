@@ -141,6 +141,7 @@ def parse_L8(scene_id):
         parsed['row'] = scene_id[13:16]
         parsed['id'] = scene_id
     else:
+        pdb.set_trace()
         raise Exception('Received incorrect scene: {0}'.format(scene_id))
 
     return parsed

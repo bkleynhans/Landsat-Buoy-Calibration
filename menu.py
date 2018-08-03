@@ -19,9 +19,9 @@ import inspect
 import sys
 import os
 import time
+import cv2
 import subprocess as sp
-import pdb
-import mysql.connector
+#import mysql.connector
 
 ERASE_LINE = '\x1b[2K'
 
@@ -64,7 +64,7 @@ def f_model_batch_merra():
     
     import test_paths
     
-    display_images = display_processed_images()
+    display_images = display_processed_images(True)
     
     batchFile = input("\n Please enter the name of the batch file : ")
     valid_data = test_paths.main([batchFile, "-tfile"])
@@ -80,7 +80,7 @@ def f_model_batch_merra():
 # Request Scene ID for single scene to calculate
 def f_model():
     
-    display_images = display_processed_images()
+    display_images = display_processed_images(False)
     
     sceneId = input("\n Please enter the Scene ID to continue : ")
     valid_data = test_input_format(sceneId)
@@ -233,12 +233,17 @@ def export_display_available():
     return returnValue
 
 # Ask the user if they want to display each image as it is processed
-def display_processed_images():
+def display_processed_images(batch):
     
     display_images = None
     
+    if batch:
+        question = "\n Do you want to display each image after it has been processed? (Y/N): "
+    else:
+        question = "\n Do you want to display the image after it has been processed? (Y/N): "
+    
     if export_display_available():
-        display_images = input("\n Do you want to display each image after it has been processed? (Y/N): ")
+        display_images = input(question)
         display_images = display_images.upper()
         
         while display_images[0] != "Y" and display_images[0] != "N":
@@ -250,7 +255,8 @@ def display_processed_images():
         else:
             display_images = '-nfalse'
     else:
-        print("\n Your terminal session does not support images.  If you want to see processed \n images please launch the program from a terminal that has X display support.")
+        print("\n Your terminal session does not support the display of images.  If you want to see \n "
+              "processed images please launch the program from a terminal \n that has X display support.")
         display_images = '-nfalse'
         
     return display_images
@@ -335,10 +341,11 @@ if __name__ == '__main__':
             elif (result == "D"):
                 print("\nPlease wait while we test the database connection\n")
     
-                testDb()
+                #testDb()
     
             elif (result == "X"):
                 successful_entry = True
+                cv2.destroyAllWindows()
                 print("\nThank you for using the Landsat Buoy Calibration program\n")
                 
             else:
@@ -346,6 +353,7 @@ if __name__ == '__main__':
                 print("\nThe value you entered is invalid, please try again\n")
                 
             sp.call('clear', shell = True)
+            cv2.destroyAllWindows()
                 
     else:        
         print("\n\n!!!")
@@ -361,3 +369,4 @@ if __name__ == '__main__':
         
         print("!")
         print("!!!\n")
+    

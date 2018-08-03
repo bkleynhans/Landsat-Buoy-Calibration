@@ -22,6 +22,7 @@ import test_paths
 import graph_generator
 import datetime
 import numpy as np
+import cv2
 
 # Process the SceneIDs and print results to a file
 def batch_f_model(scene_txt, scenes, output_txt, display_image):
@@ -46,18 +47,15 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
         # For each SceneID, process and write to txt file
         for i, scene_id in enumerate(scenes):
 
-            # Remove newline character from after SceneID and add a space
-            # if one doesn't exist.  This is required to ensure the file is
-            # read correctly from the file reader.  If no space after the id
-            # the id is read without the last character
-            if scene_id[-1] == '\n':
-                scene_id.replace('\n', ' ')
-            elif scene_id[-1] != ' ':
-                scene_id += ' '
-                        
+            # Ensure there are no spaces or new line characters after any scene id
+            if scene_id[-2:] == ' \n' or scene_id[-1] == ' ':
+                scene_id = scene_id[:(scene_id.index(' '))]
+            elif scene_id[-1] == '\n':
+                scene_id = scene_id[:-1]
+            
             print("\n Starting analysis of scene {}".format(scene_id))
 
-            ret = forward_model.main([scene_id[:-1], '-c forward_model_batch', '-n' + display_image])
+            ret = forward_model.main([scene_id, '-c forward_model_batch', '-n' + display_image])
 
             sys.stdout.write("\r Analysis completed for scene {}\n\n".format(scene_id))
             

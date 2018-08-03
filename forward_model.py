@@ -5,6 +5,7 @@ import shutil
 
 # Python Debugger - Ben
 import pdb
+import threading
 ###
 
 from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, display, error_bar)
@@ -77,14 +78,20 @@ def modis(scene_id, atmo_source='merra', verbose=False, bands=[31, 32]):
     return data
 
 
+# Display the image to the screen for 60 seconds, or until the window is closed.
+def display_cv2_image(scene_id, image):
+    
+    cv2.imshow('Landsat Preview', image)
+    cv2.waitKey(0)
+    cv2.imwrite('processed_images/{0}.jpg'.format(scene_id), image)
+        
+
 def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11]):
     
     image, file_downloaded = display.landsat_preview(scene_id, '')
     
     if display_image == 'true':
-        cv2.imshow('Landsat Preview', image)
-        cv2.waitKey(50)
-        cv2.imwrite('processed_images/preview_{0}.jpg'.format(scene_id), image)
+        threading.Thread(target=display_cv2_image, args=(scene_id, image, )).start()
     
     data = {}
     

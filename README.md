@@ -52,9 +52,19 @@ $ ./menu
 
 - Menu driven operation
 - No more issues related to path variables, this is now calculated automatically
-- Batch processing which was originally implemented but problematic has been improved
-- 
+- Batch processing which was originally implemented but problematic has been improved and errors resolved.
+- Problems relating to landsat scenes prior to 2017 as described in notes have been resolved (any landsat 8 ID should work)
+- Output input and output has been changed to the following format
 
+## Batch Input
+  input/batches
+  
+## Output
+  output/single/  - contains a comma delimited text output file when running individual scenes
+  output/processed_images/  - contains all processed images for single and batch runs
+  output/batches/  - contains all information relating to batch runs
+  output/batches/data/  - contains a comma delimed text output file containing the data for all scenes in the batch file
+  output/batches/graphs/  - contains all graphs (one per batch) dsplaying the variance with error between landsat and buoy data
 
 ### Installing
 See INSTALL.txt

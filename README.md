@@ -21,14 +21,22 @@ atmospheric (NARR or MERRA-2), NOAA buoy data, and MODTRAN. If atmospheric
 data or landsat images need to be downloaded, it will take between 5-7 minutes
 for NARR, and 2-3 for MERRA. 
 
-A menu has been implemented to replace the original command line interface:
+### Enhancements
 
+-  The program is now used by launching a menu
 ```
 $ ./menu
+```
+
+-  Previously, if a data source wasn't available the program would fail without providing adequate information.  The system now checks data sources during launch and informs the user if a source is not available while gracefully returning them to the terminal prompt.
+```
  Please be patient while we test if the required data sources are available
 
      --> All data sources are accounted for <--
+```
 
+-  A menu has been implemented to replace the original command line interface:
+```
  ***************************************************
  *                                                 *
  *           Landsat Buoy Calibration              *
@@ -55,11 +63,21 @@ $ ./menu
   Selection :
 ```
 
-### Enhancements
+- The original software could not run without a X-Window enabled terminal.  This service has now been integrated and will run regardles of X-Window availability while informing the user if the system does not have X-Window support.  It can also be enabled or disabled during runtime by the user if the service is available.
 
-- Menu driven operation
-- No more issues related to path variables, this is now calculated automatically
-- The original software could not run without a X-Window enabled terminal.  This service has now been integrated and will run regardles of X-Window availability.  It can also be enabled or disabled during runtime by the user if the service is available.
+-- Without X-Window support
+```
+Your terminal session does not support the display of images.  If you want to see processed images please launch the program from a terminal that has X display support.
+
+ Please enter the Scene ID to continue or 'X' to exit : 
+```
+-- With X-Window support
+```
+Do you want to display the image after it has been processed? (Y/N): y
+
+ Please enter the Scene ID to continue or 'X' to exit : 
+```
+- No more issues related to path variables, this is now calculated automatically.
 - Batch processing which was originally implemented but problematic has been improved and errors resolved.
 - Problems relating to landsat scenes prior to 2017 as described in notes have been resolved (any landsat 8 ID should work).  Landsat 8 data are only available from 2014.
 - Input and output directories have been implemented as follows:

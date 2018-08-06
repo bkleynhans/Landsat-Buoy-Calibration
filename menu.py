@@ -75,15 +75,21 @@ def f_model_batch_merra():
     display_images = display_processed_images(True)
     
     batchFile = 'input/batches/'
-    batchFile += input("\n Please enter the name of the batch file : ")
-    valid_data = test_paths.main([batchFile, "-tfile"])
+    batchFile += input("\n Please enter the name of the batch file or 'X' to exit : ")
     
-    if not valid_data:
-        batchFile = input("\n The batch file you entered is invalid, please try again : ")
+    if (batchFile[(batchFile.rfind('/') + 1):].upper()) != 'X':
         valid_data = test_paths.main([batchFile, "-tfile"])
-
-    # Launch batch process job
-    forward_model_batch.main([batchFile, display_images])
+        
+        if not valid_data:
+            batchFile = input("\n The batch file you entered is invalid, please try again ('X' - exit): ")
+            
+            if batchFile.upper() != 'X':
+                valid_data = test_paths.main([batchFile, "-tfile"])
+            
+    
+        if batchFile.upper() != 'X':
+            # Launch batch process job
+            forward_model_batch.main([batchFile, display_images])
 
 
 # Request Scene ID for single scene to calculate
@@ -91,17 +97,24 @@ def f_model():
     
     display_images = display_processed_images(False)
     
-    sceneId = input("\n Please enter the Scene ID to continue : ")
-    valid_data = test_input_format(sceneId)
-
-    if not valid_data:
-        while not valid_data:
-            sceneId = input("\n The Scene ID you entered is invalid, please try again : ")
-            valid_data = test_input_format(sceneId)
-
-    # Launch single scene ID process job
-    forward_model.main([sceneId, display_images])
-
+    sceneId = input("\n Please enter the Scene ID to continue or 'X' to exit : ")
+    
+    if sceneId.upper() != 'X':
+        valid_data = test_input_format(sceneId)
+    
+        if not valid_data:
+            while not valid_data:
+                sceneId = input("\n The Scene ID you entered is invalid, please try again ('X' - exit) : ")
+                
+                if sceneId.upper() != 'X':
+                    valid_data = test_input_format(sceneId)
+                else:
+                    break
+    
+        if sceneId.upper() != 'X':
+            # Launch single scene ID process job
+            forward_model.main([sceneId, display_images])
+            
 
 # Test if the input format matches the required input format
 def test_input_format(input_value):

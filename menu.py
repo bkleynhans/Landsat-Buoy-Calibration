@@ -8,7 +8,7 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : July 3, 2018
+# Last Modified Date  : August 6, 2018
 # Filename            : menu.py
 #
 ###
@@ -277,8 +277,8 @@ def display_processed_images(batch):
         else:
             display_images = '-nfalse'
     else:
-        print("\n Your terminal session does not support the display of images.  If you want to see \n "
-              "processed images please launch the program from a terminal \n that has X display support.")
+        print("\n Your terminal session does not support the display of images.  If you want to see "
+              "processed images please launch the program from a terminal that has X display support.")
         display_images = '-nfalse'
         
     return display_images

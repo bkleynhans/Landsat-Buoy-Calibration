@@ -21,7 +21,7 @@ If you want to use this code, you should have a basic knowledge of python and/or
        * [Running a Single Scene](#running-a-single-scene)
            [Test Scenes](#test-scenes)
        * [Running a Batch Job](#running-a-batch-job)
-           [Test Batches][(#test-batches)
+           [Test Batches](#test-batches)
        * [Output](#output)
        * [Notes](#notes)
 <!--te-->

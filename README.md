@@ -12,9 +12,10 @@ The original version of this software was developed on Fedora x64 by Nathan Dile
 
 Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.  
 README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md  
+
 Copyright RIT 2015-2018
 
-## OVERVIEW:
+## Overview:
 This code essentially has two funtions: calculating the radiance from the landsat image 
 provided, and calculating the corresponding ground truth radiance from outside data,
 atmospheric (NARR or MERRA-2), NOAA buoy data, and MODTRAN. If atmospheric
@@ -35,7 +36,7 @@ for NARR, and 2-3 for MERRA.
 - Whenever a batch is processed, a graph is generated which displayes the difference between landsat and buoy data over time.
 - Input and output directories have been implemented as follows:
 
-#### Batch Input
+#### Input (Batches)
   input/batches
   
 #### Output
@@ -50,7 +51,8 @@ for NARR, and 2-3 for MERRA.
 # Constants for use in directory cleanup
 CLEAN_FOLDER_ON_COMPLETION = True
 ```
- When this value is True, the downloaded_data folder is cleared after each SceneID is processed.  If the value is set to False, the data is kept until it is manually deleted OR the value is set to True.    
+ When this value is True, the downloaded_data folder is cleared after each SceneID is processed.  If the value is set to False, the data is kept until it is manually deleted OR the value is set to True.  
+ 
 !!! WHEN THE VALUE IS SET TO TRUE, EVERYTHING IN THE downloaded_data FOLDER WILL BE DELETED, REGARDLESS OF WHICH BATCH IT BELONGS TO!!!
 
 

@@ -4,12 +4,26 @@ radiance as measured by a NOAA buoy. Based on work by Frank Padula and Monica Co
 
 If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.
 
-# Table of contents
+# Table of Contents
 =================
 
 <!--ts-->
    * [Landsat Buoy Calibration](#landsat-buoy-calibration)
-   * [Table of contents](#table-of-contents)
+   * [Table of Contents](#table-of-contents)
+       * [Current Version](#current-version)
+       * [Original Version](#original-version)
+   * [Overview](#overview)
+       * [Enhancements](#enhancements)
+           [Input (Batches)](#input-(batches))
+           [Output](#output)
+       * [Installation](#installation)
+       * [Launching the Ptorgram](#launching-the-program)
+       * [Running a Single Scene](#running-a-single-scene)
+           [Test Scenes](#test-scenes)
+       * [Running a Batch Job](#running-a-batch-job)
+           [Test Batches][(#test-batches)
+       * [Output](#output)
+       * [Notes](#notes)
 <!--te-->
 
 ## Current Version
@@ -23,14 +37,14 @@ README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/READM
 
 Copyright RIT 2015-2018
 
-## Overview:
+# Overview:
 This code essentially has two funtions: calculating the radiance from the landsat image 
 provided, and calculating the corresponding ground truth radiance from outside data,
 atmospheric (NARR or MERRA-2), NOAA buoy data, and MODTRAN. If atmospheric
 data or landsat images need to be downloaded, it will take between 5-7 minutes
 for NARR, and 2-3 for MERRA. 
 
-### Enhancements
+## Enhancements
 
 -  The program is now used by launching a menu
 -  Previously, if a data source wasn't available the program would fail without providing adequate information.  The system now checks data sources during launch and informs the user if a source is not available while gracefully returning them to the terminal prompt.
@@ -44,10 +58,10 @@ for NARR, and 2-3 for MERRA.
 - Whenever a batch is processed, a graph is generated which displayes the difference between landsat and buoy data over time.
 - Input and output directories have been implemented as follows:
 
-#### Input (Batches)
+### Input (Batches)
   input/batches
   
-#### Output
+### Output
   output/single/  - a comma delimited text output file when running individual scenes  
   output/processed_images/  - all processed images for single and batch runs  
   output/batches/  - all information relating to batch runs  
@@ -64,7 +78,7 @@ CLEAN_FOLDER_ON_COMPLETION = True
 !!! WHEN THE VALUE IS SET TO TRUE, EVERYTHING IN THE downloaded_data FOLDER WILL BE DELETED, REGARDLESS OF WHICH BATCH IT BELONGS TO!!!
 
 
-### Installation
+## Installation
 It is highly recommended that the software is run on one of the RIT CIS linux servers.  There are a number of prerequisites required, some of which are challenging to install.  Additional details relating to installation of the software on any other platform than the RIT CIS servers can be found in the original installation file provided by the original developer at:  
 
 INSTALL.txt : https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/INSTALL.txt  
@@ -81,7 +95,7 @@ git clone https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
 ```
 - The program is now installed and you can continue to the next section.
 
-### Launching the program
+## Launching the program
 -  Change into the Landsat-Buoy-Calibration directory
 ```
 cd ~/Landsat-Buoy-Calibration
@@ -125,7 +139,7 @@ cd ~/Landsat-Buoy-Calibration
   Selection : 
 ```
 
-### Running a single scene
+## Running a single scene
 -  Launch the program as indicated in the "Launching the program" section.  
 -  Enter the number 1 and press enter
 ```
@@ -151,14 +165,14 @@ Do you want to display the image after it has been processed? (Y/N): y
 ```
 -  Now enter the sceneID at the prompt and press enter, or enter the letter 'x' (without the apostrophes) to be returned to the menu
 
-#### Test Scenes
+### Test Scenes
 The system supports both Scene ID's as well as Landsat Product Identifiers.  These two are both valid ID's than can be used.
 -  Scene ID  : LC80130322017332LGN00
 -  Landsat Product Identifier  : LC08_L1TP_017030_20160614_20170220_01_T1    
 
 These ID's are checked before processing to ensure they are valid.
 
-### Running a batch job
+## Running a batch job
 Batch processing has been enhanced in this revision to be very simple.  
 
 -  Copy a file containing Product ID's or Landsat Product Identifiers, with one entry per line into the /input/batches directory.  These can be files containing either one of the formats, or a mixture of the two formats.  The system determines the ID and processes it accordingly.  
@@ -193,10 +207,10 @@ Do you want to display the image after it has been processed? (Y/N): y
  Please enter the name of the batch file or 'X' to exit : test.batch
 ```
 
-#### Test Batches
+### Test Batches
 A number of batch files are included in the repository and can be used as required.  
 
-### Output
+## Output
 Output for both the single as well as batch jobs are stored in the 'output' directory within the 'Landsat-Buoy-Calibration' directory.
 
 -  Single data output locations are:  
@@ -208,6 +222,6 @@ Output for both the single as well as batch jobs are stored in the 'output' dire
   Images - /output/processed_images  
   Graphs - /output/batches/graphs  
 
-### Notes
+## Notes
 
 

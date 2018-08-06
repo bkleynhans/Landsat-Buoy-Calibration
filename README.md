@@ -10,8 +10,8 @@ Current version contains multiple enhancements of the Landsat and Buoy processin
 ## Original Version
 The original version of this software was developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu).  His original work is available at the links provided below.
 
-Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.
-README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md
+Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.  
+README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md  
 Copyright RIT 2015-2018
 
 ## OVERVIEW:

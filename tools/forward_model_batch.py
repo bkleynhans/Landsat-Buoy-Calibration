@@ -27,8 +27,7 @@ import cv2
 # Process the SceneIDs and print results to a file
 def batch_f_model(scene_txt, scenes, output_txt, display_image):
 
-    if (output_txt == 'results.txt'):
-        output_txt = 'output/' + scene_txt[7:] + '.out'
+    output_txt += '/' + scene_txt[scene_txt.rfind('/'):] + '.out'
 
     fileExists = test_paths.testFile(output_txt)
 
@@ -103,19 +102,21 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
     
     graph_title = scene_txt[scene_txt.index('/') + 1:][:scene_txt[scene_txt.index('/') + 1:].index('.')]
     
+    output_file_no_band = "output/batches/graphs/" + scene_txt[scene_txt.rfind('/') + 1:scene_txt.rfind('.')]
+    
     graph.generate_graph(
             graph_title + " - Band 10",                                         # Graph title
             "Date",                                                             # X-axis label
-            "Buoy - Landsat \n[w/m$^2$/sr/$\\mu$m]",                              # Y-axis label
+            "Buoy - Landsat \n[w/m$^2$/sr/$\\mu$m]",                            # Y-axis label
             graph_data_band10,                                                  # Error array
-            ("output/" + scene_txt[7:] + "_band10"))                            # Output file name (no extension)
+            output_file_no_band + "_band10")                                    # Output file name (no extension)
     
     graph.generate_graph(
             graph_title + " - Band 11",                                         # Graph title
             "Date",                                                             # X-axis label
-            "Buoy - Landsat \n[w/m$^2$/sr/$\\mu$m]",                              # Y-axis label
+            "Buoy - Landsat \n[w/m$^2$/sr/$\\mu$m]",                            # Y-axis label
             graph_data_band11,                                                  # Error array
-            ("output/" + scene_txt[7:] + "_band11"))                            # Output file name (no extension)
+            output_file_no_band + "_band11")                                    # Output file name (no extension)
 
 
 # Read the supplied batch file
@@ -135,7 +136,7 @@ def parseArgs(args):
 
     parser.add_argument('scene_txt')
     parser.add_argument('-a', '--atmo', default='merra', choices=['merra', 'narr'], help='Choose atmospheric data source, choices:[narr, merra].')
-    parser.add_argument('-s', '--save', default='results.txt')
+    parser.add_argument('-s', '--save', default='output/batches/data/')
     # Allow ability to disable image display
     parser.add_argument('-n', '--display_image', default='true')
 

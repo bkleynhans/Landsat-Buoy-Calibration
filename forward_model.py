@@ -83,7 +83,7 @@ def display_cv2_image(scene_id, image):
     
     cv2.imshow('Landsat Preview', image)
     cv2.waitKey(0)
-    cv2.imwrite('processed_images/{0}.jpg'.format(scene_id), image)
+    cv2.imwrite('output/processed_images/{0}.jpg'.format(scene_id), image)
         
 
 def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11]):
@@ -304,7 +304,7 @@ def parseArgs(args):
     parser.add_argument('scene_id', help='LANDSAT or MODIS scene ID. Examples: LC08_L1TP_017030_20170703_20170715_01_T1, MOD021KM.A2011154.1650.006.2014224075807.hdf')
     parser.add_argument('-a', '--atmo', default='merra', choices=['merra', 'narr'], help='Choose atmospheric data source, choices:[narr, merra].')
     parser.add_argument('-v', '--verbose', default=False, action='store_true')
-    parser.add_argument('-s', '--save', default='results.txt')
+    parser.add_argument('-s', '--save', default='output/results.txt')
     parser.add_argument('-w', '--warnings', default=False, action='store_true')
     parser.add_argument('-d', '--bands', nargs='+')
 # Allow ability to disable image display

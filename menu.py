@@ -52,11 +52,19 @@ def check_required_directories():
     
     import test_paths
     
-    required_folders = {'output', 'processed_images'}
+    required_directories = {
+            'input',
+            'input/batches',
+            'output',
+            'output/processed_images',
+            'output/single',
+            'output/batches',
+            'output/batches/data',            
+            'output/batches/graphs'}
     
-    for folder in required_folders:
-        if not test_paths.testDirectory(folder):
-            test_paths.createDirectory(folder)
+    for directory in required_directories:
+        if not test_paths.testDirectory(directory):
+            test_paths.createDirectory(directory)
     
 
 # Request name of text file containing batch process scene IDs
@@ -66,7 +74,8 @@ def f_model_batch_merra():
     
     display_images = display_processed_images(True)
     
-    batchFile = input("\n Please enter the name of the batch file : ")
+    batchFile = 'input/batches/'
+    batchFile += input("\n Please enter the name of the batch file : ")
     valid_data = test_paths.main([batchFile, "-tfile"])
     
     if not valid_data:

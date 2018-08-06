@@ -38,9 +38,6 @@ class Graph_Generator:
         self.y_axis_values = graph_data[:,1].astype(float)
         self.error = graph_data[:,2]
         
-        # Generate graph output name
-        output_filename = output_file[:-(output_file.index('.') + 1)]
-        
         # Apply formatting to graph
         plt.title(title)
         plt.xlabel(x_label, rotation=1)
@@ -54,7 +51,7 @@ class Graph_Generator:
         # Save figure to different variable to allow further manipulation (like show())
         this_graph = plt.gcf()
         this_graph.set_size_inches(14.4, 9)
-        this_graph.savefig(output_filename + ".png")
+        this_graph.savefig(output_file + ".png")
         
         #plt.show()
         

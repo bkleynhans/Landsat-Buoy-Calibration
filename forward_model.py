@@ -14,7 +14,7 @@ import numpy
 import cv2
 
 # Constants for use in directory cleanup
-CLEAN_FOLDER_ON_COMPLETION = False
+CLEAN_FOLDER_ON_COMPLETION = True
 FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
 

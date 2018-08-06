@@ -17,25 +17,35 @@ for NARR, and 2-3 for MERRA.
 A menu has been implemented to replace the original command line interface:
 
 ```
-$ python forward_model.py -h
-usage: forward_model.py [-h] [-a {merra,narr}] [-v] [-b BANDS [BANDS ...]]
-                        scene_id buoy_id
+$ ./menu
+ Please be patient while we test if the required data sources are available
 
-Compute and compare the radiance values of a landsat image to the propogated
-radiance of a NOAA buoy, using atmospheric data and MODTRAN.
+     --> All data sources are accounted for <--
 
-positional arguments:
-  scene_id              LANDSAT or MODIS scene ID. Examples:
-                        LC08_L1TP_017030_20170703_20170715_01_T1,
-                        MOD021KM.A2011154.1650.006.2014224075807.hdf
-  buoy_id               NOAA Buoy ID. Example: 45012
+ ***************************************************
+ *                                                 *
+ *           Landsat Buoy Calibration              *
+ *                                                 *
+ ***************************************************
+ *                                                 *
+ * Please select from one of the following options *
+ *                                                 *
+ *                                                 *
+ *              ***  SINGLE JOB  ***               *
+ *                                                 *
+ * 1. Forward model calculation (MERRA2 / MODIS)   *
+ *                                                 *
+ *                                                 *
+ *              ***  BATCH JOBS  ***               *
+ *                                                 *
+ * 5. Forward model calculation (MERRA2)           *
+ *                                                 *
+ *                                                 *
+ * X. Exit                                         *
+ *                                                 *
+ ***************************************************
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -a {merra,narr}, --atmo {merra,narr}
-                        Choose atmospheric data source, choices:[narr, merra].
-  -v, --verbose
-  -b BANDS [BANDS ...], --bands BANDS [BANDS ...]
+  Selection :
 ```
 
 ### Enhancements

@@ -2,10 +2,17 @@
 Calculates and compares the radiance of a thermal LANSAT scene to the "ground truth"
 radiance as measured by a NOAA buoy. Based on work by Frank Padula and Monica Cook at RIT.
 
-If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on armstrong or related servers for best results. Original version developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu) available at https://github.com/natedileas/Landsat-Buoy-Calibration.
-Copyright RIT 2015-2018
+If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.
 
-Current version contains multiple enhancements of the Landsat and Buoy processing implementation and was done by Benjamin Kleynhans (bxk8027@g.rit.edu).  The MODIS implementation remains original.  The enchancements are described below
+## Current Version
+Current version contains multiple enhancements of the Landsat and Buoy processing implementation and was done by Benjamin Kleynhans (bxk8027@g.rit.edu).  The MODIS implementation remains original and unchanged.  The enchancements are described in the sections below.
+
+## Original Version
+The original version of this software was developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu).  His original work is available at the links provided below.
+
+Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.
+README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md
+Copyright RIT 2015-2018
 
 ## OVERVIEW:
 This code essentially has two funtions: calculating the radiance from the landsat image 
@@ -52,19 +59,20 @@ $ ./menu
 
 - Menu driven operation
 - No more issues related to path variables, this is now calculated automatically
+- The original software could not run without a X-Window enabled terminal.  This service has now been integrated and will run regardles of X-Window availability.  It can also be enabled or disabled during runtime by the user if the service is available.
 - Batch processing which was originally implemented but problematic has been improved and errors resolved.
-- Problems relating to landsat scenes prior to 2017 as described in notes have been resolved (any landsat 8 ID should work)
-- Output input and output has been changed to the following format
+- Problems relating to landsat scenes prior to 2017 as described in notes have been resolved (any landsat 8 ID should work).  Landsat 8 data are only available from 2014.
+- Input and output directories have been implemented as follows:
 
-## Batch Input
+#### Batch Input
   input/batches
   
-## Output
-  output/single/  - contains a comma delimited text output file when running individual scenes
-  output/processed_images/  - contains all processed images for single and batch runs
-  output/batches/  - contains all information relating to batch runs
-  output/batches/data/  - contains a comma delimed text output file containing the data for all scenes in the batch file
-  output/batches/graphs/  - contains all graphs (one per batch) dsplaying the variance with error between landsat and buoy data
+#### Output
+  output/single/  - a comma delimited text output file when running individual scenes
+  output/processed_images/  - all processed images for single and batch runs
+  output/batches/  - all information relating to batch runs
+  output/batches/data/  - a comma delimed text output file per batch containing the data for all scenes in the batch file
+  output/batches/graphs/  - all graphs (one per batch) dsplaying the variance with error between landsat and buoy data
 
 ### Installing
 See INSTALL.txt

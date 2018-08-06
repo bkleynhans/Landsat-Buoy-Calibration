@@ -4,6 +4,14 @@ radiance as measured by a NOAA buoy. Based on work by Frank Padula and Monica Co
 
 If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.
 
+# Table of contents
+=================
+
+<!--ts-->
+   * [Landsat Buoy Calibration](#landsat-buoy-calibration)
+   * [Table of contents](#table-of-contents)
+<!--te-->
+
 ## Current Version
 Current version contains multiple enhancements of the Landsat and Buoy processing implementation and was done by Benjamin Kleynhans (bxk8027@g.rit.edu).  The MODIS implementation remains original and unchanged.  The enchancements are described in the sections below.
 

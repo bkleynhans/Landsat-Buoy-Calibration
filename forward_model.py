@@ -185,7 +185,9 @@ def buildModel(args):
         raise ValueError('Scene ID is not a valid format for (landsat8, modis)')
     
     if (args.caller == 'menu'):
-        #print('\nScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2')
+        # Change the name of the output file to <scene_id>.txt
+        args.save = args.save[:args.save.rfind('/') + 1] + args.scene_id + '.txt'
+        
         sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2\n")
         
         error_message = None
@@ -304,7 +306,7 @@ def parseArgs(args):
     parser.add_argument('scene_id', help='LANDSAT or MODIS scene ID. Examples: LC08_L1TP_017030_20170703_20170715_01_T1, MOD021KM.A2011154.1650.006.2014224075807.hdf')
     parser.add_argument('-a', '--atmo', default='merra', choices=['merra', 'narr'], help='Choose atmospheric data source, choices:[narr, merra].')
     parser.add_argument('-v', '--verbose', default=False, action='store_true')
-    parser.add_argument('-s', '--save', default='output/results.txt')
+    parser.add_argument('-s', '--save', default='output/single/results.txt')
     parser.add_argument('-w', '--warnings', default=False, action='store_true')
     parser.add_argument('-d', '--bands', nargs='+')
 # Allow ability to disable image display

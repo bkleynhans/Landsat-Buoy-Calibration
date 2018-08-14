@@ -216,6 +216,38 @@ class Db_Construction:
                                                     table_name,
                                                     table_name,
                                                     table_name)
+                        
+        elif query_type == 'create_view':
+            if table_name == 'default':
+                
+                query = "CREATE VIEW `default_view` AS " \
+                        "SELECT " \
+                        "    `t_scene_ids`.`f_scene_id` AS 'Scene ID', " \
+                        "    `t_dates`.`f_date` AS 'Date', " \
+                        "    `t_buoy_ids`.`f_buoy_id` AS 'Buoy ID', " \
+                        "    `t_data`.`f_bulk_temp` AS 'Bulk Temp', " \
+                        "    `t_data`.`f_skin_temp` AS 'Skin Temp', " \
+                        "    `t_data`.`f_buoy_lat` AS 'Buoy Lat', " \
+                        "    `t_data`.`f_buoy_lon` AS 'Buoy Lon', " \
+                        "    `t_data`.`f_mod1` AS 'Modelled B10', " \
+                        "    `t_data`.`f_mod2` AS 'Modelled B11', " \
+                        "    `t_data`.`f_img1` AS 'Landsat B10', " \
+                        "    `t_data`.`f_img2` AS 'Landsat B11', " \
+                        "    `t_data`.`f_error1` AS 'Error B10', " \
+                        "    `t_data`.`f_error2` AS 'Error B11', " \
+                        "    `t_images`.`f_image` AS 'Image', " \
+                        "    `t_data`.`f_status` AS 'Status', " \
+                        "    `t_data`.`f_comment` AS 'Comment' " \
+                        "FROM " \
+                        "    `t_data` " \
+                        "        JOIN " \
+                        "    `t_scene_ids` ON `t_scene_ids`.`f_id` = `t_data`.`f_scene_id` " \
+                        "        JOIN " \
+                        "    `t_dates` ON `t_dates`.`f_id` = `t_data`.`f_date` " \
+                        "        JOIN " \
+                        "    `t_buoy_ids` ON `t_buoy_ids`.`f_id` = `t_data`.`f_buoy_id` " \
+                        "        JOIN " \
+                        "    `t_images` ON `t_images`.`f_id` = `t_data`.`f_image`;"
         
         return query
     
@@ -260,6 +292,30 @@ class Db_Construction:
             self.cnx.close_connection()
             
         print("\n Triggers for t_data have been created")
+        
+        
+    # Create default view
+    @staticmethod
+    def create_default_view(self):
+        
+        print("\n Create default database view")
+        
+        try:
+            self.cursor = self.cnx.open_connection()
+            
+            query = self.build_query(self, 'create_view', 'default')
+            
+            self.cursor.execute(query)
+            self.cnx.db_commit()
+            
+        except:
+            print("Exception occurred during default view creation")
+            
+        finally:
+            self.cnx.close_connection()
+            
+            
+        print("\n Default view created")
 
     
     # Update database indexes
@@ -405,4 +461,5 @@ class Db_Construction:
                 self.add_indexes(self)
                 self.add_constraints(self)
                 self.upload_default_image(self)
+                self.create_default_view(self)
         

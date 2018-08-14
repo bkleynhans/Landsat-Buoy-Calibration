@@ -75,8 +75,9 @@ class Db_Operations:
             db_value = cursor.fetchone()
             db_value = db_value[0]
         
-        except:
-            print("\n An error has occurred during value test")
+        except Exception as e:
+            print("\n Error occurred in db_operations.value_exists for table {}, field {}, value {}".format(table, field, value))
+            print("\n {}".format(str(e)))
             
         finally:
             self.cnx.close_connection()
@@ -110,8 +111,9 @@ class Db_Operations:
             db_value = cursor.fetchone()
             db_value = db_value[0]
         
-        except:
-            print("\n An error has occurred during value test")
+        except Exception as e:
+            print("\n Error occurred in db_operations.row_exists for scene index {}, date_index, buoy_index".format(scene_index, date_index, buoy_index))
+            print("\n {}".format(str(e)))
             
         finally:
             self.cnx.close_connection()
@@ -153,8 +155,9 @@ class Db_Operations:
             returnValue = cursor.fetchone()
             returnValue = returnValue[0]
             
-        except:
-            print("\n An error occurred during index retrieval")
+        except Exception as e:
+            print("\n Error occurred in db_operations.get_index for table {}, value {}, field, {}".format(table, value, value_field))
+            print("\n {}".format(str(e)))
             
         finally:
             self.cnx.close_connection()
@@ -173,8 +176,9 @@ class Db_Operations:
         try:
             with open(image_file, 'rb') as image:
                 image = image.read()
-        except:
-            print("\n Error while reading image file")
+        except Exception as e:
+            print("\n Error occurred in db_operations.read_image for Scene ID {}".format(scene_id))
+            print("\n {}".format(str(e)))
         
         return image
     
@@ -197,8 +201,9 @@ class Db_Operations:
             
             value_exists = self.cursor.fetchone()
             value_exists = value_exists[0]
-        except:
-            print("Exception occurred while checking image existance upload.")
+        except Exception as e:
+            print("\n Error occurred in db_operations.image_exists for Scene ID {}".format(scene_id))
+            print("\n {}".format(str(e)))
             
         finally:
             self.cnx.close_connection()
@@ -233,8 +238,9 @@ class Db_Operations:
                 
                 image_index = self.cursor.lastrowid
                     
-            except:
-                print("Exception occurred during image insertion.")
+            except Exception as e:
+                print("\n Error occurred in db_operations.insert_image for Scene ID {}".format(scene_id))
+                print("\n {}".format(str(e)))
                 
             finally:
                 self.cnx.close_connection()
@@ -274,8 +280,9 @@ class Db_Operations:
                 
                 value_index = cursor.lastrowid
                 
-            except:
-                print("\n An error occurred during insertion into {}".format(table))
+            except Exception as e:
+                print("\n Error occurred in db_operations.insert_single_value into {}".format(table))
+                print("\n {}".format(str(e)))
                 
             finally:
                 self.cnx.close_connection()
@@ -326,8 +333,9 @@ class Db_Operations:
                 
                 self.cnx.db_commit()
                 
-            except:
-                print("\n An error occured during data row insertion")
+            except Exception as e:
+                print("\n Error occurred in db_operations.insert_image scene index {}".format(scene_index))
+                print("\n {}".format(str(e)))
                 
             finally:
                 self.cnx.close_connection()

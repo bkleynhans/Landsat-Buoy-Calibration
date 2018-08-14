@@ -12,6 +12,8 @@ from . import settings
 from . import atmo
 from .download import (url_download, ungzip)
 
+import test_paths
+
 
 class BuoyDataException(Exception):
     pass
@@ -225,7 +227,7 @@ def download(id, date, directory=settings.NOAA_DIR):
     """
     
     if date.year < datetime.date.today().year:
-        url = settings.NOAA_URLS[0] % (id, date.year)
+        url = settings.NOAA_URLS[0] % (id, date.year)        
     else:
         url = settings.NOAA_URLS[1] % (date.strftime('%b'), id, date.strftime('%-m'), datetime.datetime.now().strftime('%Y'))
 
@@ -276,6 +278,9 @@ def info(buoy_id, file, overpass_date):
     surf_rh = atmo.data.calc_rh(surf_airtemp, surf_dewpnt)
 
     bulk_temp = data[closest_dt[0], headers.index('WTMP')]
+    
+    if math.isnan(bulk_temp):
+        bulk_temp = 0
 
     try:
         skin_temp = calc_skin_temp(data, dates, headers, overpass_date, buoy_depth)

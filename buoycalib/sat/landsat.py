@@ -32,6 +32,8 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
             targzfile = directory + "/" + scene_id + ".tar.gz"
             
             try:
+                print(" Extracting {}.tar.gz\n".format(scene_id))
+                
                 tarfile = ungzip(targzfile)
                 os.remove(targzfile)
                 directory = untar(tarfile, directory)
@@ -70,6 +72,8 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
     
                     except RemoteFileException:
                         continue
+                    
+                    print(" Extracting {}\n".format(targzfile))
                     
                     tarfile = ungzip(targzfile)
                     os.remove(targzfile)

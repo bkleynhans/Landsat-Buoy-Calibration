@@ -9,6 +9,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import warnings
+import time
 
 import requests
 import forward_model
@@ -48,15 +49,15 @@ def download_http(url, filepath, auth=None):
 
         if auth:
             resource = session.get(req.url, auth=auth)
-
+    
             if resource.status_code != 200:
                 raise RemoteFileException('url: {0} does not exist'.format(url))
         else:
-            if not _remote_file_exists(url, auth):
-                raise RemoteFileException('url: {0} does not exist'.format(url))
-
             resource = session.get(req.url)
-
+            
+            if resource.status_code != 200:
+                raise RemoteFileException('url: {0} does not exist'.format(url))
+            
         with open(filepath, 'wb') as f:
             f.write(resource.content)
 

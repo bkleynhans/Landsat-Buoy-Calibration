@@ -21,7 +21,7 @@ import os
 import time
 import cv2
 import subprocess as sp
-#import mysql.connector
+import pdb
 
 ERASE_LINE = '\x1b[2K'
 
@@ -166,16 +166,26 @@ def test_input_format(input_value):
         
     return returnValue
 
-## Test if the database server is avialable
-#def testDb():
-#
-#    import db_connection
-#
-#    db_test_con = db_connection.Db_Connection()
-#
-#    db_test_con.runTest()
-#    
-#    
+# Test if the database server is avialable
+def testDb():
+
+    import db_connection
+
+    db_test_con = db_connection.Db_Connection()
+
+    db_status = db_test_con.db_available()
+    
+    import db_construction
+    
+    constructor = db_construction.Db_Construction()
+    
+    constructor.prepare_database()
+    
+    print()
+    
+    return db_status
+    
+    
 ## Timer to display activity during tests
 #def path_test_timer():
 #    
@@ -306,10 +316,10 @@ def menu():
     print(" *                                                 *")
     print(" * 5. Forward model calculation (MERRA2)           *")
     print(" *                                                 *")
-#    print(" *                                                 *")
-#    print(" *           ***  TROUBLESHOOTING  ***             *")
-#    print(" *                                                 *")
-#    print(" * D. Test database connection                     *")
+    print(" *                                                 *")
+    print(" *           ***  TROUBLESHOOTING  ***             *")
+    print(" *                                                 *")
+    print(" * D. Test database connection                     *")
     print(" *                                                 *")
     print(" * X. Exit                                         *")
     print(" *                                                 *")
@@ -361,18 +371,18 @@ if __name__ == '__main__':
                 f_model_batch_merra()
     
             elif (result == "D"):
-                print("\nPlease wait while we test the database connection\n")
+                print("\n Please wait while we test the database connection\n")
     
-                #testDb()
+                testDb()
     
             elif (result == "X"):
                 successful_entry = True
                 cv2.destroyAllWindows()
-                print("\nThank you for using the Landsat Buoy Calibration program\n")
+                print("\n Thank you for using the Landsat Buoy Calibration program\n")
                 
             else:
                 successful_entry = False
-                print("\nThe value you entered is invalid, please try again\n")
+                print("\n The value you entered is invalid, please try again\n")
                 
             sp.call('clear', shell = True)
             cv2.destroyAllWindows()

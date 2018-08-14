@@ -2,6 +2,14 @@ from os.path import join, abspath
 
 PACKAGE_BASE = abspath(join(__file__, '..'))
 
+# Program properties
+# Constants for use in directory cleanup
+CLEAN_FOLDER_ON_COMPLETION = False
+FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
+
+# Will the program be using MySQL?
+USE_MYSQL = True
+
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')
 

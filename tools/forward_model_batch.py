@@ -23,9 +23,11 @@ import graph_generator
 import datetime
 import numpy as np
 import cv2
+import db_operations
+import settings
 
 # Process the SceneIDs and print results to a file
-def batch_f_model(scene_txt, scenes, output_txt, display_image):
+def batch_f_model(db_operator, scene_txt, scenes, output_txt, display_image):
 
     output_txt += '/' + scene_txt[scene_txt.rfind('/'):] + '.out'
 
@@ -40,7 +42,7 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
         graph_data_band10 = np.zeros([1,3])
         graph_data_band11 = np.zeros([1,3])
                 
-        f.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2\n')
+        f.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
         f.flush()
         
         # For each SceneID, process and write to txt file
@@ -61,37 +63,39 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
             print(scene_id.replace('\n', ','),ret)
 
             for key in ret.keys():
-                if(ret[key][1] == "failed"):
-                    if (ret[key][2] == "buoy"):
-                        error_message = "No buoys in the scene"
-                    elif (ret[key][2] == "data"):
-                        error_message = "No data available for buoy"
-                    elif (ret[key][2]== "image"):
-                        error_message = "No Landsat Image Available For Download"
-                    elif (ret[key][2] == "merra_layer1_temperature"):
-                        error_message = "Zero reading at Merra layer1 temperature for buoy"
-                    else:
-                        error_message = ret[key][2]
-            
-                if (ret[key][1] != "failed"):
-                    buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date = ret[key]
-                    
-                    for band in error:
-                        difference = (mod_ltoa[band] - img_ltoa[band])
-                        
-                        if band == 10:
-                            graph_data_band10 = np.vstack((graph_data_band10, [date, difference, error[band]]))
-                        elif band == 11:
-                            graph_data_band11 = np.vstack((graph_data_band11, [date, difference, error[band]]))
-                        
-                    print(scene_id.replace('\n', ''), date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, \
-                        *mod_ltoa.values(), *img_ltoa.values(), *error.values(), file=f, sep=', ')
+                if(ret[key][9] == "failed"):
+                    error_message = forward_model.get_error_message(ret[key][10])
                 else:
-                    if ((ret[key][2] == "data") or
-                        (ret[key][2] == "merra_layer1_temperature")):
-                        print(scene_id.replace('\n', ''), error_message, ret[key][0], file=f, sep=', ')
-                    else:
-                        print(scene_id.replace('\n', ''), error_message, file=f, sep=', ')
+                    error_message = None
+                 
+                buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
+                
+                if settings.USE_MYSQL:
+                    # Write row of data to database
+                    db_operator.insert_data_row(scene_id_index,
+                                            date_index,
+                                            buoy_id_index,
+                                            [bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, img_ltoa, error],
+                                            image_index,
+                                            status,
+                                            error_message)
+                    
+                for band in error:
+                    difference = (mod_ltoa[band] - img_ltoa[band])
+                    
+                    if band == 10:
+                        graph_data_band10 = np.vstack((graph_data_band10, [date, difference, error[band]]))
+                    elif band == 11:
+                        graph_data_band11 = np.vstack((graph_data_band11, [date, difference, error[band]]))
+                        
+                print(scene_id.replace('\n', ''), date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, \
+                    *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message, file=f, sep=', ')
+#                else:
+#                    if ((ret[key][10] == "data") or
+#                        (ret[key][10] == "merra_layer1_temperature")):
+#                        print(scene_id.replace('\n', ''), error_message, ret[key][0], file=f, sep=', ')
+#                    else:
+#                        print(scene_id.replace('\n', ''), error_message, file=f, sep=', ')
 
             f.flush()
     
@@ -121,10 +125,13 @@ def batch_f_model(scene_txt, scenes, output_txt, display_image):
 
 # Read the supplied batch file
 def buildModel(args):
+    
+    if settings.USE_MYSQL:
+        db_operator = db_operations.Db_Operations()
 
     scenes = open(args.scene_txt).readlines()
     
-    batch_f_model(args.scene_txt, scenes, args.save, args.display_image)
+    batch_f_model(db_operator, args.scene_txt, scenes, args.save, args.display_image)
 
 
 # Parse the arguments received during program launch

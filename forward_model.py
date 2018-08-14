@@ -12,18 +12,14 @@ from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, d
 
 import numpy
 import cv2
-
-# Constants for use in directory cleanup
-CLEAN_FOLDER_ON_COMPLETION = True
-FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
-
+import db_operations
 
 def modis(scene_id, atmo_source='merra', verbose=False, bands=[31, 32]):
     image = display.modis_preview(scene_id)
     
     cv2.imshow('MODIS Preview', image)
     cv2.waitKey(50)
-    cv2.imwrite('preview_{0}.jpg'.format(scene_id), image)
+    cv2.imwrite('preview_{0}.tif'.format(scene_id), image)
 
     overpass_date, directory, metadata, [granule_filepath, geo_ref_filepath] = sat.modis.download(scene_id)
     rsrs = {b:settings.RSR_MODIS[b] for b in bands}
@@ -79,19 +75,40 @@ def modis(scene_id, atmo_source='merra', verbose=False, bands=[31, 32]):
 
 
 # Display the image to the screen for 60 seconds, or until the window is closed.
-def display_cv2_image(scene_id, image):
+def save_cv2_image(display_image, scene_id, image):
     
-    cv2.imshow('Landsat Preview', image)
-    cv2.waitKey(0)
-    cv2.imwrite('output/processed_images/{0}.jpg'.format(scene_id), image)
+    if display_image == 'true':
+        cv2.imshow('Landsat Preview', image)
+        cv2.waitKey(0)
+        
+    cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
         
 
-def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11]):
+def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11]):
+    
+    scene_id_index = None
+    image_index = None
+    date_index = None
+    buoy_id_index = None
+    
+    if settings.USE_MYSQL:
+        # Add Scene ID to database
+        scene_id_index = db_operator.insert_single_value('t_scene_ids', scene_id)
     
     image, file_downloaded = display.landsat_preview(scene_id, '')
     
+    # Save image to file and/or display image
+    #threading.Thread(target=save_cv2_image, args=(display_image, scene_id, image, )).start()
+    
     if display_image == 'true':
-        threading.Thread(target=display_cv2_image, args=(scene_id, image, )).start()
+        cv2.imshow('Landsat Preview', image)
+        cv2.waitKey(0)
+        
+    cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
+    
+    if settings.USE_MYSQL:
+        # Write image to database
+        image_index = db_operator.insert_image(scene_id)
     
     data = {}
     
@@ -100,6 +117,10 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
         # [:] thing is to shorthand to make a shallow copy
         
         overpass_date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, bands[:])
+        
+        if settings.USE_MYSQL:
+            # Write date to database
+            date_index = db_operator.insert_single_value('t_dates', overpass_date)
         
         rsrs = {b:settings.RSR_L8[b] for b in bands}
         
@@ -111,6 +132,10 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
     
         for buoy_id in buoys:
             
+            if settings.USE_MYSQL:
+                # Write Buoy ID to database
+                buoy_id_index = db_operator.insert_single_value('buoy_ids', buoy_id)
+            
             sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
             sys.stdout.flush()
             
@@ -119,11 +144,13 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
                 buoy_lat, buoy_lon, buoy_depth, bulk_temp, skin_temp, lower_atmo = buoy.info(buoy_id, buoy_file, overpass_date)
             except download.RemoteFileException:
                 warnings.warn('Buoy {0} does not have data for this date.'.format(buoy_id), RuntimeWarning)
-                data[buoy_id] = (buoy_id, 'failed', 'data')
+                data[buoy_id] = (buoy_id, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0},
+                    overpass_date, 'failed', 'file', scene_id_index, date_index, buoy_id_index, image_index)
                 continue
             except buoy.BuoyDataException as e:
                 warnings.warn(str(e), RuntimeWarning)
-                data[buoy_id] = (buoy_id, 'failed', e.args[0] + ' for buoy, ' + buoy_id)
+                data[buoy_id] = (buoy_id, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0},
+                    overpass_date, 'failed', 'data', scene_id_index, date_index, buoy_id_index, image_index)#e.args[0] + ' for buoy ' + buoy_id)
                 continue
 ### Continue from here                
             # Atmosphere
@@ -134,8 +161,10 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
             else:
                 raise ValueError('atmo_source is not one of (narr, merra)')
     
-            if not atmosphere:          
-                data[buoy_id] = (buoy_id, 'failed', 'merra_layer1_temperature')
+            if not atmosphere:
+                pdb.set_trace()
+                data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon,
+                    {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, overpass_date, 'failed', 'merra_layer1_temperature')
                 continue            
             else:
             
@@ -161,21 +190,26 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
         
                 error = error_bar.error_bar(scene_id, buoy_id, skin_temp, 0.305, overpass_date, buoy_lat, buoy_lon, rsrs, bands)
         
-                data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, overpass_date)
+                data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, 
+                    overpass_date, 'success','', scene_id_index, date_index, buoy_id_index, image_index)
             
     else:
-        data[scene_id] = (scene_id, 'failed', 'image')
+        data[scene_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, 
+            overpass_date, 'failed', 'image', scene_id_index, date_index, buoy_id_index, image_index)
     
     return data
 
 def buildModel(args):
+        
+    if settings.USE_MYSQL:
+        db_operator = db_operations.Db_Operations()
 
     if not args.warnings:
         warnings.filterwarnings("ignore")
         
     if args.scene_id[0:3] in ('LC8', 'LC0'):   # Landsat 8
         bands = [int(b) for b in args.bands] if args.bands is not None else [10, 11]
-        ret = landsat8(args.scene_id, args.display_image, args.atmo, args.verbose, bands)
+        ret = landsat8(db_operator, args.scene_id, args.display_image, args.atmo, args.verbose, bands)
 
     elif args.scene_id[0:3] == 'MOD':   # Modis
         bands = [int(b) for b in args.bands] if args.bands is not None else [31, 32]
@@ -188,69 +222,52 @@ def buildModel(args):
         # Change the name of the output file to <scene_id>.txt
         args.save = args.save[:args.save.rfind('/') + 1] + args.scene_id + '.txt'
         
-        sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2\n")
+        sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n")
         
         error_message = None
         
         for key in ret.keys():
-            if(ret[key][1] == "failed"):
-                if (ret[key][2] == "buoy"):
-                    error_message = "No buoys in the scene"
-                elif (ret[key][2] == "data"):
-                    error_message = "No data available for buoy"
-                elif (ret[key][2] == "image"):
-                    error_message = "No Landsat Image Available For Download"
-                elif (ret[key][2] == "merra_layer1_temperature"):
-                    error_message = "Zero reading at Merra layer1 temperature for buoy"
-                else:
-                    error_message = ret[key][2]
-            
-            if (ret[key][1] != "failed"):
-                buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date = ret[key]
-                print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
-                    buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values())
+            if(ret[key][9] == "failed"):
+                error_message = get_error_message(ret[key][10])
             else:
-                if ((ret[key][2] == "data") or
-                    (ret[key][2] == "merra_layer1_temperature")):
-                    print(args.scene_id, error_message, ret[key][0])
-                else:
-                    print(args.scene_id, error_message)
+                error_message = None
+                    
+            buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
+            
+            if settings.USE_MYSQL:
+                # Write row of data to database
+                db_operator.insert_data_row(scene_id_index,
+                                            date_index,
+                                            buoy_id_index,
+                                            [bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, img_ltoa, error],
+                                            image_index,
+                                            status,
+                                            error_message)
+            
+            print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
+                buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
 
-        if CLEAN_FOLDER_ON_COMPLETION:
+        if settings.CLEAN_FOLDER_ON_COMPLETION:
                 clear_downloads()
 
         if args.save:
             with open(args.save, 'w') as f:
-                print('#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2', file=f, sep=', ')
+                print('#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason', file=f, sep=', ')
                 for key in ret.keys():
-                    if(ret[key][1] == "failed"):
-                        if (ret[key][2] == "buoy"):
-                            error_message = "No buoys in the scene"
-                        elif (ret[key][2] == "data"):
-                            error_message = "No data available for buoy"
-                        elif (ret[key][2]== "image"):
-                            error_message = "No Landsat Image Available For Download"
-                        elif (ret[key][2] == "merra_layer1_temperature"):
-                            error_message = "Zero reading at Merra layer1 temperature for buoy"
-                        else:
-                            error_message = ret[key][2]
-                
-                    if (ret[key][1] != "failed"):
-                        buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date = ret[key]
-                        print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
-                            buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), file=f, sep=', ')
+                    if (ret[key][9] == "failed"):
+                        error_message = get_error_message(ret[key][10])
                     else:
-                        if ((ret[key][2] == "data") or
-                            (ret[key][2] == "merra_layer1_temperature")):
-                            print(args.scene_id, error_message, ret[key][0], file=f, sep=', ')
-                        else:
-                            print(args.scene_id, error_message, file=f, sep=', ')
+                        error_message = None
+                    
+                    buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason = ret[key]
+                    print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
+                        buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message, file=f, sep=', ')
             
         else:
             return ret
     
     else:
-        if CLEAN_FOLDER_ON_COMPLETION:
+        if settings.CLEAN_FOLDER_ON_COMPLETION:
                 clear_downloads()
                 
         return ret
@@ -265,7 +282,7 @@ def clear_downloads():
         file_path = os.path.join(directory, file_or_folder)
         
         try:
-            if get_size(file_path) > FOLDER_SIZE_FOR_REPORTING:
+            if get_size(file_path) > settings.FOLDER_SIZE_FOR_REPORTING:
                 if os.path.isfile(file_path):                    
                     sys.stdout.write("\r Deleting %s..." % (file_or_folder))
                     os.unlink(file_path)
@@ -282,6 +299,28 @@ def clear_downloads():
     
     sys.stdout.write("\r Cleanup completed!!!\n")
     
+
+# Convert error codes to error messages for user feedback    
+def get_error_message(key):
+    
+    error_message = None
+    
+    if (key == "buoy"):
+        error_message = "No buoys in the scene"
+    elif (key == "data"):
+        error_message = "No data in data file for this buoy on this date"
+    elif (key == "file"):
+        error_message = "No data file to download for this buoy for this period"
+    elif (key== "image"):
+        error_message = "No Landsat Image Available For Download"
+    elif (key == "merra_layer1_temperature"):
+        error_message = "Zero reading at Merra layer1 temperature for buoy"
+    else:
+        error_message = key
+    
+    return error_message
+
+# Get the size of a file
 def get_size(start_path):
     
     total_size = 0

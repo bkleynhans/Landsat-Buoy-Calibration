@@ -9,6 +9,7 @@ FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
 # Will the program be using MySQL?
 USE_MYSQL = True
+SQL_CONFIGURED = False
 
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')

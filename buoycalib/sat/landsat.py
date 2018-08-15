@@ -20,6 +20,9 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
     EarthExplorer is slower: https://earthexplorer.usgs.gov/
     """
     
+    landsat_versions = ['00', '01', '02', '03', '04',  # Will have to find a way to determine the number of versions available
+                        '05', '06', '07', '08', '09']
+    
     file_downloaded = None
     
     directory = directory_ + '/' + scene_id
@@ -61,7 +64,7 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
         except RemoteFileException:   # try to use EarthExplorer
     
             if connect_earthexplorer_no_proxy(*settings.EARTH_EXPLORER_LOGIN):
-                for version in ['00', '01', '02']:
+                for version in landsat_versions:
     
                     entity_id = product2entityid(scene_id, version)
                     url = earthexplorer_url(entity_id)
@@ -85,11 +88,18 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
                 raise RuntimeError('EarthExplorer Authentication Failed. Check username, \
                     password, and if the site is up (https://earthexplorer.usgs.gov/).')
 
+    # Pull glob value from folder
+    glob_value = glob.glob('{0}/*_MTL.txt'.format(directory))
+    
     # Test if the file exists before accessing its data
-    if (test_paths.main([glob.glob('{0}/*_MTL.txt'.format(directory))[0],'-tfile'])):
-        meta_file = glob.glob('{0}/*_MTL.txt'.format(directory))[0]
-        metadata = read_metadata(meta_file)
+    if len(glob_value) != 0:
+        if (test_paths.main([glob.glob('{0}/*_MTL.txt'.format(directory))[0],'-tfile'])):
+            meta_file = glob.glob('{0}/*_MTL.txt'.format(directory))[0]
+            metadata = read_metadata(meta_file)
+        else:
+            metadata = {'date':(0)}
     else:
+        file_downloaded = False
         metadata = {'date':(0)}
         
     return metadata['date'], directory, metadata, file_downloaded

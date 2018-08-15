@@ -14,6 +14,7 @@ If you want to use this code, you should have a basic knowledge of python and/or
        * [Original Version](#original-version)
    * [Overview](#overview)
        * [Enhancements](#enhancements)
+       * [Input and Output Directories](#input-and-output-directories)
            [Input (Batches)](#input-(batches))
            [Output](#output)
        * [Installation](#installation)
@@ -46,9 +47,10 @@ for NARR, and 2-3 for MERRA.
 
 ## Enhancements
 
--  The program is now used by launching a menu
--  Previously, if a data source wasn't available the program would fail without providing adequate information.  The system now checks data sources during launch and informs the user if a source is not available while gracefully returning them to the terminal prompt.
--  A menu has been implemented to replace the original command line interface
+- The program is now used by launching a menu
+- Previously, if a data source wasn't available the program would fail without providing adequate information.  The system now checks data sources during launch and informs the user if a source is not available while gracefully returning them to the terminal prompt.
+- A menu has been implemented to replace the original command line interface.
+- MySQL database support has been implemented
 - The original software could not run without a X-Window enabled terminal.  This service has now been integrated and will run regardles of X-Window availability while informing the user if the system does not have X-Window support.  It can also be enabled or disabled during runtime by the user if the service is available.
 - No more issues related to path variables, this is now calculated automatically.
 - Batch processing which was originally implemented but problematic has been improved and errors resolved.
@@ -56,7 +58,10 @@ for NARR, and 2-3 for MERRA.
 - Problems relating to landsat scenes prior to 2017 as described in notes have been resolved (any landsat 8 ID should work).  Landsat 8 data are only available from 2014.
 - The system tests both Landsat Product Identifiers as well as SceneID's during entry to ensure a valid ID is supplied.
 - Whenever a batch is processed, a graph is generated which displayes the difference between landsat and buoy data over time.
-- Input and output directories have been implemented as follows:
+
+## Input and Output Directories:
+
+Input and output directories have been designed as follows:
 
 ### Input (Batches)
   input/batches

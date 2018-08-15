@@ -17,7 +17,7 @@
 import db_connection
 import pdb
 import sys
-
+import datetime
 
 class Db_Construction:
     
@@ -218,7 +218,7 @@ class Db_Construction:
                                                     table_name)
                         
         elif query_type == 'create_view':
-            if table_name == 'default':
+            if table_name == 'default_view':
                 
                 query = "CREATE VIEW `default_view` AS " \
                         "SELECT " \
@@ -248,6 +248,74 @@ class Db_Construction:
                         "    `t_buoy_ids` ON `t_buoy_ids`.`f_id` = `t_data`.`f_buoy_id` " \
                         "        JOIN " \
                         "    `t_images` ON `t_images`.`f_id` = `t_data`.`f_image`;"
+                        
+            if table_name == 'default_view_success':
+                
+                query = "CREATE VIEW `default_view_success` AS " \
+                        "SELECT " \
+                        "    `t_scene_ids`.`f_scene_id` AS 'Scene ID', " \
+                        "    `t_dates`.`f_date` AS 'Date', " \
+                        "    `t_buoy_ids`.`f_buoy_id` AS 'Buoy ID', " \
+                        "    `t_data`.`f_bulk_temp` AS 'Bulk Temp', " \
+                        "    `t_data`.`f_skin_temp` AS 'Skin Temp', " \
+                        "    `t_data`.`f_buoy_lat` AS 'Buoy Lat', " \
+                        "    `t_data`.`f_buoy_lon` AS 'Buoy Lon', " \
+                        "    `t_data`.`f_mod1` AS 'Modelled B10', " \
+                        "    `t_data`.`f_mod2` AS 'Modelled B11', " \
+                        "    `t_data`.`f_img1` AS 'Landsat B10', " \
+                        "    `t_data`.`f_img2` AS 'Landsat B11', " \
+                        "    (`t_data`.`f_mod1` - `t_data`.`f_img1`) AS 'Diff B10', " \
+                        "    (`t_data`.`f_mod2` - `t_data`.`f_img2`) AS 'Diff B11', " \
+                        "    `t_data`.`f_error1` AS 'Error B10', " \
+                        "    `t_data`.`f_error2` AS 'Error B11', " \
+                        "    `t_images`.`f_image` AS 'Image', " \
+                        "    `t_data`.`f_status` AS 'Status', " \
+                        "    `t_data`.`f_comment` AS 'Comment' " \
+                        "FROM " \
+                        "    `t_data` " \
+                        "        JOIN " \
+                        "    `t_scene_ids` ON `t_scene_ids`.`f_id` = `t_data`.`f_scene_id` " \
+                        "        JOIN " \
+                        "    `t_dates` ON `t_dates`.`f_id` = `t_data`.`f_date` " \
+                        "        JOIN " \
+                        "    `t_buoy_ids` ON `t_buoy_ids`.`f_id` = `t_data`.`f_buoy_id` " \
+                        "        JOIN " \
+                        "    `t_images` ON `t_images`.`f_id` = `t_data`.`f_image` " \
+                        "WHERE " \
+                        "    `t_data`.`f_status` = 'success';"
+                        
+            if table_name == 'default_view_failure':
+                
+                query = "CREATE VIEW `default_view_failure` AS " \
+                        "SELECT " \
+                        "    `t_scene_ids`.`f_scene_id` AS 'Scene ID', " \
+                        "    `t_dates`.`f_date` AS 'Date', " \
+                        "    `t_buoy_ids`.`f_buoy_id` AS 'Buoy ID', " \
+                        "    `t_data`.`f_bulk_temp` AS 'Bulk Temp', " \
+                        "    `t_data`.`f_skin_temp` AS 'Skin Temp', " \
+                        "    `t_data`.`f_buoy_lat` AS 'Buoy Lat', " \
+                        "    `t_data`.`f_buoy_lon` AS 'Buoy Lon', " \
+                        "    `t_data`.`f_mod1` AS 'Modelled B10', " \
+                        "    `t_data`.`f_mod2` AS 'Modelled B11', " \
+                        "    `t_data`.`f_img1` AS 'Landsat B10', " \
+                        "    `t_data`.`f_img2` AS 'Landsat B11', " \
+                        "    `t_data`.`f_error1` AS 'Error B10', " \
+                        "    `t_data`.`f_error2` AS 'Error B11', " \
+                        "    `t_images`.`f_image` AS 'Image', " \
+                        "    `t_data`.`f_status` AS 'Status', " \
+                        "    `t_data`.`f_comment` AS 'Comment' " \
+                        "FROM " \
+                        "    `t_data` " \
+                        "        JOIN " \
+                        "    `t_scene_ids` ON `t_scene_ids`.`f_id` = `t_data`.`f_scene_id` " \
+                        "        JOIN " \
+                        "    `t_dates` ON `t_dates`.`f_id` = `t_data`.`f_date` " \
+                        "        JOIN " \
+                        "    `t_buoy_ids` ON `t_buoy_ids`.`f_id` = `t_data`.`f_buoy_id` " \
+                        "        JOIN " \
+                        "    `t_images` ON `t_images`.`f_id` = `t_data`.`f_image` " \
+                        "WHERE " \
+                        "    `t_data`.`f_status` = 'failed';"
         
         return query
     
@@ -296,26 +364,28 @@ class Db_Construction:
         
     # Create default view
     @staticmethod
-    def create_default_view(self):
+    def create_default_views(self):
         
-        print("\n Create default database view")
+        view_list = ['default_view', 'default_view_success', 'default_view_failure']
         
-        try:
-            self.cursor = self.cnx.open_connection()
+        print("\n Create default database views")
+        
+        for view in view_list:        
+            try:
+                self.cursor = self.cnx.open_connection()
+                
+                query = self.build_query(self, 'create_view', view)
+                
+                self.cursor.execute(query)
+                self.cnx.db_commit()
+                
+            except:
+                print("Exception occurred during default view creation")
+                
+            finally:
+                self.cnx.close_connection()            
             
-            query = self.build_query(self, 'create_view', 'default')
-            
-            self.cursor.execute(query)
-            self.cnx.db_commit()
-            
-        except:
-            print("Exception occurred during default view creation")
-            
-        finally:
-            self.cnx.close_connection()
-            
-            
-        print("\n Default view created")
+        print("\n Default views created")
 
     
     # Update database indexes
@@ -390,6 +460,32 @@ class Db_Construction:
         return no_image
     
 
+    # Load default values for data that doesn't exist
+    @staticmethod
+    def load_default_values(self):
+        
+        print("\n Loading default values.")
+                
+        default_value_tables = ['t_buoy_ids', 't_dates']
+        default_table_values = {'t_buoy_ids': 0, 't_dates': datetime.datetime(1,1,1,0,0)}
+        
+        for table in default_value_tables:
+            try:
+                query = "INSERT INTO `{}`(`{}`) VALUES('{}')".format(table, "f_" + table[2:-1], default_table_values[table])
+                
+                self.cursor = self.cnx.open_connection()
+                self.cursor.execute(query)
+                self.cnx.db_commit()
+                    
+            except:
+                print("Exception occurred during default value insertion.")
+                
+            finally:
+                self.cnx.close_connection()                
+        
+        print("\n Default values added")
+
+
     # Upload the default 'No Image' image
     @staticmethod
     def upload_default_image(self):
@@ -460,6 +556,7 @@ class Db_Construction:
                 self.create_triggers(self)
                 self.add_indexes(self)
                 self.add_constraints(self)
+                self.load_default_values(self)
                 self.upload_default_image(self)
-                self.create_default_view(self)
+                self.create_default_views(self)
         

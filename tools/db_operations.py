@@ -97,9 +97,9 @@ class Db_Operations:
         db_value = None
         
         query = "SELECT COUNT(`f_id`) FROM `t_data` WHERE " \
-                "`f_scene_id` = {} AND " \
-                "`f_date` = {} AND " \
-                "`f_buoy_id` = {}".format(scene_index,
+                "`f_scene_id` = '{}' AND " \
+                "`f_date` = '{}' AND " \
+                "`f_buoy_id` = '{}'".format(scene_index,
                                            date_index,
                                            buoy_index)
         
@@ -112,7 +112,7 @@ class Db_Operations:
             db_value = db_value[0]
         
         except Exception as e:
-            print("\n Error occurred in db_operations.row_exists for scene index {}, date_index, buoy_index".format(scene_index, date_index, buoy_index))
+            print("\n Error occurred in db_operations.row_exists for scene index {}, date_index {}, buoy_index {}".format(scene_index, date_index, buoy_index))
             print("\n {}".format(str(e)))
             
         finally:
@@ -190,17 +190,16 @@ class Db_Operations:
         
         returnValue = False
         
-        pdb.set_trace()
-        
         try:
             self.cursor = self.cnx.open_connection()
         
-            query = "SELECT COUNT(`f_id`) FROM `t_images` WHERE `f_scene_id` = {}".format(scene_id)
+            query = "SELECT COUNT(`f_id`) FROM `t_images` WHERE `f_scene_id` = '{}'".format(scene_id)
             
             self.cursor.execute(query, scene_id)
             
             value_exists = self.cursor.fetchone()
             value_exists = value_exists[0]
+            
         except Exception as e:
             print("\n Error occurred in db_operations.image_exists for Scene ID {}".format(scene_id))
             print("\n {}".format(str(e)))
@@ -244,6 +243,9 @@ class Db_Operations:
                 
             finally:
                 self.cnx.close_connection()
+                
+        else:
+            image_index = self.get_index(self, 't_images', scene_id, 'f_scene_id')
             
         return image_index
             
@@ -298,6 +300,12 @@ class Db_Operations:
         
         returnValue = None
         
+        if date_index is None:
+            date_index = 1
+            
+        if buoy_index is None:
+            buoy_index = 1
+        
         row_exists = self.row_exists(self, scene_index, date_index, buoy_index)
         
         if image_index == None:
@@ -334,7 +342,7 @@ class Db_Operations:
                 self.cnx.db_commit()
                 
             except Exception as e:
-                print("\n Error occurred in db_operations.insert_image scene index {}".format(scene_index))
+                print("\n Error occurred in db_operations.insert_data_row scene index {}".format(scene_index))
                 print("\n {}".format(str(e)))
                 
             finally:

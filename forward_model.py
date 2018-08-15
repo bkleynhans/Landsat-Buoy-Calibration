@@ -14,6 +14,8 @@ import numpy
 import cv2
 import db_operations
 
+from datetime import datetime
+
 def modis(scene_id, atmo_source='merra', verbose=False, bands=[31, 32]):
     image = display.modis_preview(scene_id)
     
@@ -194,7 +196,8 @@ def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=
                     overpass_date, 'success','', scene_id_index, date_index, buoy_id_index, image_index)
             
     else:
-        data[scene_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, 
+        overpass_date = datetime(1, 1, 1, 0, 0) 
+        data[0] = (0, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, 
             overpass_date, 'failed', 'image', scene_id_index, date_index, buoy_id_index, image_index)
     
     return data

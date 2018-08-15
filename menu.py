@@ -206,7 +206,7 @@ def source_test(address, missing_sources):
     import test_paths    
             
     if not test_paths.main([address, '-turl']):
-        sys.stdout.write(" " + address)
+        sys.stdout.write("\r " + address)
         
         #path_test_timer()
         
@@ -319,7 +319,7 @@ def menu():
     print(" *                                                 *")
     print(" *           ***  TROUBLESHOOTING  ***             *")
     print(" *                                                 *")
-    print(" * D. Test database connection                     *")
+    print(" * D. Create database tables                       *")
     print(" *                                                 *")
     print(" * X. Exit                                         *")
     print(" *                                                 *")
@@ -391,13 +391,13 @@ if __name__ == '__main__':
         print("\n\n!!!")
         print("!")
         print("! The program has quit because the following data source/s are currently " \
-                " not available !")
+                "not available !")
         print("!")
         print("!!!")
         print("!")
                 
         for source in missing_sources:
-            print("!    - {}".format(source))
+            print("!    >>  {}".format(source))
         
         print("!")
         print("!!!\n")

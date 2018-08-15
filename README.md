@@ -15,8 +15,8 @@ If you want to use this code, you should have a basic knowledge of python and/or
    * [Overview](#overview)
        * [Enhancements](#enhancements)
        * [Input and Output Directories](#input-and-output-directories)
-           [Input (Batches)](#input-(batches))
-           [Output](#output)
+           * [Input (Batches)](#input-batches)
+           * [Output](#output)
        * [Installation](#installation)
        * [Launching the Ptorgram](#launching-the-program)
        * [Running a Single Scene](#running-a-single-scene)
@@ -59,7 +59,7 @@ for NARR, and 2-3 for MERRA.
 - The system tests both Landsat Product Identifiers as well as SceneID's during entry to ensure a valid ID is supplied.
 - Whenever a batch is processed, a graph is generated which displayes the difference between landsat and buoy data over time.
 
-## Input and Output Directories:
+## Input and Output Directories 
 
 Input and output directories have been designed as follows:
 

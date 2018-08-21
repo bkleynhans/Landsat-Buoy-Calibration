@@ -164,7 +164,6 @@ def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=
                 raise ValueError('atmo_source is not one of (narr, merra)')
     
             if not atmosphere:
-                pdb.set_trace()
                 data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon,
                     {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, overpass_date, 'failed', 'merra_layer1_temperature')
                 continue            
@@ -277,7 +276,7 @@ def buildModel(args):
 
 def clear_downloads():
     
-    print("\n Cleaning up the downloaded items folder...\n")
+    print("\n  Cleaning up the downloaded items folder...")
     
     directory = 'downloaded_data'
     
@@ -300,7 +299,7 @@ def clear_downloads():
         except Exception as e:
             print(e)
     
-    sys.stdout.write("\r Cleanup completed!!!\n")
+    sys.stdout.write("\r  Cleanup completed!!!\n")
     
 
 # Convert error codes to error messages for user feedback    

@@ -60,7 +60,8 @@ def process(date, lat_oi, lon_oi, verbose=False):
     temp2 = numpy.diagonal(atmo_data.variables['T'][index2], axis1=1, axis2=2).T
     
     # From this line for the next 15 lines... modtran cannot calculate when
-    # there is a zero value, hence if there is a zero value, throw out the buoy
+    # there is a zero value for lowest atmospheric merra level, hence if there
+    # is a zero value, throw out the buoy
     valid_data = True
     buoys = 0
     

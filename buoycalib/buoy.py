@@ -62,11 +62,12 @@ def find_skin_temp(hour, data, headers, depth):
     Notes:
         source: https://www.cis.rit.edu/~cnspci/references/theses/masters/miller2010.pdf
     """
+    
     # compute 24hr wind speed and temperature
     avg_wspd = data[:, headers['WSPD']].mean()   # [m/s]
     avg_wtmp = data[:, headers['WTMP']].mean()   # [C]
 
-    bulk_temp = avg_wtmp + 273.15   # [C -> K]
+    #bulk_temp = avg_wtmp + 273.15   # [C -> K]
 
     # calculate skin temperature
     # part 1
@@ -89,7 +90,7 @@ def find_skin_temp(hour, data, headers, depth):
     if skin_temp >= 600:
         raise BuoyDataException('No water temp data for selected date range in the data set')
 
-    return skin_temp, bulk_temp
+    return skin_temp#, bulk_temp
 
 
 def calculate_buoy_information(scene, buoy_id=''):
@@ -245,9 +246,10 @@ def skin_temp(file, date, thermometer_depth):
     """
     data, headers = load(file, date)
 
-    skin_temp, bulk_temp = find_skin_temp(date.hour, data, headers, thermometer_depth)
+    #skin_temp, bulk_temp = find_skin_temp(date.hour, data, headers, thermometer_depth)
+    skin_temp = find_skin_temp(date.hour, data, headers, thermometer_depth)
 
-    return skin_temp, bulk_temp
+    return skin_temp
 
 
 def info(buoy_id, file, overpass_date):
@@ -276,18 +278,18 @@ def info(buoy_id, file, overpass_date):
 
     surf_dewpnt = data[closest_dt[0], headers.index('DEWP')]
     surf_rh = atmo.data.calc_rh(surf_airtemp, surf_dewpnt)
-
-    bulk_temp = data[closest_dt[0], headers.index('WTMP')]
     
-    if math.isnan(bulk_temp):
-        bulk_temp = 0
+#    bulk_temp = data[closest_dt[0], headers.index('WTMP')]
+#    
+#    if math.isnan(bulk_temp):
+#        bulk_temp = 0
 
     try:
-        skin_temp = calc_skin_temp(data, dates, headers, overpass_date, buoy_depth)
+        skin_temp, bulk_temp = calc_skin_temp(data, dates, headers, overpass_date, buoy_depth)
     except BuoyDataException as e:
         raise BuoyDataException(str(e))
     
-    return b.lat, b.lon, b.thermometer_depth, bulk_temp, skin_temp, [surf_press, surf_airtemp, surf_dewpnt, surf_rh]
+    return b.lat, b.lon, b.thermometer_depth, bulk_temp, skin_temp, [surf_press, surf_airtemp, surf_dewpnt, surf_rh] # The returning array(last 4 variables) are never used
 
 
 def load(filename):
@@ -343,6 +345,27 @@ def load(filename):
     return lines, headers, dates, units
 
 
+def calc_bulk_temp(w_temp_slice):
+    
+    bulk_temp = numpy.nanmean(w_temp_slice)
+    
+    return bulk_temp
+
+
+def to_kelvin(celsius_value):
+    
+    kelvin_value = celsius_value + 273.15
+    
+    return kelvin_value
+
+
+def to_celsius(kelvin_value):
+    
+    celsius_value = kelvin_value - 273.15
+    
+    return celsius_value
+
+
 def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
     
     dt = [(i, d) for i, d in enumerate(dates) if abs(d - overpass_date) < datetime.timedelta(hours=12)]
@@ -356,19 +379,21 @@ def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
     closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1])
     T_zt = data[closest_dt[0], headers.index('WSPD')]
 
-
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
     u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), 5, 10)
     
-    avg_wtmp = numpy.nanmean(w_temp)
+    #avg_wtmp = numpy.nanmean(w_temp)
+    bulk_temp_celsius = calc_bulk_temp(w_temp)
 
-    if numpy.isnan(avg_wtmp):
+    #if numpy.isnan(avg_wtmp):
+    if numpy.isnan(bulk_temp_celsius):
         raise BuoyDataException('No Water Temperature Data')
 
     a = 0.05 - (0.6 / u_m) + (0.03 * numpy.log(u_m))   # thermal gradient
     z = buoy_depth   # depth in meters
 
-    avg_skin_temp = avg_wtmp - (a * z) - 0.17
+    #avg_skin_temp = avg_wtmp - (a * z) - 0.17
+    avg_skin_temp = bulk_temp_celsius - (a * z) - 0.17
 
     # part 2
     b = 0.35 + (0.018 * numpy.exp(0.4 * u_m))
@@ -385,7 +410,8 @@ def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
     f = numpy.interp(t_cz, t, f_cz)
 
     # combine
-    skin_temp = avg_skin_temp +  + 273.15   # [K]
+    skin_temp = to_kelvin(avg_skin_temp) # + 273.15   # [K]
+    bulk_temp = to_kelvin(bulk_temp_celsius)
 
     # check for validity
     if not (1.5 < u_m < 7.6):
@@ -399,7 +425,7 @@ def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
     #else:
     #    print(a*z, numpy.exp(b*z), c*z)
 
-    return skin_temp
+    return skin_temp, bulk_temp
 
 def wind_speed_height_correction(wspd, h1, h2, n=0.1):
     # equation 2.9 in padula, simpolified wind speed correction

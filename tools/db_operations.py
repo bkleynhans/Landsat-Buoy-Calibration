@@ -8,8 +8,8 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : August 10, 2018
-# Filename            : db_oeprations.py
+# Last Modified Date  : August 15, 2018
+# Filename            : db_operations.py
 #
 ###
 

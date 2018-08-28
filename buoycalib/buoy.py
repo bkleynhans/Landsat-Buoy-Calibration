@@ -167,6 +167,21 @@ def point_in_corners(corners, point):
     return True
 
 
+def read_buoy_heights():
+    
+    buoy_ids, buoy_heights, anemometer_heights = numpy.genfromtxt(settings.BUOY_TXT, skip_header=7,
+                                  usecols=(0, 1, 3), unpack=True)
+    
+    return buoy_ids, buoy_heights, anemometer_heights
+    
+
+def create_dict(indexes, values):
+    
+    dictionary = dict(zip(indexes, values))
+        
+    return dictionary
+
+
 def all_datasets():
 	# TODO memoize
     """
@@ -176,9 +191,11 @@ def all_datasets():
         [[Buoy_ID, lat, lon, thermometer_depth, height], [ ... ]]
 
     """
-    buoys, heights, anemometer_height = numpy.genfromtxt(settings.BUOY_TXT, skip_header=7,
-                                      usecols=(0, 1, 3), unpack=True)
-    buoy_heights = dict(zip(buoys, heights))
+    #buoys, heights, anemometer_height = numpy.genfromtxt(settings.BUOY_TXT, skip_header=7,
+    #                                  usecols=(0, 1, 3), unpack=True)
+    #buoy_heights = dict(zip(buoys, heights))
+    buoy_ids, buoy_heights, anemometer_heights = read_buoy_heights()
+    buoy_heights = create_dict(buoy_ids, buoy_heights)
 
     buoy_stations = {}
 
@@ -285,7 +302,7 @@ def info(buoy_id, file, overpass_date):
 #        bulk_temp = 0
 
     try:
-        skin_temp, bulk_temp = calc_skin_temp(data, dates, headers, overpass_date, buoy_depth)
+        skin_temp, bulk_temp = calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth)
     except BuoyDataException as e:
         raise BuoyDataException(str(e))
     
@@ -366,7 +383,7 @@ def to_celsius(kelvin_value):
     return celsius_value
 
 
-def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
+def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     
     dt = [(i, d) for i, d in enumerate(dates) if abs(d - overpass_date) < datetime.timedelta(hours=12)]
     
@@ -378,9 +395,21 @@ def calc_skin_temp(data, dates, headers, overpass_date, buoy_depth):
     wind_spd = data[dt_slice, headers.index('WSPD')]
     closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1])
     T_zt = data[closest_dt[0], headers.index('WSPD')]
-
+    
+    buoy_ids, buoy_heights, anemometer_heights = read_buoy_heights()
+    anemometer_height_dict = create_dict(buoy_ids, anemometer_heights)
+    
+    if (int(buoy_id)) in anemometer_height_dict:
+        anemometer_height = anemometer_height_dict[int(buoy_id)]
+    else:
+        anemometer_height = 5 # If the buoy id does not exist in the heights file
+    
+    if anemometer_height == 'N/A':
+        anemometer_height = 5 # If there is no value in the heights file, use a default of 5
+    
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
-    u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), 5, 10)
+    #u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), 5, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
+    u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
     
     #avg_wtmp = numpy.nanmean(w_temp)
     bulk_temp_celsius = calc_bulk_temp(w_temp)

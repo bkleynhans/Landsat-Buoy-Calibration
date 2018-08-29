@@ -205,7 +205,7 @@ def source_test(address, missing_sources):
     
     import test_paths    
             
-    if not test_paths.main([address, '-turl']):
+    if not test_paths.main([address, '-tserver']):
         sys.stdout.write("\r " + address)
         
         #path_test_timer()

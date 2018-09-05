@@ -71,7 +71,7 @@ def download_ftp(url, filepath):
     
     try:
         request = urllib.request.urlopen(url)
-        total_size = int(req.getheader('Content-Length').strip())
+        total_size = int(request.getheader('Content-Length').strip())
     except urllib.error.URLError as e:
         print(url)
         raise RemoteFileException('url: {0} does not exist'.format(url))

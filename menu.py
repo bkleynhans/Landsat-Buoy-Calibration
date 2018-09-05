@@ -63,7 +63,7 @@ def check_required_directories():
             'output/batches/graphs'}
     
     for directory in required_directories:
-        if not test_paths.testDirectory(directory):
+        if not test_paths.main([directory, "-tdirectory"]):
             test_paths.createDirectory(directory)
     
 

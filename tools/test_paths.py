@@ -23,7 +23,7 @@ import requests
 ERASE_LINE = '\x1b[2K'
 
 # Tests a Directory
-def testDirectory(tdirectory):
+def testDirectory(args):
 
     import os.path
 
@@ -31,7 +31,7 @@ def testDirectory(tdirectory):
 
     # os.path.isfile is an internal function that returns True if a file
     # or path exists and returns False if it does not
-    if (os.path.isdir(tdirectory)):
+    if (os.path.isdir(args.path)):
         returnValue = True
 
     return returnValue
@@ -47,7 +47,7 @@ def createDirectory(cdirectory):
         
 
 # Tests a file
-def testFile(tfile):
+def testFile(args):
 
     import os.path
 
@@ -55,22 +55,22 @@ def testFile(tfile):
 
     # os.path.isfile is an internal function that returns True if a file
     # or path exists and returns False if it does not
-    if (os.path.isfile(tfile)):
+    if (os.path.isfile(args.path)):
         returnValue = True
 
     return returnValue
 
 # Test a server
-def testServer(tserver):
+def testServer(args):
     
     returnValue = False
     
     # extract the first three characters from the url to determine if it is a
     # FTP or HTTP url.  Test the url according to the type of url.
-    if (tserver[:3] == 'ftp'):
+    if (args.path[:3].upper() == 'FTP'):        
         from ftplib import FTP
                 
-        ftp = FTP(tserver[6:])
+        ftp = FTP(args.path[6:])
         resp = ftp.login()
         
         # for FTP a response code of 230 is successful
@@ -78,8 +78,7 @@ def testServer(tserver):
             returnValue = True
             
     else:
-        pdb.set_trace()
-        resp = requests.head(tserver)
+        resp = requests.head(args.path)
     
         # for HTTP a response code of 200 is successful
         if resp.status_code == 200:
@@ -89,30 +88,41 @@ def testServer(tserver):
 
 
 # Tests a url
-def testUrl(turl):
+def testUrl(args):
     
     returnValue = False
+    ftp_server = False
+    translated_path = None
+    server_address = None
     
-    ftp_server = turl[6:turl[6:].index('/') + 6]
+    if isinstance(args.path, str):
+        translated_path = args.path
+    else:
+        translated_path = args.path[0]
+    
+    # Extract server address if FTP for use with ftplib
+    if (translated_path[:3].upper() == 'FTP'):
+        server_address = translated_path[6:translated_path[6:].index('/') + 6]
+        ftp_server = True        
     
     # extract the first three characters from the url to determine if it is a
     # FTP or HTTP url.  Test the url according to the type of url.
-    if (turl[:3] == 'ftp'):
+    if ftp_server:
         from ftplib import FTP
-                
-        ftp = FTP(ftp_server)
-        resp = ftp.login()
-        
-        # for FTP a response code of 230 is successful
-        if (resp.startswith('230')):
-            file_exists_list = ftp.nlst(turl[turl[6:].index('/') + 7:])
+    
+        with FTP(server_address) as ftp:
+            resp = ftp.login(args.username, args.password)
             
-            if len(file_exists_list) != 0:
-                returnValue = True
+            # for FTP a response code of 230 is successful
+            if (resp.startswith('230')):
+                file_exists_list = ftp.nlst(translated_path[translated_path[6:].index('/') + 7:])
+                
+                if len(file_exists_list) != 0:
+                    returnValue = True
             
     else:
-        resp = requests.head(turl)
-    
+        resp = requests.head(translated_path)
+        
         # for HTTP a response code of 200 is successful
         if resp.status_code == 200:
             returnValue = True
@@ -126,13 +136,13 @@ def testPaths(args):
     returnValue = None
 
     if (args.type == 'server'):
-        returnValue = testServer(args.path)
+        returnValue = testServer(args)
     elif (args.type == 'url'):
-        returnValue = testServer(args.path)
+        returnValue = testUrl(args)
     elif (args.type == 'file'):
-        returnValue = testFile(args.path)
+        returnValue = testFile(args)
     elif (args.type == 'directory'):
-        returnValue = testDirectory(args.path)
+        returnValue = testDirectory(args)
 
     return returnValue, args.path
 
@@ -147,6 +157,8 @@ def parseArgs(args):
 
     parser.add_argument('path', help='Web link to file.  Example: https://landsat-pds.s3.amazonaws.com/c1/L8/016/030/LC08_L1TP_016030_20180629_20180630_01_RT/LC08_L1TP_016030_20180629_20180630_01_RT_B10.TIF')
     parser.add_argument('-t', '--type', default='server', choices=['server', 'url', 'file', 'directory'], help='Choose the type of path we are checking, choices:[server, url, file, directory]')
+    parser.add_argument('-u', '--username', default='anonymous', help='Username if site requires authentication.')
+    parser.add_argument('-p', '--password', default='a.b@c.com', help='Password if the site requires authentication.')
 
     return parser.parse_args(args)
 
@@ -154,7 +166,9 @@ def parseArgs(args):
 # Used when calling program from another module/function
 def main(args):
 
-    returnValue, path = testPaths(parseArgs(args))
+    parsed_args = parseArgs(args)
+    
+    returnValue, path = testPaths(parsed_args)
 
     if __name__ == '__main__':
         print(returnValue)

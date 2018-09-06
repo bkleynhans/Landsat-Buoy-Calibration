@@ -98,6 +98,7 @@ def download_ftp(url, filepath):
 
 def ungzip(filepath):
     """ un-gzip a fiile (equivalent `gzip -d filepath`) """
+    
     new_filepath = filepath.replace('.gz', '')
 
     with open(new_filepath, 'wb') as f_out, gzip.open(filepath, 'rb') as f_in:
@@ -105,7 +106,8 @@ def ungzip(filepath):
            shutil.copyfileobj(f_in, f_out)
         except OSError as e:
             warnings.warn(str(e) + filepath, RuntimeWarning)
-            return filepath
+            shutil.copyfile(filepath, new_filepath)
+            os.remove(filepath)
 
     return new_filepath
 

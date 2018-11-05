@@ -20,6 +20,18 @@ class BuoyDataException(Exception):
 
 
 class Buoy(object):
+    
+    # Variables used for calculations
+    _Ts = None          # skin temperature
+    _T0 = None          # average skin temperature
+    _a = None           # 
+    _b = None           # dampening constant
+    _c = None           # phase constant
+    _Um = None          # 24-hour wind speed at height 10m above sea level
+    _U1 = None          # 24-hour wind speed at height H1 (if not 10m)
+    _f_tcz = None       # magnitude of diurnal surface variation at time t
+    _T_zt = None        # Temperature at depth z at time t
+    
     def __init__(self, _id, lat, lon, thermometer_depth, height, skin_temp=None,
                  surf_press=None, surf_airtemp=None, surf_rh=None, url=None,
                  filename=None, bulk_temp=None):
@@ -223,6 +235,9 @@ def all_datasets():
             else:
                 lon = float(lat_lon[2])
 
+            ######## --> This implementation is incorrect.  Get details from buoy data file
+            # and if there is no hull type specified, ignore buoy.  Direction from Matt Montanaro
+            ########
             # TODO research and add more payload options
             if payload == 'ARES payload':
                 depth = 1.0
@@ -271,7 +286,8 @@ def skin_temp(file, date, thermometer_depth):
 
 def info(buoy_id, file, overpass_date):
     
-    buoy_file = download(buoy_id, overpass_date)
+    ##buoy_file = download(buoy_id, overpass_date) # Don't know why file is downloaded again, because the file is being passed from
+    buoy_file = file                               #     previous download
     data, headers, dates, units = load(buoy_file)
     b = all_datasets()[buoy_id]
     buoy_depth = b.thermometer_depth
@@ -333,9 +349,10 @@ def load(filename):
             else:
                 new.append(i)
         return new
-
+    
     dates = []
     lines = []
+        
     with open(filename, 'r') as f:
         header = f.readline()
         unit = f.readline()
@@ -352,6 +369,7 @@ def load(filename):
                 data = _filter(line.split()[5:])
             except ValueError:
                 print(line)
+            
             lines.append(data)
             dates.append(date_dt)
 
@@ -369,6 +387,13 @@ def calc_bulk_temp(w_temp_slice):
     return bulk_temp
 
 
+def calc_ave_skin_temp(Tz, a, z, d):
+    
+    ave_skin_temp = Tz - (a * z) - d
+    
+    return ave_skin_temp
+
+
 def to_kelvin(celsius_value):
     
     kelvin_value = celsius_value + 273.15
@@ -383,7 +408,7 @@ def to_celsius(kelvin_value):
     return celsius_value
 
 
-def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
+def calc_skin_temp_old(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     
     dt = [(i, d) for i, d in enumerate(dates) if abs(d - overpass_date) < datetime.timedelta(hours=12)]
     
@@ -394,7 +419,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     w_temp = data[dt_slice, headers.index('WTMP')]
     wind_spd = data[dt_slice, headers.index('WSPD')]
     closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1])
-    T_zt = data[closest_dt[0], headers.index('WSPD')]
+    t_zt = data[closest_dt[0], headers.index('WSPD')]
     
     buoy_ids, buoy_heights, anemometer_heights = read_buoy_heights()
     anemometer_height_dict = create_dict(buoy_ids, anemometer_heights)
@@ -408,7 +433,6 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
         anemometer_height = 5 # If there is no value in the heights file, use a default of 5
     
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
-    #u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), 5, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
     u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
     
     #avg_wtmp = numpy.nanmean(w_temp)
@@ -431,7 +455,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     if numpy.isnan(c):
         raise BuoyDataException('No Wind Speed Data')
 
-    f_cz = (w_temp - avg_skin_temp) / numpy.exp(b*z)
+    f_cz = (w_temp - avg_skin_temp) / numpy.exp(-b*z)
     cz = datetime.timedelta(hours=c*z)
     t_cz = [dt_to_dec_hour(dt + cz) for dt in dt_times]
     t = [dt_to_dec_hour(dt) for dt in dt_times]
@@ -449,11 +473,6 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
         else:
             raise BuoyDataException('Wind Speed Out Of Range')
 
-    #if (-1.1 < a*z < 0) and (1 < numpy.exp(b*z) < 6) and (0 < c*z < 4):
-    #    pass
-    #else:
-    #    print(a*z, numpy.exp(b*z), c*z)
-
     return skin_temp, bulk_temp
 
 def wind_speed_height_correction(wspd, h1, h2, n=0.1):
@@ -462,3 +481,124 @@ def wind_speed_height_correction(wspd, h1, h2, n=0.1):
 
 def dt_to_dec_hour(dt):
     return dt.hour + dt.minute / 60
+
+
+'''
+    Average skin temperature calculation
+    
+    This calculation is derived from the perceived values through analyzing Pedula et al. (2008) and
+    cross referencing his work with the other works in his analysis, specifically Zeng et al. (1999) and
+    Donlon et al. (2002).  No formal definitions were defined in Pedula et al. (2008) for low, medium and high
+    wind speeds.  Pedula et al. (2008) is the main source for this work.
+    
+    Pedula et al. (2008) page 85-87
+    
+    a - Warm surface temperature gradient
+    b - Damping constant
+    c - Phase constant
+    d - (0.17 or 0.2) correction
+    
+    
+'''
+def calc_avg_skin_temp(avg_bulk_temp_celsius, a, b, c, z, u_m):
+    
+    az = a * z
+    e_bz = numpy.exp(b * z)
+    cz = c * z
+    
+    if (u_m < 1.5):
+        raise BuoyDataException('Insufficient Water Mixing - Wind Speed Too Low')
+    else:
+        if ((az > -1.1 and az < 0) and
+            ((e_bz > 1) and (e_bz < 6)) and
+            (cz > 0) and (cz < 4)):
+            if (u_m >= 1.5):
+                avg_skin_temp = avg_bulk_temp_celsius - az - 0.2
+        elif (u_m > 7.6):
+            avg_skin_temp = avg_bulk_temp_celsius - 0.17
+        else:
+            raise BuoyDataException('Water mixing prerequisites not met')
+        
+    return avg_skin_temp
+
+### Rework of calculations ###_v2
+def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
+    
+    date_range = []
+    date_range.append([])
+    date_range.append([])
+    
+    # Build date_range array with all dates that fall within 12 hours (positive and negative) of overpass date
+    
+    #dt
+    date_range = [(i, d) for i, d in enumerate(dates) if abs(d - overpass_date) < datetime.timedelta(hours=12)]
+    
+    if len(date_range) == 0:
+        raise BuoyDataException('No Buoy Data')
+
+    # Split array into index (line number) and date
+    dt_line_numbers_24h, dt_times_24h = zip(*date_range)
+    # Build array of water temperatures
+    w_temp_24h = data[dt_line_numbers_24h, headers.index('WTMP')]
+    w_temp_avg = numpy.nanmean(w_temp_24h)
+    # Build array of wind speeds
+    wind_spd_24h = data[dt_line_numbers_24h, headers.index('WSPD')]
+    
+    t_zt = list(zip(dt_times_24h, w_temp_24h))
+    # Calculate Temperature at depth z at time t
+    
+    buoy_ids, buoy_heights, anemometer_heights = read_buoy_heights()
+    anemometer_height_dict = create_dict(buoy_ids, anemometer_heights)
+    
+    if (int(buoy_id)) in anemometer_height_dict:
+        anemometer_height = anemometer_height_dict[int(buoy_id)]
+    else:
+        anemometer_height = 5 # If the buoy id does not exist in the heights file
+    
+    if anemometer_height == 'N/A':
+        anemometer_height = 5 # If there is no value in the heights file, use a default of 5
+    
+    # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
+    u_m = wind_speed_height_correction(numpy.nanmean(wind_spd_24h), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
+    
+    avg_bulk_temp_celsius = calc_bulk_temp(w_temp_24h)
+
+    if numpy.isnan(avg_bulk_temp_celsius):
+        raise BuoyDataException('No Water Temperature Data')
+
+    a = 0.05 - (0.6 / u_m) + (0.03 * numpy.log(u_m))   # thermal gradient
+    z = buoy_depth   # depth in meters
+    
+    # part 2
+    b = 0.35 + (0.018 * numpy.exp(0.4 * u_m))   # damping constant
+    c = 1.32 - (0.64 * numpy.log(u_m))          # phase constant
+    
+    avg_skin_temp_no_diurnal = calc_avg_skin_temp(avg_bulk_temp_celsius, a, b, c, z, u_m)    
+
+    if numpy.isnan(c):
+        raise BuoyDataException('No Wind Speed Data')
+
+    f_tcz_time = []
+    f_tcz_temp = []
+
+    ## This needs to be corrected ###
+    for time, temperature in t_zt:
+        f_tcz_time.append(dt_to_dec_hour(time - datetime.timedelta(hours=(c * z))))
+        f_tcz_temp.append((temperature - w_temp_avg) / numpy.exp(-b * z))
+    
+    # Find closest date to overpass date)
+    closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1]) # timedelta
+    closest_dt = dt_to_dec_hour(dates[closest_dt[0]])
+            
+    f_t = numpy.interp(dt_to_dec_hour(overpass_date), f_tcz_time, f_tcz_temp, period=100)
+    
+    if numpy.isnan(f_t):
+        raise BuoyDataException('No Water Temperature Data')
+    
+    skin_temp = avg_skin_temp_no_diurnal + f_t
+
+    # combine
+    skin_temp = to_kelvin(skin_temp) # + 273.15   # [K]
+    bulk_temp = to_kelvin(avg_bulk_temp_celsius)
+
+    return skin_temp, bulk_temp

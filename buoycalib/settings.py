@@ -4,11 +4,11 @@ PACKAGE_BASE = abspath(join(__file__, '..'))
 
 # Program properties
 # Constants for use in directory cleanup
-CLEAN_FOLDER_ON_COMPLETION = True
+CLEAN_FOLDER_ON_COMPLETION = False
 FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
 # Will the program be using MySQL?
-USE_MYSQL = True
+USE_MYSQL = False
 SQL_CONFIGURED = False
 
 # static data used to make calculations
@@ -21,8 +21,8 @@ STAN_ATMO = join(MISC_FILES, 'stanAtm.txt')
 WATER_TXT = join(MISC_FILES, 'water_emis.txt')
 
 MERRA_PTS = join(STATIC, 'merra_points.npz')
-BUOY_TXT = join(STATIC, 'noaa', 'buoy_height.txt')
-STATION_TXT = join(STATIC, 'noaa', 'station_table.txt')
+BUOY_TXT = join(STATIC, 'noaa', 'buoyht.txt')               # Buoy sensor heights
+STATION_TXT = join(STATIC, 'noaa', 'station_table.txt')     # Detailed stable of all weather stations
 
 # relative spectral response files
 RSR_L8 = {
@@ -37,7 +37,8 @@ MODIS_TILE = join(STATIC, 'modis', 'sn_bound_10deg.txt')
 SWATH2GRID_PRM = join(STATIC, 'modis', 'swath2grid_template.prm')
 
 # downloading directories
-DATA_BASE = 'downloaded_data'
+#DATA_BASE = 'downloaded_data'                              # Created in home directory
+DATA_BASE = '/var/tmp/downloaded_data'                      # Create your own destination
 MERRA_DIR = join(DATA_BASE, 'merra')
 NARR_DIR = join(DATA_BASE, 'narr')
 NOAA_DIR = join(DATA_BASE, 'noaa')

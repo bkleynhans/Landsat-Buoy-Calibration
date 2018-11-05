@@ -86,7 +86,7 @@ def save_cv2_image(display_image, scene_id, image):
     cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
         
 
-def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11]):
+def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
     
     scene_id_index = None
     image_index = None
@@ -142,7 +142,7 @@ def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=
             sys.stdout.flush()
             
             try:
-                buoy_file = buoy.download(buoy_id, overpass_date)
+                buoy_file = buoy.download(buoy_id, overpass_date) ##To this point is fine - to use method in new class when completed - create new buoy object as this point
                 buoy_lat, buoy_lon, buoy_depth, bulk_temp, skin_temp, lower_atmo = buoy.info(buoy_id, buoy_file, overpass_date)
             except download.RemoteFileException:
                 warnings.warn('Buoy {0} does not have data for this date.'.format(buoy_id), RuntimeWarning)
@@ -165,10 +165,9 @@ def landsat8(db_operator, scene_id, display_image, atmo_source='merra', verbose=
     
             if not atmosphere:
                 data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon,
-                    {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, overpass_date, 'failed', 'merra_layer1_temperature')
+                    {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, overpass_date, 'failed', 'merra_layer1_temperature', scene_id_index, date_index, buoy_id_index, image_index)
                 continue            
             else:
-            
                 # MODTRAN
                 modtran_directory = '{0}/{1}_{2}'.format(settings.MODTRAN_DIR, scene_id, buoy_id)
     
@@ -211,7 +210,11 @@ def buildModel(args):
         
     if args.scene_id[0:3] in ('LC8', 'LC0'):   # Landsat 8
         bands = [int(b) for b in args.bands] if args.bands is not None else [10, 11]
-        ret = landsat8(db_operator, args.scene_id, args.display_image, args.atmo, args.verbose, bands)
+        
+        if settings.USE_MYSQL:
+            ret = landsat8(args.scene_id, args.display_image, db_operator, args.atmo, args.verbose, bands)
+        else:
+            ret = landsat8(args.scene_id, args.display_image, args.atmo, args.verbose, bands)
 
     elif args.scene_id[0:3] == 'MOD':   # Modis
         bands = [int(b) for b in args.bands] if args.bands is not None else [31, 32]
@@ -233,7 +236,7 @@ def buildModel(args):
                 error_message = get_error_message(ret[key][10])
             else:
                 error_message = None
-                    
+            
             buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
             
             if settings.USE_MYSQL:
@@ -276,9 +279,9 @@ def buildModel(args):
 
 def clear_downloads():
     
-    print("\n  Cleaning up the downloaded items folder...")
+    print("\n\n  Cleaning up the downloaded items folder...")
     
-    directory = 'downloaded_data'
+    directory = settings.DATA_BASE
     
     for file_or_folder in os.listdir(directory):
         file_path = os.path.join(directory, file_or_folder)
@@ -299,7 +302,7 @@ def clear_downloads():
         except Exception as e:
             print(e)
     
-    sys.stdout.write("\r  Cleanup completed!!!\n")
+    sys.stdout.write("\r  Cleanup completed!!!\n\n")
     
 
 # Convert error codes to error messages for user feedback    

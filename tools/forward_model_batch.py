@@ -27,11 +27,11 @@ import db_operations
 import settings
 
 # Process the SceneIDs and print results to a file
-def batch_f_model(db_operator, scene_txt, scenes, output_txt, display_image):
+def batch_f_model(scene_txt, scenes, output_txt, display_image, db_operator=None):
 
-    output_txt += '/' + scene_txt[scene_txt.rfind('/'):] + '.out'
-
-    fileExists = test_paths.testFile(output_txt)
+    output_txt += scene_txt[scene_txt.rfind('/') + 1:scene_txt.rfind('.')] + '.out'
+    
+    fileExists = test_paths.main([output_txt, "-tfile"])
 
     if not (fileExists):
         f = open(output_txt, 'w+')
@@ -126,12 +126,16 @@ def batch_f_model(db_operator, scene_txt, scenes, output_txt, display_image):
 # Read the supplied batch file
 def buildModel(args):
     
-    if settings.USE_MYSQL:
-        db_operator = db_operations.Db_Operations()
+    #if settings.USE_MYSQL:
+    #    db_operator = db_operations.Db_Operations()
 
     scenes = open(args.scene_txt).readlines()
     
-    batch_f_model(db_operator, args.scene_txt, scenes, args.save, args.display_image)
+    if settings.USE_MYSQL:
+        db_operator = db_operations.Db_Operations()
+        batch_f_model(args.scene_txt, scenes, args.save, args.display_image, db_operator)
+    else:
+        batch_f_model(args.scene_txt, scenes, args.save, args.display_image)
 
 
 # Parse the arguments received during program launch

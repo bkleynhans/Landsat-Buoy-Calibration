@@ -22,6 +22,9 @@ import requests
 
 ERASE_LINE = '\x1b[2K'
 
+class RemoteFileException(Exception):
+    pass
+
 # Tests a Directory
 def testDirectory(args):
 
@@ -71,7 +74,7 @@ def testServer(args):
         from ftplib import FTP
                 
         ftp = FTP(args.path[6:])
-        resp = ftp.login()
+        resp = ftp.login(args.username, args.password)
         
         # for FTP a response code of 230 is successful
         if (resp.startswith('230')):

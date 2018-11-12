@@ -36,6 +36,7 @@ class Db_Connection:
         self.cursor = None
         self.cnx = None
 
+    # Connection information
     def db_connect(self):
         self.cnx = mysql.connector.connect(
                 user=self.db_user,
@@ -46,9 +47,11 @@ class Db_Connection:
 
         return self.cnx
 
+    # Commit to database
     def db_commit(self):
         self.cnx.commit()
 
+    # Open the database connection
     def open_connection(self):
         
         try:
@@ -59,16 +62,19 @@ class Db_Connection:
 
         return self.cursor
 
+    # Close the database connection
     def close_connection(self):
         self.cursor.close()
         self.connection.close()
 
+    # Print current connection information
     def to_string(self):
         print("Database Server  : " + self.db_server)
         print("Database         : " + self.db_database)
         print("Database User    : " + self.db_user)
         print("Database Port    : " + self.db_port)
 
+    # Test if the databse is available
     def db_available(self):
         
         db_status = False

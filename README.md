@@ -1,5 +1,5 @@
 # Landsat Buoy Calibration
-Calculates and compares the radiance of a thermal LANSAT scene to the "ground truth"
+Calculates and compares the radiance of a thermal LANDSAT scene to the "ground truth"
 radiance as measured by a NOAA buoy. Based on work by Frank Padula and Monica Cook at RIT.  
 
 If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.

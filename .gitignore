@@ -1,0 +1,7 @@
+# ignore any files in the output folder
+output/
+
+# ignore any files in the downloaded_data folder
+downloaded_data/
+
+

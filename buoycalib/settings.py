@@ -4,7 +4,7 @@ PACKAGE_BASE = abspath(join(__file__, '..'))
 
 # Program properties
 # Constants for use in directory cleanup
-CLEAN_FOLDER_ON_COMPLETION = False
+CLEAN_FOLDER_ON_COMPLETION = False 
 FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
 # Will the program be using MySQL?
@@ -37,8 +37,8 @@ MODIS_TILE = join(STATIC, 'modis', 'sn_bound_10deg.txt')
 SWATH2GRID_PRM = join(STATIC, 'modis', 'swath2grid_template.prm')
 
 # downloading directories
-#DATA_BASE = 'downloaded_data'                              # Created in home directory
-DATA_BASE = '/var/tmp/downloaded_data'                      # Create your own destination
+DATA_BASE = 'downloaded_data'                              # Created in home directory
+#DATA_BASE = '/var/tmp/downloaded_data'                      # Create your own destination
 MERRA_DIR = join(DATA_BASE, 'merra')
 NARR_DIR = join(DATA_BASE, 'narr')
 NOAA_DIR = join(DATA_BASE, 'noaa')
@@ -87,6 +87,6 @@ MERRA_LOGIN = ('cisthermal','C15Th3rmal')           # https://disc.gsfc.nasa.gov
 # Database configuration details
 SQL_USER = ('cisthermal')           # https://disc.gsfc.nasa.gov/
 SQL_PASSWORD = ('C15Th3rmal')
-SQL_SERVER = ('roc.kleynhans.poweredbyclear.com')
+SQL_SERVER = ('kleynhans.mooo.com')
 SQL_PORT = ('33066')
 SQL_DATABASE = ('cis_tarca')

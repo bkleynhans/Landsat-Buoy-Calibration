@@ -286,12 +286,14 @@ def skin_temp(file, date, thermometer_depth):
 
 def info(buoy_id, file, overpass_date):
     
+    pdb.set_trace()
+    
     ##buoy_file = download(buoy_id, overpass_date) # Don't know why file is downloaded again, because the file is being passed from
     buoy_file = file                               #     previous download
     data, headers, dates, units = load(buoy_file)
     b = all_datasets()[buoy_id]
     buoy_depth = b.thermometer_depth
-
+    
     #data, headers = load(file)
     dt_slice = [i for i, d in enumerate(dates) if abs(d - overpass_date) < datetime.timedelta(hours=24)]
     closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1])
@@ -506,6 +508,8 @@ def calc_avg_skin_temp(avg_bulk_temp_celsius, a, b, c, z, u_m):
     e_bz = numpy.exp(b * z)
     cz = c * z
     
+    #pdb.set_trace()
+    
     if (u_m < 1.5):
         raise BuoyDataException('Insufficient Water Mixing - Wind Speed Too Low')
     else:
@@ -540,9 +544,10 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     dt_line_numbers_24h, dt_times_24h = zip(*date_range)
     # Build array of water temperatures
     w_temp_24h = data[dt_line_numbers_24h, headers.index('WTMP')]
-    w_temp_avg = numpy.nanmean(w_temp_24h)
     # Build array of wind speeds
     wind_spd_24h = data[dt_line_numbers_24h, headers.index('WSPD')]
+    
+    pdb.set_trace()
     
     t_zt = list(zip(dt_times_24h, w_temp_24h))
     # Calculate Temperature at depth z at time t
@@ -558,12 +563,14 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     if anemometer_height == 'N/A':
         anemometer_height = 5 # If there is no value in the heights file, use a default of 5
     
+    pdb.set_trace()
+    
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
     u_m = wind_speed_height_correction(numpy.nanmean(wind_spd_24h), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
     
-    avg_bulk_temp_celsius = calc_bulk_temp(w_temp_24h)
+    avg_bulk_temp_celsius_24h = calc_bulk_temp(w_temp_24h)
 
-    if numpy.isnan(avg_bulk_temp_celsius):
+    if numpy.isnan(avg_bulk_temp_celsius_24h):
         raise BuoyDataException('No Water Temperature Data')
 
     a = 0.05 - (0.6 / u_m) + (0.03 * numpy.log(u_m))   # thermal gradient
@@ -573,7 +580,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     b = 0.35 + (0.018 * numpy.exp(0.4 * u_m))   # damping constant
     c = 1.32 - (0.64 * numpy.log(u_m))          # phase constant
     
-    avg_skin_temp_no_diurnal = calc_avg_skin_temp(avg_bulk_temp_celsius, a, b, c, z, u_m)    
+    avg_skin_temp_no_diurnal = calc_avg_skin_temp(avg_bulk_temp_celsius_24h, a, b, c, z, u_m)    
 
     if numpy.isnan(c):
         raise BuoyDataException('No Wind Speed Data')
@@ -581,10 +588,11 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     f_tcz_time = []
     f_tcz_temp = []
 
-    ## This needs to be corrected ###
+    pdb.set_trace()
+
     for time, temperature in t_zt:
-        f_tcz_time.append(dt_to_dec_hour(time - datetime.timedelta(hours=(c * z))))
-        f_tcz_temp.append((temperature - w_temp_avg) / numpy.exp(-b * z))
+        f_tcz_time.append(dt_to_dec_hour(time) - (c * z))  # calculate adjusted time as described in Equasion 2.10 Frank Pedula's thesis, page 23n
+        f_tcz_temp.append((temperature - avg_bulk_temp_celsius_24h) / numpy.exp(-b * z))
     
     # Find closest date to overpass date)
     closest_dt = min([(i, abs(overpass_date - d)) for i, d in enumerate(dates)], key=lambda i: i[1]) # timedelta
@@ -599,6 +607,6 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
 
     # combine
     skin_temp = to_kelvin(skin_temp) # + 273.15   # [K]
-    bulk_temp = to_kelvin(avg_bulk_temp_celsius)
+    bulk_temp = to_kelvin(avg_bulk_temp_celsius_24h)
 
     return skin_temp, bulk_temp

@@ -136,6 +136,7 @@ def _remote_file_exists(url, auth=None):
 
 def connect_earthexplorer_no_proxy(username, password):
     """ connect to earthexplorer without a proxy server. """
+    
     # inspired by: https://github.com/olivierhagolle/LANDSAT-Download
     cookies = urllib.request.HTTPCookieProcessor()
     opener = urllib.request.build_opener(cookies)
@@ -168,11 +169,13 @@ def download_earthexplorer(url, filepath):
     inspired by: https://github.com/olivierhagolle/LANDSAT-Download
     """ 
 
+    #pdb.set_trace()
+
     try:
         req = urllib.request.urlopen(url)
     
         #if downloaded file is html
-        if (req.info().get_content_type()=='text/html'):
+        if (req.info().get_content_type() == 'text/html'):
             raise RemoteFileException("error : file is in html and not an expected binary file, url: {0}".format(url))
 
         #if file too small           

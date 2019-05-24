@@ -134,6 +134,8 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
     
         for buoy_id in buoys:
             
+            pdb.set_trace()
+            
             if settings.USE_MYSQL:
                 # Write Buoy ID to database
                 buoy_id_index = db_operator.insert_single_value('buoy_ids', buoy_id)
@@ -141,20 +143,54 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
             sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
             sys.stdout.flush()
             
+            #pdb.set_trace();
+            
             try:
                 buoy_file = buoy.download(buoy_id, overpass_date) ##To this point is fine - to use method in new class when completed - create new buoy object as this point
                 buoy_lat, buoy_lon, buoy_depth, bulk_temp, skin_temp, lower_atmo = buoy.info(buoy_id, buoy_file, overpass_date)
             except download.RemoteFileException:
                 warnings.warn('Buoy {0} does not have data for this date.'.format(buoy_id), RuntimeWarning)
-                data[buoy_id] = (buoy_id, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0},
-                    overpass_date, 'failed', 'file', scene_id_index, date_index, buoy_id_index, image_index)
+                data[buoy_id] = (
+                        buoy_id,
+                        0,
+                        0,
+                        0,
+                        0,
+                        {10:0,11:0},
+                        {10:0,11:0},
+                        {10:0,11:0},
+                        overpass_date,
+                        'failed',
+                        'file',
+                        scene_id_index,
+                        date_index,
+                        buoy_id_index,
+                        image_index
+                    )
                 continue
             except buoy.BuoyDataException as e:
                 warnings.warn(str(e), RuntimeWarning)
-                data[buoy_id] = (buoy_id, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0},
-                    overpass_date, 'failed', 'data', scene_id_index, date_index, buoy_id_index, image_index)#e.args[0] + ' for buoy ' + buoy_id)
+                data[buoy_id] = (
+                        buoy_id,
+                        0,
+                        0,
+                        0,
+                        0,
+                        {10:0,11:0},
+                        {10:0,11:0},
+                        {10:0,11:0},
+                        overpass_date,
+                        'failed',
+                        #'data',
+                        str(e),
+                        scene_id_index,
+                        date_index,
+                        buoy_id_index,
+                        image_index
+                    )#e.args[0] + ' for buoy ' + buoy_id)
                 continue
-### Continue from here                
+### Continue from here
+                #********** Break for separate calculation here **********
             # Atmosphere
             if atmo_source == 'merra':
                 atmosphere = atmo.merra.process(overpass_date, buoy_lat, buoy_lon, verbose)
@@ -164,8 +200,23 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
                 raise ValueError('atmo_source is not one of (narr, merra)')
     
             if not atmosphere:
-                data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon,
-                    {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, overpass_date, 'failed', 'merra_layer1_temperature', scene_id_index, date_index, buoy_id_index, image_index)
+                data[buoy_id] = (
+                        buoy_id, 
+                        bulk_temp, 
+                        skin_temp, 
+                        buoy_lat, 
+                        buoy_lon,
+                        { 10:0, 11:0 },
+                        { 10:0, 11:0 },
+                        { 10:0, 11:0 },
+                        overpass_date,
+                        'failed',
+                        'merra_layer1_temperature',
+                        scene_id_index,
+                        date_index,
+                        buoy_id_index,
+                        image_index
+                    )
                 continue            
             else:
                 # MODTRAN
@@ -190,13 +241,43 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
         
                 error = error_bar.error_bar(scene_id, buoy_id, skin_temp, 0.305, overpass_date, buoy_lat, buoy_lon, rsrs, bands)
         
-                data[buoy_id] = (buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, 
-                    overpass_date, 'success','', scene_id_index, date_index, buoy_id_index, image_index)
+                data[buoy_id] = (
+                        buoy_id,
+                        bulk_temp,
+                        skin_temp,
+                        buoy_lat,
+                        buoy_lon,
+                        mod_ltoa,
+                        error,
+                        img_ltoa,
+                        overpass_date,
+                        'success',
+                        '',
+                        scene_id_index,
+                        date_index,
+                        buoy_id_index,
+                        image_index
+                    )
             
     else:
         overpass_date = datetime(1, 1, 1, 0, 0) 
-        data[0] = (0, 0, 0, 0, 0, {10:0,11:0}, {10:0,11:0}, {10:0,11:0}, 
-            overpass_date, 'failed', 'image', scene_id_index, date_index, buoy_id_index, image_index)
+        data[0] = (
+                0,
+                0,
+                0,
+                0,
+                0,
+                {10:0,11:0},
+                {10:0,11:0},
+                {10:0,11:0},
+                overpass_date,
+                'failed',
+                'image',
+                scene_id_index,
+                date_index,
+                buoy_id_index,
+                image_index
+            )
     
     return data
 
@@ -244,7 +325,15 @@ def buildModel(args):
                 db_operator.insert_data_row(scene_id_index,
                                             date_index,
                                             buoy_id_index,
-                                            [bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, img_ltoa, error],
+                                            [
+                                                bulk_temp,
+                                                skin_temp,
+                                                buoy_lat,
+                                                buoy_lon,
+                                                mod_ltoa,
+                                                img_ltoa,
+                                                error
+                                            ],
                                             image_index,
                                             status,
                                             error_message)

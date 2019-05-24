@@ -1,0 +1,297 @@
+###
+#
+# CIS Top of Atmosphere Radiance Calibration
+#
+# Program Description : Weather Station Module - Manages weather station calculations
+# Created By          : Benjamin Kleynhans
+# Creation Date       : September 7, 2018
+# Authors             : Benjamin Kleynhans
+#
+# Last Modified By    : Benjamin Kleynhans
+# Last Modified Date  : September 7, 2018
+# Filename            : weather_stations.py
+#
+###
+
+# Imports
+import collections
+import inspect
+import os
+import sys
+import pdb
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import settings
+import numpy as np
+
+from tools import download
+
+''' 
+    This class is used to manage all weather station calculations for stations
+    that are used by NOAA.
+    
+    - The Constants contain the address and filenames of files containing
+        the required data
+'''
+
+NOAA_DATA_FILES_WEB = 'https://www.ndbc.noaa.gov/data/stations/'
+NOAA_DATA_FILES_LOCAL = 'data/noaa/'
+
+NDBC_BUOY_FILE = 'buoyht.txt'
+NDBC_STATIONS_FILE = 'cmanht.txt'
+NON_NDBC_STATIONS_FILE = 'non_ndbc_heights.txt'
+ALL_STATION_OWNERS_FILE = 'station_owners.txt'
+ALL_STATION_METADATA_FILE = 'station_table.txt'
+
+class Weather_Stations:
+
+    # Class Attributes
+    __this_path = None
+    __data_file_path = None
+    __stations = []
+    __station_sensors = []
+    __data_files = [
+            NDBC_STATIONS_FILE,
+            NDBC_BUOY_FILE,
+            NON_NDBC_STATIONS_FILE,
+            ALL_STATION_OWNERS_FILE,
+            ALL_STATION_METADATA_FILE
+        ]
+    
+    __all_station_owners_metadata_heading_dict = {
+            0: 'owner_code',
+            1: 'owner_name',
+            2: 'owner_country_code'
+        }
+    
+    __all_station_owners_metadata_dict = {}
+    
+    __all_stations_metadata_heading_dict = {
+            0: 'station_id',
+            1: 'owner',
+            2: 'station_type',
+            3: 'hull_type',
+            4: 'name',
+            5: 'payload',
+            6: 'location',
+            7: 'timezone',
+            8: 'forecast',
+            9: 'note'
+        }
+    
+    __all_stations_metadata_dict = {}
+    
+    __ndbc_buoy_sensor_metadata_heading_dict = {
+            0: 'station_id',
+            1: 'site_elevation',
+            2: 'air_temp_elevation',
+            3: 'anemometer_elevation',
+            4: 'barometer_elevation'
+        }
+    
+    __ndbc_buoy_sensor_metadata_dict = {}
+    
+    __ndbc_station_sensor_metadata_heading_dict = {
+            0: 'station_id',
+            1: 'site_elevation',
+            2: 'air_temp_elevation',
+            3: 'anemometer_elevation',
+            4: 'tide_reference',
+            5: 'barometer_elevation'
+        }
+    
+    __ndbc_station_sensor_metadata_dict = {}
+    
+    __non_ndbc_station_sensor_metadata_heading_dict = {
+            0: 'station_id',
+            1: 'site_elevation',
+            2: 'air_temp_elevation',
+            3: 'anemometer_elevation',
+            4: 'tide_reference',
+            5: 'barometer_elevation',
+            6: 'water_temperature_elevation',
+            7: 'water_depth',
+            8: 'watch_circle'
+        }
+    
+    __non_ndbc_station_sensor_metadata_dict = {}
+
+    # Initializer / Instance Attributes
+    def __init__(self):
+        
+        sys.stdout.write(" Please be patient while the weather station metadata files are updated\n")
+        
+        self.__this_path = self.get_module_path(self)
+        self.__data_file_path = self._Weather_Stations__this_path[:len(self._Weather_Stations__this_path) - 4] + NOAA_DATA_FILES_LOCAL
+        
+        self._update_data_files(self)
+        
+        self._read_all_station_owners_file(self)
+        self._read_all_stations_file(self)
+        self._read_ndbc_buoy_sensor_file(self)
+        self._read_ndbc_station_sensor_file(self)
+        self._read_non_ndbc_station_sensor_file(self)
+        
+        
+    # Calculate fully qualified path to location of program execution
+    @staticmethod
+    def get_module_path(self):
+        
+        path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    
+        return path
+    
+    
+    # Download that NOAA weather station metadata files
+    @staticmethod
+    def _update_data_files(self):
+        
+        #path = self.get_module_path(self)
+        #path = self.__this_path[:len(self.__this_path) - 4] + NOAA_DATA_FILES_LOCAL
+        
+        for file in self._Weather_Stations__data_files:
+            sys.stdout.write(" Updating %s...\n" % (file))
+            full_path = NOAA_DATA_FILES_WEB + file
+            download.main([full_path, '-o{}'.format(self._Weather_Stations__data_file_path)])
+            
+    
+    @staticmethod
+    def _read_all_station_owners_file(self):
+        
+        with open((self._Weather_Stations__data_file_path + ALL_STATION_OWNERS_FILE)) as file:
+            header = file.readline()
+            header1 = file.readline()            
+            
+            for line in file:
+                
+                current_line_data = line.rstrip('\n')
+                current_line_index = current_line_data[
+                                    0:current_line_data.find('|')].strip(' \t\n\r')
+                
+                first_delimiter_index = 0
+                second_delimiter_index = 0
+                end_of_text_index = 0
+                
+                for i in range(0, 3):
+                    second_index_updated = False
+                    
+                    if i == 0:         
+                        
+                        self._Weather_Stations__all_station_owners_metadata_dict[current_line_index] = {}
+                        
+                        first_delimiter_index = current_line_data.find('|') + 1
+                        
+                    else:
+                        
+                        second_delimiter_index = current_line_data.find('|', first_delimiter_index)
+                        
+                        self._Weather_Stations__all_station_owners_metadata_dict[current_line_index][self._Weather_Stations__all_station_owners_metadata_heading_dict[i]] = (current_line_data[first_delimiter_index:second_delimiter_index]).strip(' \t\n\r')
+                                
+                        first_delimiter_index = second_delimiter_index + 1
+    
+
+    @staticmethod
+    def _read_all_stations_file(self):
+        
+        with open((self._Weather_Stations__data_file_path + ALL_STATION_METADATA_FILE)) as file:
+            header = file.readline()
+            
+            for line in file:
+                
+                current_line_data = line.rstrip('\n')
+                current_line_index = current_line_data[
+                                    0:current_line_data.find('|')].strip(' \t\n\r')
+                
+                first_delimiter_index = 0
+                second_delimiter_index = 0
+                
+                for i in range(0, 10):
+                    if i == 0:         
+                        
+                        self._Weather_Stations__all_stations_metadata_dict[current_line_index] = {}
+                        
+                        first_delimiter_index = current_line_data.find('|') + 1
+                        
+                    else:
+                        
+                        second_delimiter_index = current_line_data.find('|', first_delimiter_index)
+                        
+                        self._Weather_Stations__all_stations_metadata_dict[current_line_index][self._Weather_Stations__all_stations_metadata_heading_dict[i]] = (current_line_data[first_delimiter_index:second_delimiter_index]).strip(' \t\n\r')
+                                
+                        first_delimiter_index = second_delimiter_index + 1
+            
+    
+    @staticmethod
+    def _read_ndbc_buoy_sensor_file(self):
+        
+        with open((self._Weather_Stations__data_file_path + NDBC_BUOY_FILE)) as file:
+            for header_lines in range(0, 7):
+                header = file.readline()
+            
+            for line in file:
+                
+                current_line_data = line.rstrip('\n')
+                current_line_array = current_line_data.split()
+                current_line_index = current_line_array[0]
+                
+                for i in range(0, len(current_line_array)):
+                    if i == 0:         
+                        
+                        self._Weather_Stations__ndbc_buoy_sensor_metadata_dict[current_line_index] = {}
+                        
+                    else:
+                        
+                        self._Weather_Stations__ndbc_buoy_sensor_metadata_dict[current_line_index][self._Weather_Stations__ndbc_buoy_sensor_metadata_heading_dict[i]] = current_line_array[i].strip(' \t\n\r')
+
+
+    @staticmethod
+    def _read_ndbc_station_sensor_file(self):
+        
+        with open((self._Weather_Stations__data_file_path + NDBC_STATIONS_FILE)) as file:
+            for header_lines in range(0, 7):
+                header = file.readline()
+            
+            for line in file:
+                
+                current_line_data = line.rstrip('\n')
+                current_line_array = current_line_data.split()
+                current_line_index = current_line_array[0]
+                
+                for i in range(0, len(current_line_array)):
+                    if i == 0:         
+                        
+                        self._Weather_Stations__ndbc_station_sensor_metadata_dict[current_line_index] = {}
+                        
+                    else:
+                        
+                        self._Weather_Stations__ndbc_station_sensor_metadata_dict[current_line_index][self._Weather_Stations__ndbc_station_sensor_metadata_heading_dict[i]] = current_line_array[i].strip(' \t\n\r')
+    
+    @staticmethod
+    def _read_non_ndbc_station_sensor_file(self):
+        
+        with open((self._Weather_Stations__data_file_path + NON_NDBC_STATIONS_FILE)) as file:
+            for header_lines in range(0, 6):
+                header = file.readline()
+            
+            for line in file:
+                
+                current_line_data = line.rstrip('\n')
+                current_line_array = current_line_data.split()
+                current_line_index = current_line_array[0]
+                
+                for i in range(0, len(current_line_array)):
+                    if i == 0:         
+                        
+                        self._Weather_Stations__non_ndbc_station_sensor_metadata_dict[current_line_index] = {}
+                        
+                    else:
+                        
+                        self._Weather_Stations__non_ndbc_station_sensor_metadata_dict[current_line_index][self._Weather_Stations__non_ndbc_station_sensor_metadata_heading_dict[i]] = current_line_array[i].strip(' \t\n\r')
+                        
+    @staticmethod
+    def _get_hull_type(self, buoy_id):
+        
+        hull_type = None
+        
+        
+        
+        return hull_type

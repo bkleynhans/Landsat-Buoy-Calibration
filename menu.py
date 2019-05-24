@@ -206,21 +206,21 @@ def source_test(address, missing_sources):
     import test_paths    
             
     if not test_paths.main([address, '-tserver']):
-        sys.stdout.write("\r " + address)
+        #sys.stdout.write("\r " + address)
         
         #path_test_timer()
         
-        sys.stdout.write(" NOT AVAILABLE!!!")
+        sys.stdout.write(" --> NOT AVAILABLE!!!")
         sys.stdout.flush()
         
         missing_sources.append(address)
     else:
-        sys.stdout.write(ERASE_LINE)
-        sys.stdout.write('\r ' + address)
+        #sys.stdout.write(ERASE_LINE)
+        #sys.stdout.write('\r ' + address)
         
         #path_test_timer()
         
-        sys.stdout.write(" available.")
+        sys.stdout.write(" >>> available.")
         sys.stdout.flush()
         
         missing_sources = None
@@ -244,9 +244,14 @@ def check_sources():
     sources.append(settings.LANDSAT_S3_SERVER)
     sources.append(settings.LANDSAT_EE_SERVER)
     
+    if settings.USE_MYSQL:
+        sources.append(settings.SQL_SERVER)
+    
     missing_sources = []
     
     for source in sources:
+        sys.stdout.write(ERASE_LINE)
+        sys.stdout.write('\r Testing >>> ' + source)
         source = source_test(source, missing_sources)
             
     if (len(missing_sources)):

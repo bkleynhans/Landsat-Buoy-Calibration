@@ -4,4 +4,9 @@ output/
 # ignore any files in the downloaded_data folder
 downloaded_data/
 
+# ignore the to_delete folder which contains files we want to remove but don't know
+# the impact of yet
+to_delete/
 
+# ignore self-compiled files
+*.pyc

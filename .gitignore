@@ -8,5 +8,8 @@ downloaded_data/
 # the impact of yet
 to_delete/
 
+# ignore spyder project details directory
+.spyproject/
+
 # ignore self-compiled files
 *.pyc

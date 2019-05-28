@@ -6,4 +6,5 @@
 #chmod 0600 ~/.netrc
 #touch ~/.urs_cookies
 
-python3 ~/Landsat-Buoy-Calibration/gui/tarca_gui.py
+cd ~/Landsat-Buoy-Calibration/gui
+python3 tarca_gui.py

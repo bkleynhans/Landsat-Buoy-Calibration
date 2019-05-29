@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 ###
 #
 # CIS Top of Atmosphere Radiance Calibration
@@ -47,7 +48,7 @@ class Tarca_Gui:
         menu_bar.Menu_Bar(master)
         
         # Create the Header - accessed via master.header_frame
-        header_frame.Header(master)
+        header_frame.Header_Frame(master)
         
         # Create the Input Frame - accessed via master.
         input_frame.Input_Frame(master)
@@ -74,7 +75,11 @@ def set_path_variables():
     
     path, filename = get_module_path()
     
+    # find the Calibration program path
+    path_index = path.rfind('/')
+    
     # append gui paths
+    sys.path.append(path[:path_index])
     sys.path.append(path)
     sys.path.append(path + "/forms")
     

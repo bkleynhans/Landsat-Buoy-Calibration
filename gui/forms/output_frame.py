@@ -8,8 +8,8 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : May 28, 2019
-# Filename            : output_form.py
+# Last Modified Date  : May 29, 2019
+# Filename            : output_frame.py
 #
 ###
 
@@ -28,7 +28,7 @@ class Output_Frame(tarca_gui.Tarca_Gui):
         
         output_frame.pack(anchor = 'w')
         
-        notebook.Notebook(master)
+        #notebook.Notebook(master)
         
     
     def __init__(self, master):

@@ -9,7 +9,7 @@
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : May 28, 2019
-# Filename            : status_form.py
+# Filename            : status_frame.py
 #
 ###
 
@@ -28,7 +28,7 @@ class Status_Frame(tarca_gui.Tarca_Gui):
         
         status_frame.pack(anchor = 'w')
         
-        notebook.Notebook(master)
+        #notebook.Notebook(master)
         
     
     def __init__(self, master):

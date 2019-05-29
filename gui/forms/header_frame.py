@@ -8,8 +8,8 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : May 23, 2019
-# Filename            : progress_bar.py
+# Last Modified Date  : May 29, 2019
+# Filename            : header_frame.py
 #
 ###
 
@@ -17,8 +17,27 @@
 from tkinter import *
 from tkinter import ttk
 from forms import input_frame
+import pdb
 
-class Header(input_frame.Input_Frame):
+class Header_Frame(input_frame.Input_Frame):
+           
+    def change_tabs(self, master, selection):
+        
+        if (selection.get() == 'full') :            
+            
+            master.input_frame.notebook.tab(1, state = 'hidden')
+            master.input_frame.notebook.tab(0, state = 'normal')
+            master.input_frame.notebook.select(0)
+            
+        elif (selection.get() == 'partial'):            
+            
+            master.input_frame.notebook.tab(0, state = 'hidden')
+            master.input_frame.notebook.tab(1, state = 'normal')
+            master.input_frame.notebook.select(1)
+             
+            
+        master.input_frame.notebook.tab(2, state = 'normal')
+        
     
     def create_header(self, master):
         
@@ -29,11 +48,12 @@ class Header(input_frame.Input_Frame):
         # Add Radio Buttons to Header frame
         self.process_type = StringVar()
         
-        ttk.Radiobutton(                
+        ttk.Radiobutton(
                 self.frame_header,
                 text = 'Full Process',
                 variable = self.process_type,
-                value = 'full').grid(
+                value = 'full',
+                command = lambda: self.change_tabs(master, self.process_type)).grid(
                         row = 0,
                         column = 0)
 
@@ -41,11 +61,12 @@ class Header(input_frame.Input_Frame):
                 self.frame_header,
                 text = 'Partial Process',
                 variable = self.process_type,
-                value = 'partial').grid(
+                value = 'partial',
+                command = lambda: self.change_tabs(master, self.process_type)).grid(
                         row = 0,
                         column = 1)
         
-        self.frame_header.pack()
+        self.frame_header.pack(padx = 10, pady = 10)
         
     
     def __init__(self, master):

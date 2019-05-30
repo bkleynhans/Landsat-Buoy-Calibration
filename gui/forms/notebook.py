@@ -20,7 +20,6 @@ from tkinter import filedialog
 from gui.forms import input_frame
 from tkcalendar import Calendar, DateEntry
 from datetime import date
-import pdb
 
 class Notebook(input_frame.Input_Frame):
     

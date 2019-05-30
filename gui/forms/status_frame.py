@@ -17,18 +17,16 @@
 from tkinter import *
 from tkinter import ttk
 import tarca_gui
-from gui.forms import notebook
 
 class Status_Frame(tarca_gui.Tarca_Gui):
     
     def create_status_frame(self, master):
         
-        status_frame = ttk.Frame(master)
-        master.status_frame = status_frame
+        self.status_frame = ttk.LabelFrame(master, text = 'Status')
+        master.status_frame = self.status_frame
         
-        status_frame.pack(anchor = 'w')
+        self.status_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
-        #notebook.Notebook(master)
         
     
     def __init__(self, master):

@@ -17,18 +17,15 @@
 from tkinter import *
 from tkinter import ttk
 import tarca_gui
-from gui.forms import notebook
 
 class Output_Frame(tarca_gui.Tarca_Gui):
     
     def create_output_frame(self, master):
         
-        output_frame = ttk.Frame(master)
-        master.output_frame = output_frame
+        self.output_frame = ttk.LabelFrame(master, text = 'Output')
+        master.output_frame = self.output_frame
         
-        output_frame.pack(anchor = 'w')
-        
-        #notebook.Notebook(master)
+        self.output_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
     
     def __init__(self, master):

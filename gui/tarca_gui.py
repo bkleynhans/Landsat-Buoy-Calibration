@@ -16,6 +16,7 @@
 
 # Imports
 from tkinter import *
+from tkinter import messagebox
 import inspect
 import sys
 import os
@@ -83,12 +84,19 @@ def set_path_variables():
     sys.path.append(path)
     sys.path.append(path + "/forms")
     
+    
+def on_closing(root):
+    
+    if messagebox.askyesno("Quit", "Do you really wish to quit?"):
+        root.destroy()
+    
 
 def main():
     
     set_path_variables()
     
     root = Tk()
+    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
     tarca_gui = Tarca_Gui(root)
     root.mainloop()
     

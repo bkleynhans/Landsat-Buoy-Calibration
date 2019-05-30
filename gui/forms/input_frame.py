@@ -23,11 +23,10 @@ class Input_Frame(tarca_gui.Tarca_Gui):
     
     def create_input_frame(self, master):
         
-        self.input_frame = ttk.Frame(master)
-        self.input_frame.config(padding = (10, 10))
+        self.input_frame = ttk.LabelFrame(master, text = "Input")
         master.input_frame = self.input_frame
         
-        self.input_frame.pack(anchor = 'w')
+        self.input_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
         notebook.Notebook(master)
         

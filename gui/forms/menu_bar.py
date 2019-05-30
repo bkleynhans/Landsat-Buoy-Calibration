@@ -37,7 +37,7 @@ class Menu_Bar(tarca_gui.Tarca_Gui):
         self.menu_bar.add_cascade(menu = self.edit_menu, label = 'Edit')
         
          # Define the File menu options
-        self.file_menu.add_command(label = 'Exit', command = lambda: print('Clicked Exit'))
+        self.file_menu.add_command(label = 'Exit', command = lambda: tarca_gui.on_closing(master))#print('Clicked Exit'))
         self.file_menu.entryconfig('Exit', accelerator = 'Ctrl+Q')
     
         # Define the Edit menu options

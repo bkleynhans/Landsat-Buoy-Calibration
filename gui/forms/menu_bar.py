@@ -18,6 +18,7 @@ from tkinter import *
 from tkinter import ttk
 import tarca_gui
 import help_menu
+from gui.forms import settings_frame
 
 class Menu_Bar(tarca_gui.Tarca_Gui):
     
@@ -37,11 +38,11 @@ class Menu_Bar(tarca_gui.Tarca_Gui):
         self.menu_bar.add_cascade(menu = self.edit_menu, label = 'Edit')
         
          # Define the File menu options
-        self.file_menu.add_command(label = 'Exit', command = lambda: tarca_gui.on_closing(master))#print('Clicked Exit'))
+        self.file_menu.add_command(label = 'Exit', command = lambda: tarca_gui.on_closing(master))
         self.file_menu.entryconfig('Exit', accelerator = 'Ctrl+Q')
     
         # Define the Edit menu options
-        self.edit_menu.add_command(label = 'Preferences', command = lambda: print('Clicked Preferences'))
+        self.edit_menu.add_command(label = 'Preferences', command = lambda: settings_frame.Settings_Frame(master))
     
         # Define the Help menu options        
         self.menu_bar.add_command(

@@ -17,7 +17,7 @@
 from tkinter import *
 from tkinter import ttk
 import tarca_gui
-from gui.forms import notebook
+from gui.forms import input_notebook
 
 class Input_Frame(tarca_gui.Tarca_Gui):
     

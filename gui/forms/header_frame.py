@@ -19,26 +19,14 @@ from tkinter import ttk
 from forms import input_frame
 import pdb
 
+
 class Header_Frame(input_frame.Input_Frame):
-           
-    def change_tabs(self, master, selection):
-        
-        if (selection.get() == 'full') :            
-            
-            master.input_frame.notebook.tab(1, state = 'hidden')
-            master.input_frame.notebook.tab(0, state = 'normal')
-            master.input_frame.notebook.select(0)
-            
-        elif (selection.get() == 'partial'):            
-            
-            master.input_frame.notebook.tab(0, state = 'hidden')
-            master.input_frame.notebook.tab(1, state = 'normal')
-            master.input_frame.notebook.select(1)
-             
-            
-        master.input_frame.notebook.tab(2, state = 'normal')
-        
     
+    def __init__(self, master):
+        
+        self.create_header(master)
+        
+        
     def create_header(self, master):
         
         # Create the Header frame
@@ -68,7 +56,20 @@ class Header_Frame(input_frame.Input_Frame):
         
         self.frame_header.pack(padx = 10, pady = 10)
         
-    
-    def __init__(self, master):
+           
+    def change_tabs(self, master, selection):
         
-        self.create_header(master)
+        if (selection.get() == 'full') :            
+            
+            master.input_frame.notebook.tab(1, state = 'hidden')
+            master.input_frame.notebook.tab(0, state = 'normal')
+            master.input_frame.notebook.select(0)
+            
+        elif (selection.get() == 'partial'):            
+            
+            master.input_frame.notebook.tab(0, state = 'hidden')
+            master.input_frame.notebook.tab(1, state = 'normal')
+            master.input_frame.notebook.select(1)
+             
+            
+        master.input_frame.notebook.tab(2, state = 'normal')

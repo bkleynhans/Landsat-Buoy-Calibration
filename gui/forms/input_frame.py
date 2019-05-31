@@ -19,7 +19,13 @@ from tkinter import ttk
 import tarca_gui
 from gui.forms import input_notebook
 
+
 class Input_Frame(tarca_gui.Tarca_Gui):
+    
+    def __init__(self, master):
+        
+        self.create_input_frame(master)
+        
     
     def create_input_frame(self, master):
         
@@ -28,9 +34,4 @@ class Input_Frame(tarca_gui.Tarca_Gui):
         
         self.input_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
-        notebook.Notebook(master)
-        
-    
-    def __init__(self, master):
-        
-        self.create_input_frame(master)
+        input_notebook.Notebook(master)

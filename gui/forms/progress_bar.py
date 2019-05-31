@@ -18,7 +18,13 @@ from tkinter import *
 from tkinter import ttk
 import tarca_gui
 
+
 class Progress_Bar(tarca_gui.Tarca_Gui):
+    
+    def __init__(self, master):
+        
+        self.create_progressbar_window(master)
+        
     
     def create_progressbar_window(self, master):
         
@@ -36,7 +42,3 @@ class Progress_Bar(tarca_gui.Tarca_Gui):
                 
         self.progressbar.pack(anchor = 'nw', padx = 10, pady = (0, 10))
         self.progressbar_window.withdraw()
-    
-    def __init__(self, master):
-        
-        self.create_progressbar_window(master)

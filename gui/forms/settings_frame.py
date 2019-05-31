@@ -19,18 +19,12 @@ from tkinter import ttk
 from tkinter import messagebox
 import tarca_gui
 
+
 class Settings_Frame(tarca_gui.Tarca_Gui):
     
-    def save_changes(self):
+    def __init__(self, master):
         
-        pass
-    
-    def on_closing(self, settings_frame):
-    
-        if messagebox.askyesno("Save Preferences", "Do you wish to save your changes?"):
-            self.save_changes
-        else:
-            settings_frame.destroy()
+        self.create_settings_frame(master)
         
     
     def create_settings_frame(self, master):
@@ -40,7 +34,14 @@ class Settings_Frame(tarca_gui.Tarca_Gui):
         self.settings_frame.protocol("WM_DELETE_WINDOW", lambda: self.on_closing(master.settings_frame))
         
         
-    
-    def __init__(self, master):
+    def save_changes(self):
         
-        self.create_settings_frame(master)
+        pass
+    
+    
+    def on_closing(self, settings_frame):
+    
+        if messagebox.askyesno("Save Preferences", "Do you wish to save your changes?"):
+            self.save_changes
+        else:
+            settings_frame.destroy()

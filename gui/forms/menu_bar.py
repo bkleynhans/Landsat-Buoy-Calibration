@@ -20,7 +20,13 @@ import tarca_gui
 import help_menu
 from gui.forms import settings_frame
 
+
 class Menu_Bar(tarca_gui.Tarca_Gui):
+    
+    def __init__(self, master):
+        
+        self.create_menu_bar(master)
+        
     
     def create_menu_bar(self, master):
         
@@ -48,7 +54,3 @@ class Menu_Bar(tarca_gui.Tarca_Gui):
         self.menu_bar.add_command(
                 label = 'Help', 
                 command = lambda: help_menu.Help_Menu(master)) # Open the readme file on the GitHub page for the project
-    
-    def __init__(self, master):
-        
-        self.create_menu_bar(master)

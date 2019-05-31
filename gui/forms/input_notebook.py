@@ -21,8 +21,46 @@ from gui.forms import input_frame
 from tkcalendar import Calendar, DateEntry
 from datetime import date
 
+
 class Notebook(input_frame.Input_Frame):
     
+    def __init__(self, master):
+        
+        self.create_notebook(master.input_frame)
+        
+        
+    # Create the notebook object that will contain all the tabs
+    def create_notebook(self, input_frame):
+        
+        self.notebook = ttk.Notebook(input_frame)
+        input_frame.notebook = self.notebook
+        
+        self.notebook.input_values = {'batch_file': '',
+                                      'scene_id': '',
+                                      'date_frame_container': {
+                                              'frame': '',
+                                              'date_picker': '',
+                                              'date_label': '',
+                                              'date': ''},
+                                      'lat': '',
+                                      'lon': '',
+                                      'surface_temp': ''}
+        
+        self.full_single = ttk.Frame(self.notebook)
+        self.notebook.full_single = self.full_single
+        self.setup_full_single(self.notebook)
+        
+        self.partial_single = ttk.Frame(self.notebook)
+        self.notebook.partial_single = self.partial_single
+        self.setup_partial_single(self.notebook)
+        
+        self.full_batch = ttk.Frame(self.notebook)
+        self.notebook.full_batch = self.full_batch
+        self.setup_batch(self.notebook)        
+        
+        self.notebook.pack()
+        
+        
     def update_dates(self, date_frame_container):
         
         date_frame_container['date_picker'].set_date(date.today())
@@ -127,40 +165,3 @@ class Notebook(input_frame.Input_Frame):
                         pady = 10,
                         sticky = 'w'
                 )
-        
-    
-    # Create the notebook object that will contain all the tabs
-    def create_notebook(self, input_frame):
-        
-        self.notebook = ttk.Notebook(input_frame)
-        input_frame.notebook = self.notebook
-        
-        self.notebook.input_values = {'batch_file': '',
-                                      'scene_id': '',
-                                      'date_frame_container': {
-                                              'frame': '',
-                                              'date_picker': '',
-                                              'date_label': '',
-                                              'date': ''},
-                                      'lat': '',
-                                      'lon': '',
-                                      'surface_temp': ''}
-        
-        self.full_single = ttk.Frame(self.notebook)
-        self.notebook.full_single = self.full_single
-        self.setup_full_single(self.notebook)
-        
-        self.partial_single = ttk.Frame(self.notebook)
-        self.notebook.partial_single = self.partial_single
-        self.setup_partial_single(self.notebook)
-        
-        self.full_batch = ttk.Frame(self.notebook)
-        self.notebook.full_batch = self.full_batch
-        self.setup_batch(self.notebook)        
-        
-        self.notebook.pack()    
-        
-    
-    def __init__(self, master):
-        
-        self.create_notebook(master.input_frame)

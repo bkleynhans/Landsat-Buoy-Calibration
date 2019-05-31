@@ -18,7 +18,13 @@ from tkinter import *
 from tkinter import ttk
 import tarca_gui
 
+
 class Output_Frame(tarca_gui.Tarca_Gui):
+    
+    def __init__(self, master):
+        
+        self.create_output_frame(master)
+        
     
     def create_output_frame(self, master):
         
@@ -26,8 +32,3 @@ class Output_Frame(tarca_gui.Tarca_Gui):
         master.output_frame = self.output_frame
         
         self.output_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
-        
-    
-    def __init__(self, master):
-        
-        self.create_output_frame(master)

@@ -18,7 +18,13 @@ from tkinter import *
 from tkinter import ttk
 import tarca_gui
 
+
 class Status_Frame(tarca_gui.Tarca_Gui):
+    
+    def __init__(self, master):
+        
+        self.create_status_frame(master)
+        
     
     def create_status_frame(self, master):
         
@@ -26,9 +32,3 @@ class Status_Frame(tarca_gui.Tarca_Gui):
         master.status_frame = self.status_frame
         
         self.status_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
-        
-        
-    
-    def __init__(self, master):
-        
-        self.create_status_frame(master)

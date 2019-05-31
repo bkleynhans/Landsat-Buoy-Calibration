@@ -20,11 +20,16 @@ import time
 import threading
 import menu_bar
 
+
 class Help_Menu(menu_bar.Menu_Bar):
     
     GITHUB_PATH = 'https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/master/README.md'
      
-    
+    def __init__(self, master):
+        
+        self.open_help(master)
+        
+        
     def open_webpage(self, url, progressbar_window):
         
         import webbrowser
@@ -45,8 +50,3 @@ class Help_Menu(menu_bar.Menu_Bar):
         master.progressbar_window.progressbar.start()
         
         threading.Thread(target=self.open_webpage, args=(self.GITHUB_PATH, master.progressbar_window, )).start()
-        
-        
-    def __init__(self, master):
-        
-        self.open_help(master)

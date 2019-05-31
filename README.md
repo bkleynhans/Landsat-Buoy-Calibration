@@ -1,4 +1,6 @@
 # Landsat Buoy Calibration
+!!!!! DEVELOPMENT IN PROGRESS, THIS DOCUMENT IS OUTDATED !!!!!
+
 Calculates and compares the radiance of a thermal LANDSAT scene to the "ground truth"
 radiance as measured by a NOAA buoy. Based on work in theses by Frank Padula and Monica Cook at RIT.  
 

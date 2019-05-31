@@ -134,7 +134,7 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
     
         for buoy_id in buoys:
             
-            pdb.set_trace()
+            #pdb.set_trace()
             
             if settings.USE_MYSQL:
                 # Write Buoy ID to database

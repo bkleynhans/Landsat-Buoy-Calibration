@@ -286,7 +286,7 @@ def skin_temp(file, date, thermometer_depth):
 
 def info(buoy_id, file, overpass_date):
     
-    pdb.set_trace()
+    #pdb.set_trace()
     
     ##buoy_file = download(buoy_id, overpass_date) # Don't know why file is downloaded again, because the file is being passed from
     buoy_file = file                               #     previous download
@@ -547,7 +547,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     # Build array of wind speeds
     wind_spd_24h = data[dt_line_numbers_24h, headers.index('WSPD')]
     
-    pdb.set_trace()
+    #pdb.set_trace()
     
     t_zt = list(zip(dt_times_24h, w_temp_24h))
     # Calculate Temperature at depth z at time t
@@ -563,7 +563,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     if anemometer_height == 'N/A':
         anemometer_height = 5 # If there is no value in the heights file, use a default of 5
     
-    pdb.set_trace()
+    #pdb.set_trace()
     
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
     u_m = wind_speed_height_correction(numpy.nanmean(wind_spd_24h), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
@@ -588,7 +588,7 @@ def calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth):
     f_tcz_time = []
     f_tcz_temp = []
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
     for time, temperature in t_zt:
         f_tcz_time.append(dt_to_dec_hour(time) - (c * z))  # calculate adjusted time as described in Equasion 2.10 Frank Pedula's thesis, page 23n

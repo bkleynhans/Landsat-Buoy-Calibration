@@ -23,11 +23,13 @@ from gui.forms import settings_frame
 
 class Menu_Bar(tarca_gui.Tarca_Gui):
     
+    # Menu Bar constructor
     def __init__(self, master):
         
         self.create_menu_bar(master)
         
     
+    # Create Menu Bar object
     def create_menu_bar(self, master):
         
         # Create menubar

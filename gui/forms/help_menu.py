@@ -25,11 +25,13 @@ class Help_Menu(menu_bar.Menu_Bar):
     
     GITHUB_PATH = 'https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/master/README.md'
      
+    # Help Menu constructor
     def __init__(self, master):
         
         self.open_help(master)
         
-        
+    
+    # Open in github as a thread
     def open_webpage(self, url, progressbar_window):
         
         import webbrowser
@@ -42,6 +44,7 @@ class Help_Menu(menu_bar.Menu_Bar):
         progressbar_window.withdraw()
                 
     
+    # Open the Help page from github
     def open_help(self, master):
         
         master.progressbar_window.progressbar.config(mode = 'indeterminate')

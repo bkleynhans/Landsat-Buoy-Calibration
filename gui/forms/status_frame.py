@@ -21,11 +21,13 @@ import tarca_gui
 
 class Status_Frame(tarca_gui.Tarca_Gui):
     
+    # Status Frame constructor
     def __init__(self, master):
         
         self.create_status_frame(master)
         
     
+    # Create the status frame object
     def create_status_frame(self, master):
         
         self.status_frame = ttk.LabelFrame(master, text = 'Status')

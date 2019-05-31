@@ -21,11 +21,13 @@ import tarca_gui
 
 class Progress_Bar(tarca_gui.Tarca_Gui):
     
+    # Progress Bar constructor
     def __init__(self, master):
         
         self.create_progressbar_window(master)
         
     
+    # Create the progress bar widow object
     def create_progressbar_window(self, master):
         
         # Create the progressbar object

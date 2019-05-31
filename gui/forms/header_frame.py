@@ -22,11 +22,13 @@ import pdb
 
 class Header_Frame(input_frame.Input_Frame):
     
+    # Header Frame constructor
     def __init__(self, master):
         
         self.create_header(master)
         
         
+    # Create header frame object
     def create_header(self, master):
         
         # Create the Header frame
@@ -56,20 +58,21 @@ class Header_Frame(input_frame.Input_Frame):
         
         self.frame_header.pack(padx = 10, pady = 10)
         
-           
+          
+    # Function to change visible tables based on radio button selection
     def change_tabs(self, master, selection):
         
         if (selection.get() == 'full') :            
             
-            master.input_frame.notebook.tab(1, state = 'hidden')
-            master.input_frame.notebook.tab(0, state = 'normal')
-            master.input_frame.notebook.select(0)
+            master.input_frame.input_notebook.tab(1, state = 'hidden')
+            master.input_frame.input_notebook.tab(0, state = 'normal')
+            master.input_frame.input_notebook.select(0)
             
         elif (selection.get() == 'partial'):            
             
-            master.input_frame.notebook.tab(0, state = 'hidden')
-            master.input_frame.notebook.tab(1, state = 'normal')
-            master.input_frame.notebook.select(1)
+            master.input_frame.input_notebook.tab(0, state = 'hidden')
+            master.input_frame.input_notebook.tab(1, state = 'normal')
+            master.input_frame.input_notebook.select(1)
              
             
-        master.input_frame.notebook.tab(2, state = 'normal')
+        master.input_frame.input_notebook.tab(2, state = 'normal')

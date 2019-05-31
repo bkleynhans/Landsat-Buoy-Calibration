@@ -3,7 +3,7 @@
 # CIS Top of Atmosphere Radiance Calibration
 #
 # Program Description : GUI for the Landsat Buoy Calibration program
-# Module Description  : Creates the notebook that exists on the Settings Frame.  Also
+# Module Description  : Creates the settings_notebook that exists on the Settings Frame.  Also
 #                       handles all data input from the Settings Frame
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 30, 2019
@@ -35,7 +35,7 @@ class Settings_Notebook(settings_frame.Settings_Frame):
         
         pass
         
-#        self.settings_notebook = ttk.Notebook(settings_frame)
+#        self.settings_notebook = ttk.Settings_Notebook(settings_frame)
 #        settings_frame.settings_notebook = self.settings_notebook
         
 #        self.settings_notebook.input_values = {

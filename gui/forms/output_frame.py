@@ -21,11 +21,13 @@ import tarca_gui
 
 class Output_Frame(tarca_gui.Tarca_Gui):
     
+    # Output Frame constructor
     def __init__(self, master):
         
         self.create_output_frame(master)
         
     
+    # Create Output Frame object
     def create_output_frame(self, master):
         
         self.output_frame = ttk.LabelFrame(master, text = 'Output')

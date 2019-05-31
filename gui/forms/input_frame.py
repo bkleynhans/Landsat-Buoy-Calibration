@@ -22,11 +22,13 @@ from gui.forms import input_notebook
 
 class Input_Frame(tarca_gui.Tarca_Gui):
     
+    # Input Frame constructor
     def __init__(self, master):
         
         self.create_input_frame(master)
         
     
+    # Create the actual Frame
     def create_input_frame(self, master):
         
         self.input_frame = ttk.LabelFrame(master, text = "Input")
@@ -34,4 +36,5 @@ class Input_Frame(tarca_gui.Tarca_Gui):
         
         self.input_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
-        input_notebook.Notebook(master)
+        # Add the input notebook to the frame
+        input_notebook.Input_Notebook(master)

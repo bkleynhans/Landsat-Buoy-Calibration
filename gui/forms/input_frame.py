@@ -16,25 +16,23 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import tarca_gui
+from gui_frame import Gui_Frame
 from gui.forms import input_notebook
 
 
-class Input_Frame(tarca_gui.Tarca_Gui):
+class Input_Frame(Gui_Frame):
     
     # Input Frame constructor
     def __init__(self, master):
         
+        Gui_Frame.__init__(self, master, "input_frame", "Input")
         self.create_input_frame(master)
         
     
     # Create the actual Frame
     def create_input_frame(self, master):
         
-        self.input_frame = ttk.LabelFrame(master, text = "Input")
-        master.input_frame = self.input_frame
-        
-        self.input_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
         # Add the input notebook to the frame
-        input_notebook.Input_Notebook(master)
+        input_notebook.Input_Notebook(master, self.frame_name)

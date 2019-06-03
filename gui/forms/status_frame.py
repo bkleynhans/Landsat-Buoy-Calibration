@@ -16,21 +16,19 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import tarca_gui
+from gui_frame import Gui_Frame
 
 
-class Status_Frame(tarca_gui.Tarca_Gui):
+class Status_Frame(Gui_Frame):
     
     # Status Frame constructor
     def __init__(self, master):
         
+        Gui_Frame.__init__(self, master, "status_frame", "Status")
         self.create_status_frame(master)
         
     
     # Create the status frame object
     def create_status_frame(self, master):
-        
-        self.status_frame = ttk.LabelFrame(master, text = 'Status')
-        master.status_frame = self.status_frame
-        
-        self.status_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+                
+        master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

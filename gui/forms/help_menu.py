@@ -18,10 +18,9 @@ from tkinter import *
 from tkinter import ttk
 import time
 import threading
-import menu_bar
 
 
-class Help_Menu(menu_bar.Menu_Bar):
+class Help_Menu():
     
     GITHUB_PATH = 'https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/master/README.md'
      

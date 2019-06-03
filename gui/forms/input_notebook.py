@@ -17,17 +17,16 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-from gui.forms import input_frame
 from tkcalendar import Calendar, DateEntry
 from datetime import date
 
 
-class Input_Notebook(input_frame.Input_Frame):
+class Input_Notebook():
     
     # Input Notebook constructor
-    def __init__(self, master):
+    def __init__(self, master, frame_name):
         
-        self.create_notebook(master.input_frame)
+        self.create_notebook(master.frames[frame_name])
         
         
     # Create the input_notebook object that will contain all the tabs

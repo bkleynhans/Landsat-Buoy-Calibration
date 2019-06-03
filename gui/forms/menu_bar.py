@@ -16,13 +16,12 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import tarca_gui
 import help_menu
-from gui.forms import settings_frame
+import settings_frame
 
 
-class Menu_Bar(tarca_gui.Tarca_Gui):
-    
+class Menu_Bar(): 
+   
     # Menu Bar constructor
     def __init__(self, master):
         

@@ -16,21 +16,19 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import tarca_gui
+from gui_frame import Gui_Frame
 
 
-class Output_Frame(tarca_gui.Tarca_Gui):
+class Output_Frame(Gui_Frame):
     
     # Output Frame constructor
     def __init__(self, master):
         
+        Gui_Frame.__init__(self, master, "output_frame", "Output")
         self.create_output_frame(master)
         
     
     # Create Output Frame object
     def create_output_frame(self, master):
-        
-        self.output_frame = ttk.LabelFrame(master, text = 'Output')
-        master.output_frame = self.output_frame
-        
-        self.output_frame.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+                
+        master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

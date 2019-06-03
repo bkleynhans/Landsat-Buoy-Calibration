@@ -19,10 +19,9 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import filedialog
-from gui.forms import settings_frame
 
 
-class Settings_Notebook(settings_frame.Settings_Frame):
+class Settings_Notebook():
     
     # Settings Notebook constructor
     def __init__(self, master):

@@ -17,11 +17,10 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from gui.forms import menu_bar
 from gui.forms import settings_notebook
 
 
-class Settings_Frame(menu_bar.Menu_Bar):
+class Settings_Frame():
     
     # Settings Frame constructor
     def __init__(self, master):

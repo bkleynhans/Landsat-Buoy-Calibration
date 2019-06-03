@@ -16,10 +16,9 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import tarca_gui
 
 
-class Progress_Bar(tarca_gui.Tarca_Gui):
+class Progress_Bar():
     
     # Progress Bar constructor
     def __init__(self, master):

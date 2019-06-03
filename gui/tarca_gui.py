@@ -10,7 +10,7 @@
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : May 23, 2019
-# Filename            : gui.py
+# Filename            : tarca_gui.py
 #
 ###
 
@@ -47,6 +47,10 @@ class Tarca_Gui:
         
         # Create the Menubar - accessed via master.menu_bar
         menu_bar.Menu_Bar(master)
+        
+        # Create frame container
+        frames = {}
+        master.frames = frames 
         
         # Create the Header - accessed via master.header_frame
         header_frame.Header_Frame(master)

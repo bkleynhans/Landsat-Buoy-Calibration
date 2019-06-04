@@ -17,39 +17,23 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from gui.forms import settings_notebook
+from gui_frame import Gui_Frame
+from settings_notebook import Settings_Notebook
+import pdb
 
-
-class Settings_Frame():
+class Settings_Frame(Gui_Frame):
     
     # Settings Frame constructor
     def __init__(self, master):
         
+        Gui_Frame.__init__(self, master, "settings_frame", "Settings")
         self.create_settings_frame(master)
         
     
     # Create the actual frame as a separate window
     def create_settings_frame(self, master):
         
-        self.settings_frame = Toplevel(master)
-        master.settings_frame = self.settings_frame
-        
-        self.settings_frame.protocol("WM_DELETE_WINDOW", lambda: self.on_closing(master.settings_frame))
+        master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
         # Add the settings notebook to the frame
-        #settings_notebook.Notebook(master)
-        
-        
-    # Save changes made to settings
-    def save_changes(self):
-        
-        pass
-    
-    
-    # Action to perform when settings window is closed
-    def on_closing(self, settings_frame):
-    
-        if messagebox.askyesno("Save Preferences", "Do you wish to save your changes?"):
-            self.save_changes
-        else:
-            settings_frame.destroy()
+        Settings_Notebook(master, self.frame_name)

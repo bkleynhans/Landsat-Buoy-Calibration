@@ -16,8 +16,9 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-import help_menu
-import settings_frame
+import tarca_gui
+from help_menu import Help_Menu
+from settings_window import Settings_Window
 
 
 class Menu_Bar(): 
@@ -49,9 +50,9 @@ class Menu_Bar():
         self.file_menu.entryconfig('Exit', accelerator = 'Ctrl+Q')
     
         # Define the Edit menu options
-        self.edit_menu.add_command(label = 'Preferences', command = lambda: settings_frame.Settings_Frame(master))
+        self.edit_menu.add_command(label = 'Preferences', command = lambda: Settings_Window(master))
     
         # Define the Help menu options        
         self.menu_bar.add_command(
                 label = 'Help', 
-                command = lambda: help_menu.Help_Menu(master)) # Open the readme file on the GitHub page for the project
+                command = lambda: Help_Menu(master)) # Open the readme file on the GitHub page for the project

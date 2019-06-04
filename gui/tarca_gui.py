@@ -52,6 +52,10 @@ class Tarca_Gui:
         frames = {}
         master.frames = frames 
         
+        # Create window container
+        windows = {}
+        master.windows = windows
+        
         # Create the Header - accessed via master.header_frame
         header_frame.Header_Frame(master)
         

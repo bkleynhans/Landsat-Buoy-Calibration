@@ -16,14 +16,12 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-
+import pdb
 
 class Gui_Frame():
 
-    # Class Attributes
-    frame_name = ""
-    frame_title = ""
-    
+    # Create Notebook container
+    notebooks = {}    
     
     # Main Gui Frame constructor
     def __init__(self, master, frame_name, frame_title):

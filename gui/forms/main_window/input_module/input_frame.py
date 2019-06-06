@@ -18,7 +18,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
-from gui.forms.main_window.input.input_notebook import Input_Notebook
+from gui.forms.main_window.input_module.input_notebook import Input_Notebook
 import menu
 import forward_model
 import pdb

@@ -31,9 +31,9 @@ class Tarca_Gui:
         from forms.general.progress_bar import Progress_Bar
         from forms.main_window.menu_bar import Menu_Bar
         from forms.main_window.header_frame import Header_Frame
-        from forms.main_window.input.input_frame import Input_Frame
-        from forms.main_window.output.output_frame import Output_Frame
-        from forms.main_window.status.status_frame import Status_Frame
+        from forms.main_window.input_module.input_frame import Input_Frame
+        from forms.main_window.output_module.output_frame import Output_Frame
+        from forms.main_window.status_module.status_frame import Status_Frame
         
         # Create the root Tkinter object
         master.title('CIS Top Of Atmosphere Radiance Calibration System')

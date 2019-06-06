@@ -17,9 +17,9 @@
 from tkinter import *
 from tkinter import ttk
 from gui.forms.base_classes.gui_notebook import Gui_Notebook
-from gui.forms.main_window.input.input_sub_frames.input_full_single import Input_Full_Single
-from gui.forms.main_window.input.input_sub_frames.input_partial_single import Input_Partial_Single
-from gui.forms.main_window.input.input_sub_frames.input_batch import Input_Batch
+from gui.forms.main_window.input_module.input_sub_frames.input_full_single import Input_Full_Single
+from gui.forms.main_window.input_module.input_sub_frames.input_partial_single import Input_Partial_Single
+from gui.forms.main_window.input_module.input_sub_frames.input_batch import Input_Batch
 import pdb
 
 class Input_Notebook(Gui_Notebook):

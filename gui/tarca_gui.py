@@ -22,17 +22,18 @@ import sys
 import os
 import pdb
 
+
 class Tarca_Gui:
     
     def __init__(self, master):
-        
+                
         # Import gui paths
-        from forms import progress_bar
-        from forms import menu_bar
-        from forms import header_frame
-        from forms import input_frame
-        from forms import output_frame
-        from forms import status_frame
+        from forms.general.progress_bar import Progress_Bar
+        from forms.main_window.menu_bar import Menu_Bar
+        from forms.main_window.header_frame import Header_Frame
+        from forms.main_window.input.input_frame import Input_Frame
+        from forms.main_window.output.output_frame import Output_Frame
+        from forms.main_window.status.status_frame import Status_Frame
         
         # Create the root Tkinter object
         master.title('CIS Top Of Atmosphere Radiance Calibration System')
@@ -43,10 +44,10 @@ class Tarca_Gui:
         master.option_add('*tearOff', False)
         
         # Create the Progressbar window - accessed via master.progressbar_window.progress_bar
-        progress_bar.Progress_Bar(master)
+        Progress_Bar(master)
         
         # Create the Menubar - accessed via master.menu_bar
-        menu_bar.Menu_Bar(master)
+        Menu_Bar(master)
         
         # Create frame container
         frames = {}
@@ -57,16 +58,19 @@ class Tarca_Gui:
         master.windows = windows
         
         # Create the Header - accessed via master.header_frame
-        header_frame.Header_Frame(master)
+        Header_Frame(master)
         
         # Create the Input Frame - accessed via master.
-        input_frame.Input_Frame(master)
+        Input_Frame(master)
         
         # Create the Input Frame - accessed via master.
-        output_frame.Output_Frame(master)
+        Output_Frame(master)
         
         # Create the Input Frame - accessed via master.
-        status_frame.Status_Frame(master)
+        Status_Frame(master)
+        
+        # Test if data sources are available
+        
         
         
 
@@ -83,14 +87,23 @@ def get_module_path():
 def set_path_variables():
     
     path, filename = get_module_path()
-    
+        
     # find the Calibration program path
     path_index = path.rfind('/')
     
-    # append gui paths
+    # append the Calibration program paths
     sys.path.append(path[:path_index])
+    sys.path.append(path[:path_index] + "/buoycalib")
+    sys.path.append(path[:path_index] + "/downloaded_data")
+    sys.path.append(path[:path_index] + "/tools")
+    sys.path.append(path[:path_index] + "/output")
+    sys.path.append(path[:path_index] + "/processed_images")
+        
+    # append gui paths
     sys.path.append(path)
     sys.path.append(path + "/forms")
+    
+    return path[:path_index]
     
     
 def on_closing(root):
@@ -101,11 +114,14 @@ def on_closing(root):
 
 def main():
     
-    set_path_variables()
-    
+    project_root = set_path_variables()
+        
     root = Tk()
-    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+    root.project_root = project_root
+    #root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+    
     tarca_gui = Tarca_Gui(root)
+    
     root.mainloop()
     
     

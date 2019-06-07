@@ -13,6 +13,9 @@
 #
 ###
 
+### This module created with help from the article by Md. Sabuj Sarker(http://sabuj.me/)
+##  https://www.linode.com/docs/development/monitor-filesystem-events-with-pyinotify/
+
 # Imports
 import pyinotify
 

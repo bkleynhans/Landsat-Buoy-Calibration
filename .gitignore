@@ -1,5 +1,8 @@
-# ignore any files in the output folder
+# ignore the output directory
 output/
+
+# ignore the logs directory
+logs/
 
 # ignore any files in the downloaded_data folder
 downloaded_data/

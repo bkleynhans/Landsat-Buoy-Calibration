@@ -1,0 +1,7 @@
+#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason
+LC80400382018028LGN00, 2018/01/28, 46086, 289.25, 289.4787249645946, 32.491, -118.035, 8.003349783172297, 7.533584349255054, 8.052066199999999, 7.547015733333332, 0.03829343237444116, 0.03282750908362484, success, None
+LC80400382018028LGN00, 2018/01/28, 46227, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC80400382018028LGN00, 2018/01/28, 46231, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC80400382018028LGN00, 2018/01/28, 46232, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data in data file for this buoy on this date
+LC80400382018028LGN00, 2018/01/28, 46235, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC80400382018028LGN00, 2018/01/28, 46258, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data in data file for this buoy on this date

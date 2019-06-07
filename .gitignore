@@ -16,3 +16,6 @@ to_delete/
 
 # ignore self-compiled files
 *.pyc
+
+# ignore any files that start with 'example'
+example_*

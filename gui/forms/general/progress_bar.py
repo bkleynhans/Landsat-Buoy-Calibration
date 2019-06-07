@@ -21,7 +21,9 @@ from tkinter import ttk
 class Progress_Bar():
     
     # Progress Bar constructor
-    def __init__(self, master):
+    def __init__(self, master, progressbar_text):
+        
+        self.text = progressbar_text
         
         self.create_progressbar_window(master)
         
@@ -32,8 +34,9 @@ class Progress_Bar():
         # Create the progressbar object
         self.progressbar_window = Toplevel(master)                              # Create a progressbar toplevel window
         master.progressbar_window = self.progressbar_window                # Add the progressbar window to the master window as object variable
-        
-        self.progressbar_label = ttk.Label(self.progressbar_window, text = 'Loading Help Page ... ')
+        master.progressbar_window.resizable(False, False)
+                
+        self.progressbar_label = ttk.Label(self.progressbar_window, text = self.text)
         self.progressbar_window.progressbar_label = self.progressbar_label
         
         self.progressbar_label.pack(anchor = 'sw', padx = 10, pady = (10, 0))
@@ -42,4 +45,3 @@ class Progress_Bar():
         self.progressbar_window.progressbar = self.progressbar                  # Add the progressbar to the progressbar window as object variable
                 
         self.progressbar.pack(anchor = 'nw', padx = 10, pady = (0, 10))
-        self.progressbar_window.withdraw()

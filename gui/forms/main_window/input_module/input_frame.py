@@ -95,7 +95,7 @@ class Input_Frame(Gui_Label_Frame):
                 current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
             
                 # Create a logger instance
-                logfile = ("-lsingle/" + str(scene_id) + "_" + str(current_datetime) + ".txt")
+                logfile = ("-lsingle/" + str(scene_id) + "_" + str(current_datetime) + ".out")
             
                 # Create a progress bar to show activity
                 self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)

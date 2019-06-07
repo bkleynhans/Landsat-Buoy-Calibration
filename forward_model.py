@@ -302,7 +302,7 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
 
 def buildModel(args):
     
-    from tools.process_logger import Process_Logger
+    from process_logger import Process_Logger
     
     status_logger = Process_Logger(args.logfile)
         

@@ -17,7 +17,7 @@
 # Imports
 import os
 from os.path import join, abspath
-from tools import test_paths
+import test_paths
 
 PACKAGE_BASE = abspath(join(__file__, '../..'))
 

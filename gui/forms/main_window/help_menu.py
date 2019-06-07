@@ -18,6 +18,8 @@ from tkinter import *
 from tkinter import ttk
 import time
 import threading
+from gui.forms.general.progress_bar import Progress_Bar
+import pdb
 
 
 class Help_Menu():
@@ -31,7 +33,7 @@ class Help_Menu():
         
     
     # Open in github as a thread
-    def open_webpage(self, url, progressbar_window):
+    def open_webpage(self, url):
         
         import webbrowser
         
@@ -39,16 +41,17 @@ class Help_Menu():
         
         time.sleep(10)
         
-        progressbar_window.progressbar.stop()
-        progressbar_window.withdraw()
+        self.progressbar.progressbar.stop()
+        self.progressbar.progressbar_window.destroy()
                 
     
     # Open the Help page from github
     def open_help(self, master):
         
-        master.progressbar_window.progressbar.config(mode = 'indeterminate')
+        self.progressbar = Progress_Bar(master, 'Loading Help Page ... ')
+        self.progressbar.progressbar.config(mode = 'indeterminate')
         
-        master.progressbar_window.deiconify()
-        master.progressbar_window.progressbar.start()
+        self.progressbar.progressbar_window.deiconify()
+        self.progressbar.progressbar.start()
         
-        threading.Thread(target=self.open_webpage, args=(self.GITHUB_PATH, master.progressbar_window, )).start()
+        threading.Thread(target = self.open_webpage, args = (self.GITHUB_PATH, )).start()

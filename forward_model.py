@@ -1,4 +1,5 @@
 import warnings
+import inspect
 import sys
 import os
 import shutil
@@ -13,6 +14,7 @@ from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, d
 import numpy
 import cv2
 import db_operations
+from tools.process_logger import Process_Logger
 
 from datetime import datetime
 
@@ -86,13 +88,26 @@ def save_cv2_image(display_image, scene_id, image):
     cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
         
 
-def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
+def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
     
     scene_id_index = None
     image_index = None
     date_index = None
     buoy_id_index = None
+    path_to_output_folder = None
     
+    path_to_working_directory = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    parent_directory_index = path_to_working_directory.rfind('/')
+    
+    if (path_to_working_directory[parent_directory_index + 1:] == 'Landsat-Buoy-Calibration'):
+        
+        path_to_output_folder = (path_to_working_directory + '/output/')
+        
+    elif (path_to_working_directory[parent_directory_index + 1:] == 'gui'):
+        
+        inner_index = path_to_working_directory[:parent_directory_index].rfind('/')
+        path_to_output_folder = (path_to_working_directory[:inner_index] + '/output/')
+        
     if settings.USE_MYSQL:
         # Add Scene ID to database
         scene_id_index = db_operator.insert_single_value('t_scene_ids', scene_id)
@@ -106,7 +121,9 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
         cv2.imshow('Landsat Preview', image)
         cv2.waitKey(0)
         
-    cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
+    #pdb.set_trace()
+        
+    cv2.imwrite((path_to_output_folder + 'processed_images/{0}.tif').format(scene_id), image)
     
     if settings.USE_MYSQL:
         # Write image to database
@@ -140,7 +157,10 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
                 # Write Buoy ID to database
                 buoy_id_index = db_operator.insert_single_value('buoy_ids', buoy_id)
             
-            sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
+            log_text = ("  Processing buoy %s" % (buoy_id))
+#            sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
+            sys.stdout.write("\r" + log_text)
+            status_logger.write(log_text)
             sys.stdout.flush()
             
             #pdb.set_trace();
@@ -282,6 +302,8 @@ def landsat8(scene_id, display_image, atmo_source='merra', verbose=False, bands=
     return data
 
 def buildModel(args):
+    
+    status_logger = Process_Logger(args.logfile)
         
     if settings.USE_MYSQL:
         db_operator = db_operations.Db_Operations()
@@ -293,9 +315,9 @@ def buildModel(args):
         bands = [int(b) for b in args.bands] if args.bands is not None else [10, 11]
         
         if settings.USE_MYSQL:
-            ret = landsat8(args.scene_id, args.display_image, db_operator, args.atmo, args.verbose, bands)
+            ret = landsat8(args.scene_id, args.display_image, status_logger, db_operator, args.atmo, args.verbose, bands)
         else:
-            ret = landsat8(args.scene_id, args.display_image, args.atmo, args.verbose, bands)
+            ret = landsat8(args.scene_id, args.display_image, status_logger, args.atmo, args.verbose, bands)
 
     elif args.scene_id[0:3] == 'MOD':   # Modis
         bands = [int(b) for b in args.bands] if args.bands is not None else [31, 32]
@@ -308,7 +330,10 @@ def buildModel(args):
         # Change the name of the output file to <scene_id>.txt
         args.save = args.save[:args.save.rfind('/') + 1] + args.scene_id + '.txt'
         
-        sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n")
+        report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
+        #sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n")
+        sys.stdout.write("\r" + report_headings + "\n")
+        status_logger.write(report_headings)
         
         error_message = None
         
@@ -317,9 +342,9 @@ def buildModel(args):
                 error_message = get_error_message(ret[key][10])
             else:
                 error_message = None
-            
+                            
             buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
-            
+                        
             if settings.USE_MYSQL:
                 # Write row of data to database
                 db_operator.insert_data_row(scene_id_index,
@@ -338,12 +363,20 @@ def buildModel(args):
                                             status,
                                             error_message)
             
-            print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
-                buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
+            
+            # Convert tuple to text and remove first and last parentheses
+            log_text = "".join(str(ret[key]))[1:-1]
+            print(log_text)
+            
+            status_logger.write(log_text)
+#            print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
+#                buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
 
+        # Erases all the downloaded data if configured
         if settings.CLEAN_FOLDER_ON_COMPLETION:
-                clear_downloads()
+                clear_downloads(status_logger)
 
+        # Saves results to the output folder in the specified file
         if args.save:
             with open(args.save, 'w') as f:
                 print('#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason', file=f, sep=', ')
@@ -362,11 +395,11 @@ def buildModel(args):
     
     else:
         if settings.CLEAN_FOLDER_ON_COMPLETION:
-                clear_downloads()
+                clear_downloads(status_logger)
                 
         return ret
 
-def clear_downloads():
+def clear_downloads(status_logger):
     
     print("\n\n  Cleaning up the downloaded items folder...")
     
@@ -377,11 +410,17 @@ def clear_downloads():
         
         try:
             if get_size(file_path) > settings.FOLDER_SIZE_FOR_REPORTING:
-                if os.path.isfile(file_path):                    
-                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
+                if os.path.isfile(file_path):
+                    log_text = (" Deleting %s..." % (file_or_folder))
+#                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
+                    sys.stdout.write("\r" + log_text)
+                    status_logger.write(log_text)
                     os.unlink(file_path)
                 elif os.path.isdir(file_path):
-                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
+                    log_text = (" Deleting %s..." % (file_or_folder))
+#                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
+                    sys.stdout.write("\r" + log_text)
+                    status_logger.write(log_text)
                     shutil.rmtree(file_path)
             else:
                 if os.path.isfile(file_path):
@@ -446,6 +485,8 @@ def parseArgs(args):
     parser.add_argument('-n', '--display_image', default='true')
 # Add caller information
     parser.add_argument('-c', '--caller', default='menu')
+# Add log file location
+    parser.add_argument('-l', '--logfile', default = 'logs/', help='Directory and name of log file')
 
     return parser.parse_args(args)
 

@@ -83,7 +83,7 @@ class Input_Full_Single(Gui_Frame):
                 )
         
         self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 40, borderwidth = 0)
-        self.scene_id.insert(1.0, "LC80290302015343LGN00")
+        self.scene_id.insert(1.0, "LC80110312017350LGN00")
         self.scene_id.configure(
                 state = 'disabled',
                 inactiveselectbackground = self.scene_id.cget('selectbackground'))

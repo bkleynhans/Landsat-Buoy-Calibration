@@ -28,7 +28,7 @@ class Tarca_Gui:
     def __init__(self, master):
                 
         # Import gui paths
-        from forms.general.progress_bar import Progress_Bar
+#        from forms.general.progress_bar import Progress_Bar
         from forms.main_window.menu_bar import Menu_Bar
         from forms.main_window.header_frame import Header_Frame
         from forms.main_window.input_module.input_frame import Input_Frame
@@ -44,7 +44,7 @@ class Tarca_Gui:
         master.option_add('*tearOff', False)
         
         # Create the Progressbar window - accessed via master.progressbar_window.progress_bar
-        Progress_Bar(master)
+#        Progress_Bar(master)
         
         # Create the Menubar - accessed via master.menu_bar
         Menu_Bar(master)

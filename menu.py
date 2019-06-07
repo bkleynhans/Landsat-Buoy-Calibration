@@ -21,9 +21,14 @@ import os
 import time
 import cv2
 import subprocess as sp
+from os.path import join, abspath
+import datetime
 import pdb
 
 ERASE_LINE = '\x1b[2K'
+
+PROGRAM_ROOT = 'Landsat-Buoy-Calibration/'
+GUI_ROOT = join(PROGRAM_ROOT, 'gui/')
 
 # Calculate fully qualified path to location of program execution
 def get_module_path():
@@ -51,7 +56,7 @@ def set_path_variables():
 def check_required_directories():
     
     import test_paths
-    
+        
     required_directories = {
             'input',
             'input/batches',
@@ -60,7 +65,10 @@ def check_required_directories():
             'output/single',
             'output/batches',
             'output/batches/data',            
-            'output/batches/graphs'}
+            'output/batches/graphs',
+            'logs',
+            'logs/single',
+            'logs/batch'}
     
     for directory in required_directories:
         if not test_paths.main([directory, "-tdirectory"]):
@@ -100,31 +108,37 @@ def f_model():
     sceneId = input("\n Please enter the Scene ID to continue or 'X' to exit : ")
     
     if sceneId.upper() != 'X':
-        valid_data = test_input_format(sceneId)
+        valid_data = is_valid_id(sceneId)
     
         if not valid_data:
             while not valid_data:
                 sceneId = input("\n The Scene ID you entered is invalid, please try again ('X' - exit) : ")
                 
                 if sceneId.upper() != 'X':
-                    valid_data = test_input_format(sceneId)
+                    valid_data = is_valid_id(sceneId)
                 else:
                     break
     
         if sceneId.upper() != 'X':
+            
+            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+            
+            # Create a logger instance
+            logfile = ("-lsingle/" + str(sceneId) + "_" + str(current_datetime) + ".txt")
+            
             # Launch single scene ID process job
-            forward_model.main([sceneId, display_images])
+            forward_model.main([sceneId, display_images, logfile])
             
 
 # Test if the input format matches the required input format
-def test_input_format(input_value):
+def is_valid_id(input_value):
     
     returnValue = False
     
     # import regular expression module
     import re
     
-    # Scene ID format                       - LC80290302015343LGN00
+    # Scene ID format                       - LC80140372017307LGN00 
     scene_id_regex_string = ('(L)'                                              # Landsat (L)
                             '(C|O|T|E|M)'                                       # Sensor ("C" = OLI/TIRS Combined, "O" = OLI-only, "T" = TIRS-only and TM, "E" = ETM+, "M" = MSS)
                             '(7|8)'                                             # Satellite (7 - 8)
@@ -163,8 +177,9 @@ def test_input_format(input_value):
     
     if re_scene_id.match(input_value) or re_lan_prod_id.match(input_value):
             returnValue = True
-        
+    
     return returnValue
+
 
 # Test if the database server is avialable
 def testDb():
@@ -335,6 +350,7 @@ def menu():
     menuInput = menuInput.upper()
 
     return menuInput
+
 
 # Application launch
 if __name__ == '__main__':

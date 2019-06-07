@@ -17,6 +17,10 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import datetime
+import time
+import threading
+from gui.forms.general.progress_bar import Progress_Bar
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 from gui.forms.main_window.input_module.input_notebook import Input_Notebook
 import menu
@@ -51,6 +55,25 @@ class Input_Frame(Gui_Label_Frame):
         self.process_button.pack(anchor = 'e', padx = 10, pady = (0, 10))
         self.process_button.config(command = lambda: self.process_full_single(master))
         
+        
+    def step_progressbar(self):
+                    
+        while not self.process_complete:
+            
+            self.progressbar.progressbar.step()
+            
+            time.sleep(0.02)
+            
+        self.progressbar.progressbar_window.destroy()
+    
+    
+    def process_scene_id(self, scene_id, show_images, logfile):
+        
+        forward_model.main([scene_id, show_images, logfile])
+        
+        self.process_complete = True
+    
+        
     # Define process for full_single
     def process_full_single(self, master):
         
@@ -60,8 +83,34 @@ class Input_Frame(Gui_Label_Frame):
         
             if (menu.is_valid_id(scene_id)):
                 
-                forward_model.main([scene_id, '-nfalse'])
+                show_images = messagebox.askyesno(
+                        title = "Display Images",
+                        message = "Do you wish to display each image as it is processing?")
                 
+                if show_images == True:
+                    show_images = '-ntrue'
+                else:
+                    show_images = '-nfalse'
+                
+                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+            
+                # Create a logger instance
+                logfile = ("-lsingle/" + str(scene_id) + "_" + str(current_datetime) + ".txt")
+            
+                # Create a progress bar to show activity
+                self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
+                self.progressbar.progressbar.config(mode = 'indeterminate')
+                
+                # Progressbar start and stop work with program loop, so manual loop is required for progression
+                self.process_complete = False
+                
+                progressbar_thread = threading.Thread(target = self.step_progressbar)
+                progressbar_thread.start()
+                
+                # Launch single scene ID process job in own thread
+                cis_tarca_thread = threading.Thread(target = self.process_scene_id, args = ([scene_id, show_images, logfile, ]))
+                cis_tarca_thread.start()
+                                
             else:
                 
                 messagebox.showwarning(

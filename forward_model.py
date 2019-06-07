@@ -14,7 +14,6 @@ from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, d
 import numpy
 import cv2
 import db_operations
-from tools.process_logger import Process_Logger
 
 from datetime import datetime
 
@@ -302,6 +301,8 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
     return data
 
 def buildModel(args):
+    
+    from tools.process_logger import Process_Logger
     
     status_logger = Process_Logger(args.logfile)
         

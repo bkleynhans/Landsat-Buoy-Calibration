@@ -162,7 +162,7 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
             status_logger.write(log_text)
             sys.stdout.flush()
             
-            #pdb.set_trace();
+#            pdb.set_trace();
             
             try:
                 buoy_file = buoy.download(buoy_id, overpass_date) ##To this point is fine - to use method in new class when completed - create new buoy object as this point
@@ -300,10 +300,10 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
     
     return data
 
+
 def buildModel(args):
-    
-    from process_logger import Process_Logger
-    
+        
+    from process_logger import Process_Logger    
     status_logger = Process_Logger(args.logfile)
         
     if settings.USE_MYSQL:

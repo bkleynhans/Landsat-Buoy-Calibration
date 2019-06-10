@@ -54,7 +54,7 @@ class Header_Frame(Gui_Label_Frame):
                         row = 0,
                         column = 1)
         
-        master.frames[self.frame_name].pack(padx = 10, pady = 10)
+        master.frames[self.frame_name].pack(padx = 10, pady = (10, 0))
         
           
     # Function to change visible tables based on radio button selection

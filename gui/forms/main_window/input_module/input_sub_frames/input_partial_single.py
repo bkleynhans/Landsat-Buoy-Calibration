@@ -83,7 +83,7 @@ class Input_Partial_Single(Gui_Frame):
         master.input_values['lon'].grid(row = 2, column = 1, padx = 10, pady = 10, sticky = 'e')
         
         # Read in the surface temperature
-        ttk.Label(master.frames[self.frame_name], text = 'Surface Temperature (K) : ', width = 20).grid(row = 3, column = 0, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(master.frames[self.frame_name], text = 'Surface Temperature (K) : ', width = 20).grid(row = 3, column = 0, padx = 10, pady = (10, 0), sticky = 'w')
         
         master.input_values['surface_temp'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.input_values['surface_temp'].grid(row = 3, column = 1, padx = 10, pady = 10, sticky = 'e')
+        master.input_values['surface_temp'].grid(row = 3, column = 1, padx = 10, pady = (10, 0), sticky = 'e')

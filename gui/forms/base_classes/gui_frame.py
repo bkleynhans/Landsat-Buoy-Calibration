@@ -20,9 +20,6 @@ import pdb
 
 class Gui_Frame():
     
-    # Create Notebook container
-    notebooks = {}
-    
     # Main Gui Frame constructor
     def __init__(self, master, frame_name):
         
@@ -36,6 +33,10 @@ class Gui_Frame():
         
         self.gui_frame = ttk.LabelFrame(master)
         
-        self.gui_frame.notebooks = Gui_Frame.notebooks
+        self.notebooks = {}
+        self.gui_frame.notebooks = self.notebooks
+        
+        self.widgets = {}
+        self.gui_frame.widgets = self.widgets
         
         master.frames[self.frame_name] = self.gui_frame

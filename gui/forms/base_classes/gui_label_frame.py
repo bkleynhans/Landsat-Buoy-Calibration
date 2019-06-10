@@ -19,9 +19,6 @@ from tkinter import ttk
 import pdb
 
 class Gui_Label_Frame():
-
-    # Create Notebook container
-    notebooks = {}
     
     # Main Gui Frame constructor
     def __init__(self, master, frame_name, frame_title):
@@ -37,6 +34,10 @@ class Gui_Label_Frame():
         
         self.gui_label_frame = ttk.LabelFrame(master, text = self.frame_title)
         
-        self.gui_label_frame.notebooks = Gui_Label_Frame.notebooks
+        self.notebooks = {}
+        self.gui_label_frame.notebooks = self.notebooks
+        
+        self.widgets = {}
+        self.gui_label_frame.widgets = self.widgets
         
         master.frames[self.frame_name] = self.gui_label_frame

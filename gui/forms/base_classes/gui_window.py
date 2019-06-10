@@ -19,9 +19,6 @@ from tkinter import ttk
 
 
 class Gui_Window():
-    
-    # Create frame container
-    frames = {}
         
     # Settings Window constructor
     def __init__(self, master, window_name, window_title):
@@ -37,6 +34,10 @@ class Gui_Window():
         
         self.gui_window = Toplevel(master)
         
-        self.gui_window.frames = Gui_Window.frames
+        self.frames = {}
+        self.gui_window.frames = self.frames
+        
+        self.widgets = {}
+        self.gui_window.widgets = self.widgets
         
         master.windows[self.window_name] = self.gui_window

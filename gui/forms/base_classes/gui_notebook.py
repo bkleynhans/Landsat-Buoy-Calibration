@@ -19,9 +19,6 @@ from tkinter import ttk
 import pdb
 
 class Gui_Notebook():
-
-    # Create Notebook container
-    frames = {}
     
     # Main Gui Frame constructor
     def __init__(self, master, notebook_name):
@@ -36,6 +33,10 @@ class Gui_Notebook():
         
         self.gui_notebook = ttk.Notebook(master)
         
-        self.gui_notebook.frames = Gui_Notebook.frames
+        self.frames = {}
+        self.gui_notebook.frames = self.frames
+        
+        self.widgets = {}
+        self.gui_notebook.widgets = self.widgets
         
         master.notebooks[self.notebook_name] = self.gui_notebook

@@ -18,6 +18,7 @@
 
 # Imports
 import pyinotify
+import pdb
 
 
 class Event_Processor(pyinotify.ProcessEvent):
@@ -38,8 +39,43 @@ class Event_Processor(pyinotify.ProcessEvent):
                 "IN_Q_OVERFLOW",
                 "IN_UNMOUNT",
                 "default"]
+
+    master = None
     
     # Event Processor constructor
-    def __init__(self):
+    def __init__(self, master):
         
-        pass
+        self.master = master
+    
+    
+    def process_generator(self, cls, method):
+        
+        def write_new_line_to_gui(self, frame_name, widget_name, text):
+            
+            self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
+        
+        
+        def read_updated_file(filename):
+            
+            line_list = None
+            
+            for line in open(filename, 'r'):
+                line_list = line
+                
+            
+            return line_list
+            
+        
+        def _method_name(self, event):
+            
+            new_line = read_updated_file(event.pathname)
+            
+            write_new_line_to_gui(self, 'status_frame', 'status_text', new_line)
+            
+            print("Method name: process_{}()\n"
+                   "Path name: {}\n"
+                   "Event Name: {}\n".format(method, event.pathname, event.maskname))
+            
+        
+        _method_name.__name__ = "process_{}".format(method)
+        setattr(cls, _method_name.__name__, _method_name)

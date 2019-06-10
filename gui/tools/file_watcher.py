@@ -19,33 +19,33 @@
 # Imports
 import os
 import pyinotify
-from event_processor import Event_Processor
+import pdb
 
 
 class File_Watcher():
     
     # File Watcher constructor
-    def __init__(self, path):
+    def __init__(self, master, path):
         
-        self.event_processor = Event_Processor()
+        from gui.tools.event_processor import Event_Processor
+        self.event_processor = Event_Processor(master)
         
+        # For each event generated, run the processor.  Also pass the master
+        # which contains the parent object which contains all required methods
+        # and accessors
         for method in Event_Processor._methods:
-            self.process_generator(Event_Processor, method)
+            self.event_processor.process_generator(Event_Processor, method)
         
         self.watch_manager = pyinotify.WatchManager()
-        self.event_notifier = pyinotify.ThreadedNotifier(self.watch_manager, Event_Processor())
+        self.event_notifier = pyinotify.ThreadedNotifier(self.watch_manager, Event_Processor(master))
         
         self.watch_this = path
         self.watch_manager.add_watch(self.watch_this, pyinotify.IN_MODIFY)
-        self.event_notifier.start()
         
-    
-    def process_generator(self, cls, method):
-        def _method_name(self, event):
-            print("Method name: process_{}()\n"
-                   "Path name: {}\n"
-                   "Event Name: {}\n".format(method, event.pathname, event.maskname))
-            
-            
-        _method_name.__name__ = "process_{}".format(method)
-        setattr(cls, _method_name.__name__, _method_name)
+        # After creating an instance of the watcher, you have to start and top it
+        # my_watcher = File_Watcher("path_to_file") !!! NOTE THIS IS THE DIRECTORY OF THE FILE, DO NOT INCLUDE FILE NAME
+        # my_watcher.event_notifier.start()
+        # --> run processes <--
+        # my_watcher.event_notifier.stop()
+        #
+        # !!->> Define the actions for each event in the event_processor

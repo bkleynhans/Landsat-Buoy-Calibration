@@ -38,7 +38,7 @@ class Input_Frame(Gui_Label_Frame):
         
     
     # Create the actual Frame
-    def create_input_frame(self, master):
+    def create_input_frame(self, master):        
         
         master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
         
@@ -67,11 +67,18 @@ class Input_Frame(Gui_Label_Frame):
         self.progressbar.progressbar_window.destroy()
     
     
-    def process_scene_id(self, scene_id, show_images, logfile):
+    def process_scene_id(self, master, scene_id, show_images, parameterized_logfile, logfile_absolute_path):
         
-        forward_model.main([scene_id, show_images, logfile])
+        from gui.tools.file_watcher import File_Watcher
+        # Instantiate the watcher and pass the master object (containing required functions) and path to file
+        self.watchdog = File_Watcher(master, logfile_absolute_path)
+        self.watchdog.event_notifier.start()
+        
+        forward_model.main([scene_id, show_images, parameterized_logfile])
         
         self.process_complete = True
+        
+        self.watchdog.event_notifier.stop()
     
         
     # Define process for full_single
@@ -95,7 +102,10 @@ class Input_Frame(Gui_Label_Frame):
                 current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
             
                 # Create a logger instance
-                logfile = ("-lsingle/" + str(scene_id) + "_" + str(current_datetime) + ".out")
+                logfile_name = str(scene_id) + "_" + str(current_datetime) + ".out"
+                logfile_relative_path_and_filename = ("single/" + logfile_name)
+                logfile_absolute_path = (master.project_root + "/logs/single/")
+                parameterized_logfile = ("-l" + logfile_relative_path_and_filename)
             
                 # Create a progress bar to show activity
                 self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
@@ -108,7 +118,16 @@ class Input_Frame(Gui_Label_Frame):
                 progressbar_thread.start()
                 
                 # Launch single scene ID process job in own thread
-                cis_tarca_thread = threading.Thread(target = self.process_scene_id, args = ([scene_id, show_images, logfile, ]))
+                cis_tarca_thread = threading.Thread(
+                        target = self.process_scene_id, args = (
+                                [master, 
+                                 scene_id, 
+                                 show_images, 
+                                 parameterized_logfile, 
+                                 logfile_absolute_path, ]
+                        )
+                )
+                        
                 cis_tarca_thread.start()
                                 
             else:

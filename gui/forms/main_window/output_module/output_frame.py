@@ -17,7 +17,7 @@
 from tkinter import *
 from tkinter import ttk
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
-
+import pdb
 
 class Output_Frame(Gui_Label_Frame):
     
@@ -30,5 +30,21 @@ class Output_Frame(Gui_Label_Frame):
     
     # Create Output Frame object
     def create_output_frame(self, master):
+        
+        self.add_output_textbox(master.frames[self.frame_name])
                 
         master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        
+        
+    # Add a text widget to display the processing status
+    def add_output_textbox(self, master):
+        
+        self.controls = {}
+                
+        self.output_text = Text(master, height = 5, width = 5)
+        
+        self.controls['output_text'] = self.output_text
+        
+        self.output_text.config(wrap = 'word')
+        self.output_text.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        

@@ -17,6 +17,7 @@
 from tkinter import *
 from tkinter import ttk
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
+import pdb
 
 
 class Status_Frame(Gui_Label_Frame):
@@ -30,5 +31,20 @@ class Status_Frame(Gui_Label_Frame):
     
     # Create the status frame object
     def create_status_frame(self, master):
+        
+        self.add_status_textbox(master.frames[self.frame_name])
                 
         master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        
+        
+    # Add a text widget to display the processing status
+    def add_status_textbox(self, master):
+        
+        self.controls = {}
+        
+        self.status_text = Text(master, height = 5, width = 5)
+        
+        self.widgets['status_text'] = self.status_text
+        
+        self.status_text.config(wrap = 'word')
+        self.status_text.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

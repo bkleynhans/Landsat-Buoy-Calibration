@@ -26,9 +26,8 @@ import pdb
 class Tarca_Gui:
     
     def __init__(self, master):
-                
+        
         # Import gui paths
-#        from forms.general.progress_bar import Progress_Bar
         from forms.main_window.menu_bar import Menu_Bar
         from forms.main_window.header_frame import Header_Frame
         from forms.main_window.input_module.input_frame import Input_Frame
@@ -37,14 +36,11 @@ class Tarca_Gui:
         
         # Create the root Tkinter object
         master.title('CIS Top Of Atmosphere Radiance Calibration System')
-        master.geometry('800x600')
+        master.geometry('1024x768')
         master.resizable(False, False)
         #master.configure(background = '#FFFFFF')
         
         master.option_add('*tearOff', False)
-        
-        # Create the Progressbar window - accessed via master.progressbar_window.progress_bar
-#        Progress_Bar(master)
         
         # Create the Menubar - accessed via master.menu_bar
         Menu_Bar(master)
@@ -112,9 +108,12 @@ def on_closing(root):
         root.destroy()
     
 
-def main():
+def main():    
     
     project_root = set_path_variables()
+    
+    import menu    
+    menu.check_required_directories()
         
     root = Tk()
     root.project_root = project_root

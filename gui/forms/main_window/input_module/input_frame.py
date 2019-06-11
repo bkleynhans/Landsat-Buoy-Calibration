@@ -102,6 +102,9 @@ class Input_Frame(Gui_Label_Frame):
         
         self.process_button.config(state = 'disabled')
         
+        master.frames['status_frame'].widgets['status_text'].delete('1.0', 'end')
+        master.frames['output_frame'].widgets['output_text'].delete('1.0', 'end')
+        
         scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id'].get()
         
         if (scene_id != None):

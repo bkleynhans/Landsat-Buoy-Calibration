@@ -17,6 +17,7 @@
 ##  https://www.linode.com/docs/development/monitor-filesystem-events-with-pyinotify/
 
 # Imports
+from tkinter import *
 import pyinotify
 import pdb
 
@@ -56,7 +57,7 @@ class Event_Processor(pyinotify.ProcessEvent):
             if (frame_name == 'status_frame'):
                 self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
             elif (frame_name == 'output_frame'):
-                self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
+                self.master.frames[frame_name].widgets[widget_name].insert('end', text)
         
         
         # Open and read the output file

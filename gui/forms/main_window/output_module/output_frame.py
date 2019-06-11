@@ -42,7 +42,7 @@ class Output_Frame(Gui_Label_Frame):
         
         self.controls = {}
                 
-        self.output_text = Text(master, height = 5, width = 5)
+        self.output_text = Text(master, height = 5, width = 5, font=('Courier', 8))
         
         self.widgets['output_text'] = self.output_text
         

@@ -26,7 +26,7 @@ class Process_Logger():
     # Main Gui Frame constructor
     def __init__(self, filename):
         
-        self.filename = os.path.join(PACKAGE_BASE, 'logs', filename)
+        self.filename = os.path.join(PACKAGE_BASE, filename)
         
         self.check_required_directories()
         
@@ -36,8 +36,13 @@ class Process_Logger():
             
         self.required_directories = {
                 'logs',
-                'logs/single',
-                'logs/batch'}
+                'logs/status',
+                'logs/status/single',
+                'logs/status/batch',
+                'logs/output',
+                'logs/output/single',
+                'logs/output/batch'
+            }
         
         for directory in self.required_directories:
             if not test_paths.main([os.path.join(PACKAGE_BASE, directory), "-tdirectory"]):

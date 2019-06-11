@@ -67,8 +67,12 @@ def check_required_directories():
             'output/batches/data',            
             'output/batches/graphs',
             'logs',
-            'logs/single',
-            'logs/batch'}
+            'logs/status',
+            'logs/status/single',
+            'logs/status/batch',
+            'logs/output',
+            'logs/output/single',
+            'logs/output/batch'}
     
     for directory in required_directories:
         if not test_paths.main([directory, "-tdirectory"]):

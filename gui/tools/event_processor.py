@@ -48,13 +48,18 @@ class Event_Processor(pyinotify.ProcessEvent):
         self.master = master
     
     
+    # Processes events that are generated
     def process_generator(self, cls, method):
-        
+        # Insert the line into the gui
         def write_new_line_to_gui(self, frame_name, widget_name, text):
             
-            self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
+            if (frame_name == 'status_frame'):
+                self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
+            elif (frame_name == 'output_frame'):
+                self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
         
         
+        # Open and read the output file
         def read_updated_file(filename):
             
             line_list = None
@@ -66,15 +71,20 @@ class Event_Processor(pyinotify.ProcessEvent):
             return line_list
             
         
+        # Handles the actual event.  Receives the method, path and event name
         def _method_name(self, event):
             
             new_line = read_updated_file(event.pathname)
+                        
+            if (event.pathname[event.pathname.rfind('status'):] == 'status'):
+                write_new_line_to_gui(self, 'status_frame', 'status_text', new_line)
+            elif (event.pathname[event.pathname.rfind('output'):] == 'output'):
+                write_new_line_to_gui(self, 'output_frame', 'output_text', new_line)
             
-            write_new_line_to_gui(self, 'status_frame', 'status_text', new_line)
-            
-            print("Method name: process_{}()\n"
-                   "Path name: {}\n"
-                   "Event Name: {}\n".format(method, event.pathname, event.maskname))
+#             #Information about method and event
+#            print("Method name: process_{}()\n"
+#                   "Path name: {}\n"
+#                   "Event Name: {}\n".format(method, event.pathname, event.maskname))
             
         
         _method_name.__name__ = "process_{}".format(method)

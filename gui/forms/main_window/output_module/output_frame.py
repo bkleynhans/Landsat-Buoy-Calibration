@@ -19,6 +19,7 @@ from tkinter import ttk
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 import pdb
 
+
 class Output_Frame(Gui_Label_Frame):
     
     # Output Frame constructor
@@ -43,7 +44,7 @@ class Output_Frame(Gui_Label_Frame):
                 
         self.output_text = Text(master, height = 5, width = 5)
         
-        self.controls['output_text'] = self.output_text
+        self.widgets['output_text'] = self.output_text
         
         self.output_text.config(wrap = 'word')
         self.output_text.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

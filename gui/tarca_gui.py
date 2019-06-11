@@ -66,9 +66,7 @@ class Tarca_Gui:
         Status_Frame(master)
         
         # Test if data sources are available
-        
-        
-        
+                
 
 # Calculate fully qualified path to location of program execution
 def get_module_path():

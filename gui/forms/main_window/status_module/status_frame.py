@@ -48,3 +48,4 @@ class Status_Frame(Gui_Label_Frame):
         
         self.status_text.config(wrap = 'word')
         self.status_text.pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        

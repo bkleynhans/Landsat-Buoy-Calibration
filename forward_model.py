@@ -87,7 +87,7 @@ def save_cv2_image(display_image, scene_id, image):
     cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
         
 
-def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
+def landsat8(scene_id, display_image, caller, status_logger, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
     
     scene_id_index = None
     image_index = None
@@ -148,6 +148,7 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
         if not buoys:
             raise buoy.BuoyDataException('no buoys in scene')
     
+    
         for buoy_id in buoys:
             
             #pdb.set_trace()
@@ -158,8 +159,12 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
             
             log_text = ("  Processing buoy %s" % (buoy_id))
 #            sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
-            sys.stdout.write("\r" + log_text)
-            status_logger.write(log_text)
+            
+            if (caller != 'tarca_gui'):
+                sys.stdout.write("\r" + log_text)
+            else:
+                status_logger.write(log_text)
+            
             sys.stdout.flush()
             
 #            pdb.set_trace();
@@ -302,9 +307,10 @@ def landsat8(scene_id, display_image, status_logger, atmo_source='merra', verbos
 
 
 def buildModel(args):
-        
+    
     from process_logger import Process_Logger    
-    status_logger = Process_Logger(args.logfile)
+    status_logger = Process_Logger(args.statusdirectory)
+    output_logger = Process_Logger(args.outputdirectory)
         
     if settings.USE_MYSQL:
         db_operator = db_operations.Db_Operations()
@@ -316,9 +322,9 @@ def buildModel(args):
         bands = [int(b) for b in args.bands] if args.bands is not None else [10, 11]
         
         if settings.USE_MYSQL:
-            ret = landsat8(args.scene_id, args.display_image, status_logger, db_operator, args.atmo, args.verbose, bands)
+            ret = landsat8(args.scene_id, args.display_image, args.caller, status_logger, db_operator, args.atmo, args.verbose, bands)
         else:
-            ret = landsat8(args.scene_id, args.display_image, status_logger, args.atmo, args.verbose, bands)
+            ret = landsat8(args.scene_id, args.display_image, args.caller, status_logger, args.atmo, args.verbose, bands)
 
     elif args.scene_id[0:3] == 'MOD':   # Modis
         bands = [int(b) for b in args.bands] if args.bands is not None else [31, 32]
@@ -327,14 +333,18 @@ def buildModel(args):
     else:
         raise ValueError('Scene ID is not a valid format for (landsat8, modis)')
     
-    if (args.caller == 'menu'):
+    if ((args.caller == 'menu') or (args.caller == 'tarca_gui')):
         # Change the name of the output file to <scene_id>.txt
-        args.save = args.save[:args.save.rfind('/') + 1] + args.scene_id + '.txt'
-        
+        args.savefile = args.savefile[:args.savefile.rfind('/') + 1] + args.scene_id + '.txt'
         report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
         #sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n")
-        sys.stdout.write("\r" + report_headings + "\n")
-        status_logger.write(report_headings)
+        
+        if (args.caller == 'tarca_gui'):
+            output_logger.write(report_headings)
+        elif (args.caller != 'tarca_gui'):
+            sys.stdout.write("\r" + report_headings + "\n")        
+        
+#        status_logger.write(report_headings)
         
         error_message = None
         
@@ -367,19 +377,26 @@ def buildModel(args):
             
             # Convert tuple to text and remove first and last parentheses
             log_text = "".join(str(ret[key]))[1:-1]
-            print(log_text)
             
-            status_logger.write(log_text)
+            if (args.caller == 'tarca_gui'):
+                output_logger.write(log_text)
+            elif (args.caller != 'tarca_gui'):
+                sys.stdout.write("\r" + log_text + "\n")
+            
+#            if (args.caller != 'tarca_gui'):
+#                print(log_text)
+            
+#            status_logger.write(log_text)
 #            print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
 #                buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
 
         # Erases all the downloaded data if configured
         if settings.CLEAN_FOLDER_ON_COMPLETION:
                 clear_downloads(status_logger)
-
+        
         # Saves results to the output folder in the specified file
-        if args.save:
-            with open(args.save, 'w') as f:
+        if args.savefile:
+            with open(args.savefile, 'w') as f:
                 print('#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason', file=f, sep=', ')
                 for key in ret.keys():
                     if (ret[key][9] == "failed"):
@@ -409,30 +426,43 @@ def clear_downloads(status_logger):
     for file_or_folder in os.listdir(directory):
         file_path = os.path.join(directory, file_or_folder)
         
+        log_text = (" Deleting %s..." % (file_or_folder))
+        
         try:
             if get_size(file_path) > settings.FOLDER_SIZE_FOR_REPORTING:
-                if os.path.isfile(file_path):
-                    log_text = (" Deleting %s..." % (file_or_folder))
-#                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
-                    sys.stdout.write("\r" + log_text)
-                    status_logger.write(log_text)
+                if os.path.isfile(file_path):                    
+                    if (args.caller != 'tarca_gui'):
+                        sys.stdout.write("\r" + log_text)
+                    else:
+                        status_logger.write(log_text)
+                    
+                    
                     os.unlink(file_path)
-                elif os.path.isdir(file_path):
-                    log_text = (" Deleting %s..." % (file_or_folder))
-#                    sys.stdout.write("\r Deleting %s..." % (file_or_folder))
-                    sys.stdout.write("\r" + log_text)
-                    status_logger.write(log_text)
+                    
+                elif os.path.isdir(file_path):                    
+                    if (args.caller != 'tarca_gui'):
+                        sys.stdout.write("\r" + log_text)
+                    else:
+                        status_logger.write(log_text)
+                    
+                    
                     shutil.rmtree(file_path)
             else:
                 if os.path.isfile(file_path):
+                    # unlink is ux version of delete for files
                     os.unlink(file_path)
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)
         except Exception as e:
             print(e)
     
-    sys.stdout.write("\r  Cleanup completed!!!\n\n")
+    log_text = "Cleanup completed!!!"
     
+    if (args.caller != 'tarca_gui'):
+        sys.stdout.write("\r" + log_text + "\n\n")
+        #sys.stdout.write("\r  Cleanup completed!!!\n\n")
+
+    status_logger.write(log_text)    
 
 # Convert error codes to error messages for user feedback    
 def get_error_message(key):
@@ -479,15 +509,17 @@ def parseArgs(args):
     parser.add_argument('scene_id', help='LANDSAT or MODIS scene ID. Examples: LC08_L1TP_017030_20170703_20170715_01_T1, MOD021KM.A2011154.1650.006.2014224075807.hdf')
     parser.add_argument('-a', '--atmo', default='merra', choices=['merra', 'narr'], help='Choose atmospheric data source, choices:[narr, merra].')
     parser.add_argument('-v', '--verbose', default=False, action='store_true')
-    parser.add_argument('-s', '--save', default='output/single/results.txt')
+    parser.add_argument('-s', '--savefile', default='output/single/results.txt')
     parser.add_argument('-w', '--warnings', default=False, action='store_true')
     parser.add_argument('-d', '--bands', nargs='+')
 # Allow ability to disable image display
     parser.add_argument('-n', '--display_image', default='true')
 # Add caller information
     parser.add_argument('-c', '--caller', default='menu')
-# Add log file location
-    parser.add_argument('-l', '--logfile', default = 'logs/', help='Directory and name of log file')
+# Add log file locations
+    parser.add_argument('-l', '--logfile', default = 'logs/default.log', help='Log file and directory')
+    parser.add_argument('-t', '--statusdirectory', default = 'logs/status/default.status', help='Status file directory')
+    parser.add_argument('-u', '--outputdirectory', default = 'logs/output/default.output', help='Output file directory')
 
     return parser.parse_args(args)
 

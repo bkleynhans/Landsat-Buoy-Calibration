@@ -44,4 +44,4 @@ class Progress_Bar():
         self.progressbar = ttk.Progressbar(self.progressbar_window, orient = HORIZONTAL, length = 200)  # Create a progressbar
         self.progressbar_window.progressbar = self.progressbar                  # Add the progressbar to the progressbar window as object variable
                 
-        self.progressbar.pack(anchor = 'nw', padx = 10, pady = (0, 10))
+        self.progressbar.pack(anchor = 'nw', fill = BOTH, expand = True, padx = 10, pady = (0, 10))

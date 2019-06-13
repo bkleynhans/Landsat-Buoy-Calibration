@@ -151,8 +151,6 @@ def landsat8(scene_id, display_image, caller, status_logger, atmo_source='merra'
     
         for buoy_id in buoys:
             
-            #pdb.set_trace()
-            
             if settings.USE_MYSQL:
                 # Write Buoy ID to database
                 buoy_id_index = db_operator.insert_single_value('buoy_ids', buoy_id)
@@ -160,9 +158,9 @@ def landsat8(scene_id, display_image, caller, status_logger, atmo_source='merra'
             log_text = ("  Processing buoy %s" % (buoy_id))
 #            sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
             
-            if (caller != 'tarca_gui'):
+            if ((caller == 'menu') or (caller == 'forward_model_batch')):
                 sys.stdout.write("\r" + log_text)
-            else:
+            elif ((caller == 'tarca_gui') or (caller == 'tarca_gui_batch')):
                 status_logger.write(log_text)
             
             sys.stdout.flush()
@@ -309,8 +307,8 @@ def landsat8(scene_id, display_image, caller, status_logger, atmo_source='merra'
 def buildModel(args):
     
     from process_logger import Process_Logger    
-    status_logger = Process_Logger(args.statusdirectory)
-    output_logger = Process_Logger(args.outputdirectory)
+    status_logger = Process_Logger(args.statuslog)
+    output_logger = Process_Logger(args.outputlog)
         
     if settings.USE_MYSQL:
         db_operator = db_operations.Db_Operations()
@@ -341,7 +339,7 @@ def buildModel(args):
         
         if (args.caller == 'tarca_gui'):
             output_logger.write(report_headings)
-        elif (args.caller != 'tarca_gui'):
+        elif ((args.caller == 'menu') or (args.caller == 'forward_model_batch')):
             sys.stdout.write("\r" + report_headings + "\n")        
         
 #        status_logger.write(report_headings)
@@ -380,7 +378,7 @@ def buildModel(args):
             
             if (args.caller == 'tarca_gui'):
                 output_logger.write(log_text)
-            elif (args.caller != 'tarca_gui'):
+            elif (args.caller == 'menu'):
                 sys.stdout.write("\r" + log_text + "\n")
             
 #            if (args.caller != 'tarca_gui'):
@@ -413,8 +411,8 @@ def buildModel(args):
     
     else:
         if settings.CLEAN_FOLDER_ON_COMPLETION:
-                clear_downloads(status_logger)
-                
+            clear_downloads(status_logger)
+               
         return ret
 
 def clear_downloads(status_logger):
@@ -462,7 +460,7 @@ def clear_downloads(status_logger):
         sys.stdout.write("\r" + log_text + "\n\n")
         #sys.stdout.write("\r  Cleanup completed!!!\n\n")
 
-    status_logger.write(log_text)    
+    status_logger.write(log_text)
 
 # Convert error codes to error messages for user feedback    
 def get_error_message(key):
@@ -515,11 +513,10 @@ def parseArgs(args):
 # Allow ability to disable image display
     parser.add_argument('-n', '--display_image', default='true')
 # Add caller information
-    parser.add_argument('-c', '--caller', default='menu')
+    parser.add_argument('-c', '--caller', help='The name or reference of the file calling this function')
 # Add log file locations
-    parser.add_argument('-l', '--logfile', default = 'logs/default.log', help='Log file and directory')
-    parser.add_argument('-t', '--statusdirectory', default = 'logs/status/default.status', help='Status file directory')
-    parser.add_argument('-u', '--outputdirectory', default = 'logs/output/default.output', help='Output file directory')
+    parser.add_argument('-t', '--statuslog', default = 'logs/status/default.status', help='Status file directory')
+    parser.add_argument('-u', '--outputlog', default = 'logs/output/default.output', help='Output file directory')
 
     return parser.parse_args(args)
 

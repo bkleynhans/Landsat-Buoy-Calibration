@@ -39,8 +39,6 @@ class Output_Frame(Gui_Label_Frame):
         
     # Add a text widget to display the processing status
     def add_output_textbox(self, master):
-        
-        self.controls = {}
                 
         self.output_text = Text(master, height = 5, width = 5, font=('Courier', 8))
         

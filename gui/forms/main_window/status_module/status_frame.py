@@ -40,8 +40,6 @@ class Status_Frame(Gui_Label_Frame):
     # Add a text widget to display the processing status
     def add_status_textbox(self, master):
         
-        self.controls = {}
-        
         self.status_text = Text(master, height = 5, width = 5)
         
         self.widgets['status_text'] = self.status_text

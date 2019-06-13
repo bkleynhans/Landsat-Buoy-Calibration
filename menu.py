@@ -86,8 +86,9 @@ def f_model_batch_merra():
     
     display_images = display_processed_images(True)
     
-    batchFile = 'input/batches/'
-    batchFile += input("\n Please enter the name of the batch file or 'X' to exit : ")
+    batchFileDirectory = 'input/batches/'
+    batchFileName = input("\n Please enter the name of the batch file or 'X' to exit : ")
+    batchFile = os.path.join(batchFileDirectory, batchFileName)
     
     if (batchFile[(batchFile.rfind('/') + 1):].upper()) != 'X':
         valid_data = test_paths.main([batchFile, "-tfile"])
@@ -100,8 +101,11 @@ def f_model_batch_merra():
             
     
         if batchFile.upper() != 'X':
+            
+#            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+            
             # Launch batch process job
-            forward_model_batch.main([batchFile, display_images])
+            forward_model_batch.main([batchFile, display_images, '-cmenu'])
 
 
 # Request Scene ID for single scene to calculate
@@ -125,13 +129,10 @@ def f_model():
     
         if sceneId.upper() != 'X':
             
-            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
-            
-            # Create a logger instance
-            logfile = ("-lsingle/" + str(sceneId) + "_" + str(current_datetime) + ".txt")
+#            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
             
             # Launch single scene ID process job
-            forward_model.main([sceneId, display_images, logfile])
+            forward_model.main([sceneId, display_images, '-cmenu'])
             
 
 # Test if the input format matches the required input format

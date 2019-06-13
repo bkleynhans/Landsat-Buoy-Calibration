@@ -55,7 +55,8 @@ class Event_Processor(pyinotify.ProcessEvent):
         def write_new_line_to_gui(self, frame_name, widget_name, text):
             
             if (frame_name == 'status_frame'):
-                self.master.frames[frame_name].widgets[widget_name].insert(0.0, text)
+                self.master.frames[frame_name].widgets[widget_name].insert('end', text)
+                self.master.frames[frame_name].widgets[widget_name].see('end')
             elif (frame_name == 'output_frame'):
                 self.master.frames[frame_name].widgets[widget_name].insert('end', text)
         

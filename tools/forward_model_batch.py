@@ -58,13 +58,13 @@ def batch_f_model(args, scene_txt, scenes, output_txt, display_image, caller, st
             elif scene_id[-1] == '\n':
                 scene_id = scene_id[:-1]
 
-            log_text = "\n Starting analysis of scene {}\n".format(scene_id)
+            log_text = "Starting analysis of scene {}".format(scene_id)
             
             print_data(caller, log_text, status_logger)
             
             ret = forward_model.main([scene_id, ('-c' + caller), ('-n' + display_image),('-t' + args.statuslog), ('-u' + args.outputlog)])
 
-            log_text = "\n Analysis completed for scene {}\n".format(scene_id)
+            log_text = "Analysis completed for scene {}".format(scene_id)
             
             print_data(caller, log_text, status_logger)
 
@@ -134,18 +134,11 @@ def batch_f_model(args, scene_txt, scenes, output_txt, display_image, caller, st
             output_file_no_band + "_band11")                                    # Output file name (no extension)
 
 
-
-def save_to_file(caller, processed_data):
-    
-    
-    pass
-
-
 def print_data(caller, data, logger):
     
     if caller == 'forward_model_batch':
         
-        print_to_screen(data)
+        print_to_screen("\n" + data + "\n")
         
     elif caller == 'tarca_gui_batch':
                 

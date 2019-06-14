@@ -23,6 +23,7 @@ import threading
 from gui.forms.general.progress_bar import Progress_Bar
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 from gui.forms.main_window.input_module.input_notebook import Input_Notebook
+from gui.forms.general.error_module.error_window import Error_Window
 import menu
 import forward_model
 import forward_model_batch
@@ -211,7 +212,8 @@ class Input_Frame(Gui_Label_Frame):
                         title = "Invalid Input",
                         message = "The scene id you entered is of an incorrect format.\n\n"
                                     "Please try again")
-    
+                
+                self.process_button.config(state = 'normal')    
     
         
     # Define process for partial_single
@@ -264,14 +266,32 @@ class Input_Frame(Gui_Label_Frame):
             
             if (len(error_list['errors']) > 0):
                 
-                sys.stdout.write("\n\n*********************************************************************\n")
-                sys.stdout.write("*  !!!   The following errors were found in your batch file   !!!   *\n")
-                sys.stdout.write("*********************************************************************\n")
-            
+                asterisk = '*'
+                nr_asterisks = 65
+                
+                space = ' '
+                nr_spaces = 5
+                
+                header1 = ''.join([char*nr_asterisks for char in asterisk])
+                header1 += '\n'
+                header2 = ''.join([char*nr_spaces for char in space])
+                header2 += '!!!   The following errors were found in your batch file   !!!'
+                header2 += ''.join([char*nr_spaces for char in space])
+                header2 += '\n'
+                header3 = ''.join([char*nr_asterisks for char in asterisk])
+                
+                message_header = header1 + header2 + header3
+                                
+                message_body = ""
+                
                 for error in error_list['errors']:
-                    sys.stdout.write("  line : %5s         scene : %s" % (error['idx'], error['scene']))
-                    
-                sys.stdout.write("\n\n")
+                    message_body = message_body + "  line : %5s         scene : %40s\n" % (error['idx'], error['scene'])
+                
+                message_body = message_body[:-2]
+                
+                Error_Window(master, "batch_error_window", "Batch File Errors", message_header, message_body)
+                
+                self.process_button.config(state = 'normal')
                     
             else:
                 sys.stdout.write("NO ERRORS!!! \n")
@@ -309,7 +329,7 @@ class Input_Frame(Gui_Label_Frame):
                     parameterized_outputfile = ("-u" + outputfile_relative_path_and_filename)
                 
                     # Create a progress bar to show activity
-                    self.progressbar = Progress_Bar(master, 'Processing Batch ' + source_file_name)
+                    self.progressbar = Progress_Bar(master, 'Processing Batch: ' + source_file_name)
                     self.progressbar.progressbar.config(mode = 'indeterminate')
                     
                     # Progressbar start and stop work with program loop, so manual loop is required for progression

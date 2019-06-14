@@ -102,10 +102,42 @@ def f_model_batch_merra():
     
         if batchFile.upper() != 'X':
             
-#            current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+            # Read in the file
+            scenes = open(batchFile).readlines()
             
-            # Launch batch process job
-            forward_model_batch.main([batchFile, display_images, '-cmenu'])
+            counter = 0
+            error_list = {"errors":[]}
+            
+            for scene in scenes:
+                
+                counter += 1
+                
+                if not is_valid_id(scene):
+                    
+                    error = {}
+                    error["idx"] = counter
+                    error["scene"] = scene
+                    
+                    error_list["errors"].append(error)
+            
+            
+            if (len(error_list['errors']) > 0):
+                
+                sys.stdout.write("\n\n*********************************************************************\n")
+                sys.stdout.write("*  !!!   The following errors were found in your batch file   !!!   *\n")
+                sys.stdout.write("*********************************************************************\n")
+            
+                for error in error_list['errors']:
+                    sys.stdout.write("  line : %5s         scene : %s" % (error['idx'], error['scene']))
+                    
+                sys.stdout.write("\n\n")
+                
+                input("Press Enter to continue...")
+                    
+            else:
+            
+                # Launch batch process job
+                forward_model_batch.main([batchFile, display_images, '-cmenu'])
 
 
 # Request Scene ID for single scene to calculate

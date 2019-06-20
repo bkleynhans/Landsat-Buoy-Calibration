@@ -15,73 +15,20 @@
 
 # Imports
 
-import inspect
+#import inspect
 import sys
 import os
-import time
+#import time
 import cv2
 import subprocess as sp
 from os.path import join, abspath
 from buoycalib import settings
-import datetime
-import pdb
-from term import forward_model
-from term import forward_model_batch
+#import datetime
+#import pdb
+from modules.term import forward_model
+from modules.term import forward_model_batch
 
-ERASE_LINE = '\x1b[2K'
-
-#PROGRAM_ROOT = 'Landsat-Buoy-Calibration/'
-#GUI_ROOT = join(PROGRAM_ROOT, 'gui/')
-#
-## Calculate fully qualified path to location of program execution
-#def get_module_path():
-#    
-#    filename = inspect.getfile(inspect.currentframe())
-#    path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-#
-#    return path, filename
-#
-#
-## Set environment variables to locate current execution path
-#def set_path_variables():
-#    
-#    path, filename = get_module_path()
-#
-#    sys.path.append(path)
-#    sys.path.append(path + "/buoycalib")
-#    sys.path.append(path + "/downloaded_data")
-#    sys.path.append(path + "/tools")
-#    sys.path.append(path + "/output")
-#    sys.path.append(path + "/processed_images")
-#    sys.path.append(path + "/modules")
-#
-#
-## Create any folders that are required and not currently available
-#def check_required_directories():
-#    
-#    import test_paths
-#        
-#    required_directories = {
-#            'input',
-#            'input/batches',
-#            'output',
-#            'output/processed_images',
-#            'output/single',
-#            'output/batches',
-#            'output/batches/data',            
-#            'output/batches/graphs',
-#            'logs',
-#            'logs/status',
-#            'logs/status/single',
-#            'logs/status/batch',
-#            'logs/output',
-#            'logs/output/single',
-#            'logs/output/batch'}
-#    
-#    for directory in required_directories:
-#        if not test_paths.main([directory, "-tdirectory"]):
-#            test_paths.createDirectory(directory)
-    
+ERASE_LINE = '\x1b[2K'    
 
 # Request name of text file containing batch process scene IDs
 def f_model_batch_merra(project_root):
@@ -380,79 +327,6 @@ def testDb():
     
     return db_status
     
-    
-## Timer to display activity during tests
-#def path_test_timer():
-#    
-#    sys.stdout.write(" ")
-#    
-#    for i in range(0, 5, 1):
-#        sys.stdout.write(".")
-#        sys.stdout.flush()
-#        
-#        time.sleep(0.5)
-#        
-#    time.sleep(0.5)
-        
-
-## Tests whether the online data sources are available
-#def source_test(address, missing_sources):
-#    
-#    import test_paths    
-#            
-#    if not test_paths.main([address, '-tserver']):
-#        #sys.stdout.write("\r " + address)
-#        
-#        #path_test_timer()
-#        
-#        sys.stdout.write(" --> NOT AVAILABLE!!!")
-#        sys.stdout.flush()
-#        
-#        missing_sources.append(address)
-#    else:
-#        #sys.stdout.write(ERASE_LINE)
-#        #sys.stdout.write('\r ' + address)
-#        
-#        #path_test_timer()
-#        
-#        sys.stdout.write(" >>> available.")
-#        sys.stdout.flush()
-#        
-#        missing_sources = None
-#        
-#    time.sleep(0.5)
-#        
-#    return missing_sources
-
-## Test if all data sources specified in buoycalib/settings.py are present
-#def check_sources():
-#    
-#    import settings
-#    
-#    sources_available = True
-#    
-#    sources = []
-#    
-#    sources.append(settings.MERRA_SERVER)
-#    sources.append(settings.NARR_SERVER)
-#    sources.append(settings.NOAA_SERVER)
-#    sources.append(settings.LANDSAT_S3_SERVER)
-#    sources.append(settings.LANDSAT_EE_SERVER)
-#    
-#    if settings.USE_MYSQL:
-#        sources.append(settings.SQL_SERVER)
-#    
-#    missing_sources = []
-#    
-#    for source in sources:
-#        sys.stdout.write(ERASE_LINE)
-#        sys.stdout.write('\r Testing >>> ' + source)
-#        source = source_test(source, missing_sources)
-#            
-#    if (len(missing_sources)):
-#        sources_available = False
-#        
-#    return sources_available, missing_sources
 
 # Test if the terminal session allows export of display
 def export_display_available():
@@ -545,21 +419,6 @@ def main(project_root):
     menuInput = ""
     result = ""
     
-#    print()
-#    print(" Please be patient while we test if the required data sources are available")
-#    print()
-#    
-#    data_sources_available, missing_sources = check_sources()
-    
-#    if (data_sources_available):
-#    if 1 == 1:
-#        
-##        check_required_directories()
-#        
-#        sys.stdout.write(ERASE_LINE)
-#        sys.stdout.write("\r     --> All data sources are accounted for <--")
-#        print()
-        
     successful_entry = None
     
     while result != "X" and successful_entry != True:
@@ -592,17 +451,3 @@ def main(project_root):
         sp.call('clear', shell = True)
         cv2.destroyAllWindows()
                 
-#    else:        
-#        print("\n\n!!!")
-#        print("!")
-#        print("! The program has quit because the following data source/s are currently " \
-#                "not available !")
-#        print("!")
-#        print("!!!")
-#        print("!")
-#                
-#        for source in missing_sources:
-#            print("!    >>  {}".format(source))
-#        
-#        print("!")
-#        print("!!!\n")

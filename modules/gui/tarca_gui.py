@@ -60,41 +60,6 @@ class Tarca_Gui:
         
         # Create the Input Frame - accessed via master.
         Status_Frame(master)
-        
-        # Test if data sources are available
-                
-
-## Calculate fully qualified path to location of program execution
-#def get_module_path():
-#    
-#    filename = inspect.getfile(inspect.currentframe())
-#    path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-#
-#    return path, filename
-#
-#
-## Set environment variables to locate current execution path
-#def set_path_variables():
-#    
-#    path, filename = get_module_path()
-#        
-#    # find the Calibration program path
-#    path_index = path.rfind('/')
-#    
-#    # append the Calibration program paths
-#    sys.path.append(path[:path_index])
-#    sys.path.append(path[:path_index] + "/buoycalib")
-#    sys.path.append(path[:path_index] + "/downloaded_data")
-#    sys.path.append(path[:path_index] + "/tools")
-#    sys.path.append(path[:path_index] + "/output")
-#    sys.path.append(path[:path_index] + "/processed_images")
-#    sys.path.append(path[:path_index] + "/modules")
-#        
-#    # append gui paths
-#    sys.path.append(path)
-#    sys.path.append(path + "/forms")
-#    
-#    return path[:path_index]
     
     
 def on_closing(root):
@@ -104,12 +69,7 @@ def on_closing(root):
     
 
 def main(project_root):
-    
-#    project_root = set_path_variables()
-    
-#    import menu    
-#    menu.check_required_directories()
-        
+            
     root = Tk()
     root.project_root = project_root
     #root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))

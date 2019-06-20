@@ -16,15 +16,15 @@
 
 import os.path
 import sys
-import pdb
-import forward_model
-import test_paths
+#import pdb
+from modules.term import forward_model
+#import test_paths
 import graph_generator
-import datetime
+#import datetime
 import numpy as np
 import cv2
 #from modules.db import db_operations
-import settings
+from buoycalib import settings
 
 
 # Process the SceneIDs and print results to a file

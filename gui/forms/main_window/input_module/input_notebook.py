@@ -35,7 +35,8 @@ class Input_Notebook(Gui_Notebook):
     def create_notebook(self, master):
         
         master.notebooks[self.notebook_name].input_values = {'batch_file': '',
-                                      'scene_id': '',
+                                      'scene_id_full_single': '',
+                                      'scene_id_partial_single': '',
                                       'date_frame_container': {
                                               'frame': '',
                                               'date_picker': '',
@@ -43,6 +44,8 @@ class Input_Notebook(Gui_Notebook):
                                               'date': ''},
                                       'lat': '',
                                       'lon': '',
+                                      'emissivity_b10': '',
+                                      'emissivity_b11': '',
                                       'surface_temp': ''}
                                       
 

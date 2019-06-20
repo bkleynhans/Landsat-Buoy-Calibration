@@ -11,6 +11,10 @@ FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 USE_MYSQL = False
 SQL_CONFIGURED = False
 
+# Emissivity used for split window
+DEFAULT_EMIS_B10 = 0.988
+DEFAULT_EMIS_B11 = 0.98644
+
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')
 
@@ -44,7 +48,8 @@ NARR_DIR = join(DATA_BASE, 'narr')
 NOAA_DIR = join(DATA_BASE, 'noaa')
 LANDSAT_DIR = join(DATA_BASE, 'landsat')
 MODIS_DIR = join(DATA_BASE, 'modis')
-MODTRAN_DIR = join(DATA_BASE, 'modtran')
+MODTRAN_BASH_DIR = join(DATA_BASE, 'modtran/menu')
+MODTRAN_GUI_DIR = join(DATA_BASE, 'modtran/gui')
 
 MODTRAN_DATA = '/dirs/pkg/Mod4v3r1/DATA'
 MODTRAN_EXE = '/dirs/pkg/Mod4v3r1/Mod4v3r1.exe'

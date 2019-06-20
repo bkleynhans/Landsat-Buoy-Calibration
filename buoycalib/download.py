@@ -12,7 +12,7 @@ import warnings
 import time
 
 import requests
-import forward_model
+#import forward_model
 
 CHUNK = 1024 * 1024 * 8   # 1 MB
 

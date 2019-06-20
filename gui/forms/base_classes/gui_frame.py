@@ -31,7 +31,7 @@ class Gui_Frame():
     # Create the actual Frame
     def create_gui_frame(self, master):
         
-        self.gui_frame = ttk.LabelFrame(master)
+        self.gui_frame = ttk.Frame(master)
         
         self.notebooks = {}
         self.gui_frame.notebooks = self.notebooks

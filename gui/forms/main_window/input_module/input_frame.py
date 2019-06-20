@@ -20,6 +20,7 @@ from tkinter import messagebox
 import datetime
 import time
 import threading
+from buoycalib import (sat, atmo, radiance, modtran, settings)
 from gui.forms.general.progress_bar import Progress_Bar
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 from gui.forms.main_window.input_module.input_notebook import Input_Notebook
@@ -28,6 +29,9 @@ import menu
 import forward_model
 import forward_model_batch
 import os, sys
+import numpy
+import warnings
+from modules.stp.sw.split_window import Split_Window
 import pdb
 
 
@@ -35,7 +39,22 @@ class Input_Frame(Gui_Label_Frame):
     
     # Input Frame constructor
     def __init__(self, master):
+                
+        self.path_dictionary = {
+                'relative_status_path': 'logs/status/batch',
+                'relative_output_path': 'logs/output/single',
+                'statusfile_name': '',
+                'statusfile_relative_path_and_filename': '',
+                'statusfile_absolute_path': '',
+                'parameterized_statusfile': '',
+                'outputfile_name': '',
+                'outputfile_relative_path_and_filename': '',
+                'outputfile_absolute_path': '',
+                'parameterized_outputfile': ''
+        }
         
+        self.current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+                    
         Gui_Label_Frame.__init__(self, master, "input_frame", "Input")
         self.create_input_frame(master)
         
@@ -43,7 +62,7 @@ class Input_Frame(Gui_Label_Frame):
     # Create the actual Frame
     def create_input_frame(self, master):        
         
-        master.frames[self.frame_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)
+        master.frames[self.frame_name].pack(anchor = 'w', fill = 'both', expand = True, padx = 10, pady = 10)
         
         # Add the input notebook to the frame
         Input_Notebook(master.frames[self.frame_name], self.frame_name)
@@ -71,7 +90,6 @@ class Input_Frame(Gui_Label_Frame):
         self.process_button.pack(anchor = 'e', padx = 10, pady = (0, 10))
         
         self.process_button.config(command = lambda: self.process_active_tab(master))
-#        self.process_button.config(command = lambda: self.process_full_single(master))
         
         
     def delete_log_files(self, file_absolute_path, file_name):
@@ -90,10 +108,9 @@ class Input_Frame(Gui_Label_Frame):
         self.progressbar.progressbar_window.destroy()
         
         self.process_button.config(state = 'normal')
+        
     
-    
-    def process_scene_id(self, master, scene_id, show_images, parameterized_statusfile, statusfile_absolute_path, statusfile_name,
-                         parameterized_outputfile, outputfile_absolute_path, outputfile_name):
+    def create_watchdogs(self, master, statusfile_absolute_path, outputfile_absolute_path):
         
         from gui.tools.file_watcher import File_Watcher
         # Instantiate the watcher and pass the master object (containing required functions) and path to file
@@ -103,41 +120,103 @@ class Input_Frame(Gui_Label_Frame):
         self.status_watchdog.event_notifier.start()
         self.output_watchdog.event_notifier.start()
         
-        forward_model.main([scene_id, show_images, "-ctarca_gui", parameterized_statusfile, parameterized_outputfile])
-        
-        self.process_complete = True
+    
+    def kill_watchdogs(self):
         
         self.status_watchdog.event_notifier.stop()
         self.output_watchdog.event_notifier.stop()
         
-#        self.delete_log_files(statusfile_absolute_path, statusfile_name)
-#        self.delete_log_files(outputfile_absolute_path, outputfile_name)
+        
+    def build_paths(self, master):
+        
+        # Create status logger instance paths
+        self.path_dictionary['statusfile_relative_path_and_filename'] = os.path.join(
+                self.path_dictionary['relative_status_path'], 
+                self.path_dictionary['statusfile_name']
+        )        
+        self.path_dictionary['statusfile_absolute_path'] = os.path.join(
+                master.project_root,
+                self.path_dictionary['relative_status_path']
+        )        
+        self.path_dictionary['parameterized_statusfile'] = ("-t" + self.path_dictionary['statusfile_relative_path_and_filename'])
+        
+        # Create a output logger instance paths
+        self.path_dictionary['outputfile_relative_path_and_filename'] = os.path.join(
+                self.path_dictionary['relative_output_path'], 
+                self.path_dictionary['outputfile_name']
+        )
+        self.path_dictionary['outputfile_absolute_path'] = os.path.join(
+                master.project_root, 
+                self.path_dictionary['relative_output_path']
+        )
+        self.path_dictionary['parameterized_outputfile'] = ("-u" + self.path_dictionary['outputfile_relative_path_and_filename'])
+    
+    
+    def clear_watch_files(self, master):#, statusfile_absolute_path, statusfile_name, outputfile_absolute_path, outputfile_name):
+        
+        self.delete_log_files(self.path_dictionary['statusfile_absolute_path'], self.path_dictionary['statusfile_name'])
+        self.delete_log_files(self.path_dictionary['outputfile_absolute_path'], self.path_dictionary['outputfile_name'])
         
     
-    def process_batch_ids(self, master, source_file, show_images, parameterized_statusfile, statusfile_absolute_path, statusfile_name,
-                         parameterized_outputfile, outputfile_absolute_path, outputfile_name):
+    def convert_to_float(self, value):
         
-        from gui.tools.file_watcher import File_Watcher
-        # Instantiate the watcher and pass the master object (containing required functions) and path to file
-        self.status_watchdog = File_Watcher(master, statusfile_absolute_path)
-        self.output_watchdog = File_Watcher(master, outputfile_absolute_path)
+        try:
+            value = float(value)
+        except ValueError:
+            print("Invalid lat")
+            
+        return value
+    
+    def process_scene_id(self, master, scene_id, show_images):
         
-        self.status_watchdog.event_notifier.start()
-        self.output_watchdog.event_notifier.start()
+        self.create_watchdogs(
+                master, 
+                self.path_dictionary['statusfile_absolute_path'], 
+                self.path_dictionary['outputfile_absolute_path']
+        )
         
-        forward_model_batch.main([source_file, show_images, "-ctarca_gui_batch", parameterized_statusfile, parameterized_outputfile])
+        forward_model.main([
+                scene_id,
+                show_images,
+                "-ctarca_gui",
+                ('-d' + master.project_root),
+                self.path_dictionary['parameterized_statusfile'],
+                self.path_dictionary['parameterized_outputfile']
+        ])
         
         self.process_complete = True
         
-        self.status_watchdog.event_notifier.stop()
-        self.output_watchdog.event_notifier.stop()
+        self.kill_watchdogs()
         
-#        self.delete_log_files(statusfile_absolute_path, statusfile_name)
-#        self.delete_log_files(outputfile_absolute_path, outputfile_name)
+        self.clear_watch_files(master)
+        
     
+    def process_batch_ids(self, master, source_file, show_images):
         
-    # Define process for full_single
-    def process_full_single(self, master):
+        self.create_watchdogs(
+                master,
+                self.path_dictionary['statusfile_absolute_path'],
+                self.path_dictionary['outputfile_absolute_path']
+        )
+        
+        forward_model_batch.main([
+                source_file,
+                show_images,
+                "-ctarca_gui_batch",
+                ('-d' + master.project_root),
+                self.path_dictionary['parameterized_statusfile'],
+                self.path_dictionary['parameterized_outputfile']
+        ])
+        
+        self.process_complete = True
+        
+        self.kill_watchdogs()
+    
+        self.clear_watch_files(master)
+        
+        
+    # Clean the output areas and disable the button
+    def prepare_window(self, master):
         
         # Disable the process button
         self.process_button.config(state = 'disabled')
@@ -146,39 +225,30 @@ class Input_Frame(Gui_Label_Frame):
         master.frames['status_frame'].widgets['status_text'].delete('1.0', 'end')
         master.frames['output_frame'].widgets['output_text'].delete('1.0', 'end')
         
+        
+    # Define process for full_single
+    def process_full_single(self, master):
+        
+        # Clear output windows and disable process button
+        self.prepare_window(master)
+        
         # Read the scene_id from the form
-        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id'].get()
+        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id_full_single'].get()
         
         if (scene_id != None):
         
             if (menu.is_valid_id(scene_id)):
                 
-                show_images = messagebox.askyesno(
-                        title = "Display Images",
-                        message = "Do you wish to display each image as it is processing?")
-                
-                if show_images == True:
-                    show_images = '-ntrue'
-                else:
-                    show_images = '-nfalse'
-                
-                current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
-                
-                relative_status_path = 'logs/status/single'
-                relative_output_path = 'logs/output/single'
+                show_images = self.ask_show_images()
             
                 # Create a status logger instance
-                statusfile_name = str(scene_id) + "_" + str(current_datetime) + ".status"
-                statusfile_relative_path_and_filename = os.path.join(relative_status_path, statusfile_name)
-                statusfile_absolute_path = os.path.join(master.project_root, relative_status_path)
-                parameterized_statusfile = ("-t" + statusfile_relative_path_and_filename)
-                
+                self.path_dictionary['statusfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".status"
+
                 # Create a output logger instance
-                outputfile_name = str(scene_id) + "_" + str(current_datetime) + ".output"
-                outputfile_relative_path_and_filename = os.path.join(relative_output_path, outputfile_name)
-                outputfile_absolute_path = os.path.join(master.project_root, relative_output_path)
-                parameterized_outputfile = ("-u" + outputfile_relative_path_and_filename)
+                self.path_dictionary['outputfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".output"
             
+                self.build_paths(master)
+                
                 # Create a progress bar to show activity
                 self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
                 self.progressbar.progressbar.config(mode = 'indeterminate')
@@ -194,17 +264,11 @@ class Input_Frame(Gui_Label_Frame):
                         target = self.process_scene_id, args = (
                                 [master, 
                                  scene_id, 
-                                 show_images, 
-                                 parameterized_statusfile, 
-                                 statusfile_absolute_path,
-                                 statusfile_name,
-                                 parameterized_outputfile, 
-                                 outputfile_absolute_path,
-                                 outputfile_name, ]
+                                 show_images, ]
                         )
                 )
                         
-                cis_tarca_thread.start()                
+                cis_tarca_thread.start()
                                 
             else:
                 
@@ -215,22 +279,75 @@ class Input_Frame(Gui_Label_Frame):
                 
                 self.process_button.config(state = 'normal')    
     
-        
-    # Define process for partial_single
-    def process_partial_single(self, master):
-        
-        pass
     
+    def ask_show_images(self):
+        
+        show_images = messagebox.askyesno(
+                title = "Display Images",
+                message = "Do you wish to display each image as it is processing?")
+        
+        if show_images == True:
+            show_images ='-ntrue'
+        else:
+            show_images = '-nfalse'
+    
+        return show_images
+    
+    
+    # Define process for partial_single
+    def process_partial_single(self, master, bands=[10, 11]):
+
+        # Clear output windows and disable process button
+        self.prepare_window(master)
+        
+        # Read the scene_id from the form
+        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id_partial_single'].get()
+        lat = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lat'].get()
+        lon = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lon'].get()
+        emissivity_b10 = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b10'].get()
+        emissivity_b11 = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b11'].get()
+        skin_temp = master.frames[self.frame_name].notebooks['input_notebook'].input_values['surface_temp'].get()
+        
+        lat = self.convert_to_float(lat)
+        lon = self.convert_to_float(lon)
+        emissivity_b10 = self.convert_to_float(emissivity_b10)
+        emissivity_b11 = self.convert_to_float(emissivity_b11)
+        skin_temp = self.convert_to_float(skin_temp)
+        
+        overpass_date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, bands[:])
+        
+        atmosphere = atmo.merra.process(overpass_date, lat, lon)
+        
+        # MODTRAN
+        modtran_directory = '{0}/{1}'.format(settings.MODTRAN_GUI_DIR, scene_id)
+        wavelengths, upwell_rad, gnd_reflect, transmission = modtran.process(atmosphere,lat, lon, overpass_date, modtran_directory, skin_temp)
+        
+        # LTOA calcs
+        mod_ltoa_spectral = radiance.calc_ltoa_spectral(wavelengths, upwell_rad, gnd_reflect, transmission, skin_temp)
+
+        img_ltoa = {}
+        mod_ltoa = {}
+        rsrs = {b:settings.RSR_L8[b] for b in bands}
+        
+        try:
+            for b in bands:
+                RSR_wavelengths, RSR = numpy.loadtxt(rsrs[b], unpack=True)
+                img_ltoa[b] = sat.landsat.calc_ltoa(directory, metadata, lat, lon, b)
+                mod_ltoa[b] = radiance.calc_ltoa(wavelengths, mod_ltoa_spectral, RSR_wavelengths, RSR)
+        except RuntimeError as e:
+            warnings.warn(str(e), RuntimeWarning)
+        
+        # split window
+        sw = Split_Window(img_ltoa[10], img_ltoa[11], emissivity_b10, emissivity_b11)
+        
+        pdb.set_trace()
+            
     
     # Define process for batch
     def process_batch(self, master):
         
-        # Disable the process button
-        self.process_button.config(state = 'disabled')
-        
-        # Clear the output frames (output andn status)
-        master.frames['status_frame'].widgets['status_text'].delete('1.0', 'end')
-        master.frames['output_frame'].widgets['output_text'].delete('1.0', 'end')
+        # Clear output windows and disable process button
+        self.prepare_window(master)
                 
         # Get the batch file from the form
         source_file = master.frames[self.frame_name].notebooks['input_notebook'].input_values['batch_file'].get()
@@ -302,31 +419,17 @@ class Input_Frame(Gui_Label_Frame):
             
                 if (len(scenes) > 0):
                     
-                    show_images = messagebox.askyesno(
-                            title = "Display Images",
-                            message = "Do you wish to display each image as it is processing?")
+                    # Ask user if they want to display each image during processing
+                    show_images = self.ask_show_images()
                     
-                    if show_images == True:
-                        show_images = '-ntrue'
-                    else:
-                        show_images = '-nfalse'
+                    # Define a status logger file
+                    self.path_dictionary['statusfile_name'] = source_file[source_file.rfind('/') + 1:source_file.rfind('.')] + "_" + str(self.current_datetime) + ".status"
                     
-                    current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
+                    # Define a output logger file
+                    self.path_dictionary['outputfile_name'] = source_file[source_file.rfind('/') + 1:source_file.rfind('.')] + "_" + str(self.current_datetime) + ".output"
                     
-                    relative_status_path = 'logs/status/batch'
-                    relative_output_path = 'logs/output/batch'
-                    
-                    # Create a status logger instance             
-                    statusfile_name = source_file[source_file.rfind('/') + 1:source_file.rfind('.')] + "_" + str(current_datetime) + ".status"
-                    statusfile_relative_path_and_filename = os.path.join(relative_status_path, statusfile_name)
-                    statusfile_absolute_path = os.path.join(master.project_root, relative_status_path)
-                    parameterized_statusfile = ("-t" + statusfile_relative_path_and_filename)
-                    
-                    # Create a output logger instance
-                    outputfile_name = source_file[source_file.rfind('/') + 1:source_file.rfind('.')] + "_" + str(current_datetime) + ".output"
-                    outputfile_relative_path_and_filename = os.path.join(relative_output_path, outputfile_name)
-                    outputfile_absolute_path = os.path.join(master.project_root, relative_output_path)
-                    parameterized_outputfile = ("-u" + outputfile_relative_path_and_filename)
+                    # Define all logger paths
+                    self.build_paths(master)
                 
                     # Create a progress bar to show activity
                     self.progressbar = Progress_Bar(master, 'Processing Batch: ' + source_file_name)
@@ -343,13 +446,7 @@ class Input_Frame(Gui_Label_Frame):
                             target = self.process_batch_ids, args = (
                                     [master, 
                                      source_file, 
-                                     show_images, 
-                                     parameterized_statusfile, 
-                                     statusfile_absolute_path,
-                                     statusfile_name,
-                                     parameterized_outputfile, 
-                                     outputfile_absolute_path,
-                                     outputfile_name, ]
+                                     show_images, ]
                             )
                     )
                             

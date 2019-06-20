@@ -47,8 +47,8 @@ class Input_Full_Single(Gui_Frame):
                         sticky = 'nsew'
                 )
         
-        master.input_values['scene_id'] = ttk.Entry(master.frames[self.frame_name], width = 60)
-        master.input_values['scene_id'].grid(
+        master.input_values['scene_id_full_single'] = ttk.Entry(master.frames[self.frame_name], width = 60)
+        master.input_values['scene_id_full_single'].grid(
                 row = 0, 
                 column = 1, 
                 columnspan = 2,

@@ -73,19 +73,9 @@ def batch_f_model(args, scene_txt, scenes, output_txt, display_image, caller, st
                     error_message = forward_model.get_error_message(ret[key][10])
                 else:
                     error_message = None
-                 
-#                buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
+                    
+                    
                 buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason = ret[key]
-                
-#                if settings.USE_MYSQL:
-#                    # Write row of data to database
-#                    db_operator.insert_data_row(scene_id_index,
-#                                            date_index,
-#                                            buoy_id_index,
-#                                            [bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, img_ltoa, error],
-#                                            image_index,
-#                                            status,
-#                                            error_message)
                     
                 for band in error:
                     difference = (mod_ltoa[band] - img_ltoa[band])
@@ -95,9 +85,6 @@ def batch_f_model(args, scene_txt, scenes, output_txt, display_image, caller, st
                     elif band == 11:
                         graph_data_band11 = np.vstack((graph_data_band11, [date, difference, error[band]]))
                 
-#                print(scene_id.replace('\n', ''), date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, \
-#                    *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message, file=f, sep=', ')
-                        # Convert tuple to text and remove first and last parentheses
                 
                 # Create a formatted tuple with the required data
                 processed_data = (scene_id.replace('\n', ''), date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
@@ -161,16 +148,10 @@ def buildModel(args):
     
     if (args.caller == 'menu'):
         args.caller = 'forward_model_batch'
-            
-#    if settings.USE_MYSQL:
-#        db_operator = db_operations.Db_Operations()
+        
 
     scenes = open(args.scene_txt).readlines()
-        
-#    if settings.USE_MYSQL:
-#        db_operator = db_operations.Db_Operations()
-#        batch_f_model(args, args.scene_txt, scenes, args.save, args.display_image, db_operator, args.caller, status_logger, output_logger, args.project_root)
-#    else:
+    
     batch_f_model(args, args.scene_txt, scenes, args.save, args.display_image, args.caller, status_logger, output_logger, args.project_root)
 
 

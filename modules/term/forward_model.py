@@ -86,30 +86,7 @@ def open_image(image):
 
 def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_source='merra', verbose=False, bands=[10, 11], db_operator=None):
     
-#    scene_id_index = None
-#    image_index = None
-#    date_index = None
-#    buoy_id_index = None
-    
     output_directory = os.path.join(project_root, 'output')
-    
-#    path_to_output_folder = None
-#    
-#    path_to_project_root = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-#    parent_directory_index = path_to_project_root.rfind('/')
-#    
-#    if (path_to_project_root[parent_directory_index + 1:] == 'Landsat-Buoy-Calibration'):
-#        
-#        path_to_output_folder = (path_to_project_root + '/output/')
-#        
-#    elif (path_to_project_root[parent_directory_index + 1:] == 'gui'):
-#        
-#        inner_index = path_to_project_root[:parent_directory_index].rfind('/')
-#        path_to_output_folder = (path_to_project_root[:inner_index] + '/output/')
-        
-#    if settings.USE_MYSQL:
-#        # Add Scene ID to database
-#        scene_id_index = db_operator.insert_single_value('t_scene_ids', scene_id)
         
     image, file_downloaded = display.landsat_preview(scene_id, '')
     
@@ -118,17 +95,12 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
         display_image_thread = threading.Thread(target=open_image, args=(image, ))
         display_image_thread.start()
         
-#    cv2.imwrite('output/processed_images/{0}.tif'.format(scene_id), image)
     image_file = '{0}.tif'.format(scene_id)
     image_directory = os.path.join(output_directory, 'processed_images')
     absolute_image_directory = os.path.join(project_root, image_directory)
     absolute_image_path = os.path.join(absolute_image_directory, image_file)
     cv2.imwrite(absolute_image_path, image)
-    
-#    if settings.USE_MYSQL:
-#        # Write image to database
-#        image_index = db_operator.insert_image(scene_id)
-    
+        
     data = {}
     
     if file_downloaded:
@@ -136,10 +108,6 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
         # [:] thing is to shorthand to make a shallow copy
         
         overpass_date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, bands[:])
-        
-#        if settings.USE_MYSQL:
-#            # Write date to database
-#            date_index = db_operator.insert_single_value('t_dates', overpass_date)
         
         rsrs = {b:settings.RSR_L8[b] for b in bands}
         
@@ -152,12 +120,7 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
     
         for buoy_id in buoys:
             
-#            if settings.USE_MYSQL:
-#                # Write Buoy ID to database
-#                buoy_id_index = db_operator.insert_single_value('buoy_ids', buoy_id)
-            
             log_text = ("  Processing buoy %s" % (buoy_id))
-#            sys.stdout.write("\r  Processing buoy %s" % (buoy_id))
             
             if ((caller == 'menu') or (caller == 'forward_model_batch')):
                 sys.stdout.write("\r" + log_text)
@@ -183,11 +146,7 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
                         {10:0,11:0},
                         overpass_date,
                         'failed',
-                        'file'#,
-#                        scene_id_index,
-#                        date_index,
-#                        buoy_id_index,
-#                        image_index
+                        'file'
                     )
                 continue
             except buoy.BuoyDataException as e:
@@ -203,13 +162,8 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
                         {10:0,11:0},
                         overpass_date,
                         'failed',
-                        #'data',
-                        str(e)#,
-#                        scene_id_index,
-#                        date_index,
-#                        buoy_id_index,
-#                        image_index
-                    )#e.args[0] + ' for buoy ' + buoy_id)
+                        str(e)
+                    )
                 continue
 ### Continue from here
                 #********** Break for separate calculation here **********
@@ -233,11 +187,7 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
                         { 10:0, 11:0 },
                         overpass_date,
                         'failed',
-                        'merra_layer1_temperature'#,
-#                        scene_id_index,
-#                        date_index,
-#                        buoy_id_index,
-#                        image_index
+                        'merra_layer1_temperature'
                     )
                 continue            
             else:
@@ -273,11 +223,7 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
                         img_ltoa,
                         overpass_date,
                         'success',
-                        ''#,
-#                        scene_id_index,
-#                        date_index,
-#                        buoy_id_index,
-#                        image_index
+                        ''
                     )
             
     else:
@@ -293,11 +239,7 @@ def landsat8(scene_id, display_image, caller, status_logger, project_root, atmo_
                 {10:0,11:0},
                 overpass_date,
                 'failed',
-                'image'#,
-#                scene_id_index,
-#                date_index,
-#                buoy_id_index,
-#                image_index
+                'image'
             )
     
     return data
@@ -309,19 +251,12 @@ def buildModel(args):
     status_logger = Process_Logger(args.statuslog)
     output_logger = Process_Logger(args.outputlog)
         
-#    if settings.USE_MYSQL:
-#        db_operator = db_operations.Db_Operations()
-
     if not args.warnings:
         warnings.filterwarnings("ignore")
         
     if args.scene_id[0:3] in ('LC8', 'LC0'):   # Landsat 8
         bands = [int(b) for b in args.bands] if args.bands is not None else [10, 11]
         
-#        if settings.USE_MYSQL:
-#            ret = landsat8(args.scene_id, args.display_image, args.caller, status_logger, db_operator, args.atmo, args.verbose, bands)
-#        else:
-#            ret = landsat8(args.scene_id, args.display_image, args.caller, status_logger, args.atmo, args.verbose, bands)
         ret = landsat8(args.scene_id, args.display_image, args.caller, status_logger, args.project_root, args.atmo, args.verbose, bands)
 
     elif args.scene_id[0:3] == 'MOD':   # Modis
@@ -335,14 +270,11 @@ def buildModel(args):
         # Change the name of the output file to <scene_id>.txt
         args.savefile = args.savefile[:args.savefile.rfind('/') + 1] + args.scene_id + '.txt'
         report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
-        #sys.stdout.write("\rScene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n")
         
         if (args.caller == 'tarca_gui'):
             output_logger.write(report_headings)
         elif ((args.caller == 'menu') or (args.caller == 'forward_model_batch')):
-            sys.stdout.write("\r" + report_headings + "\n")        
-        
-#        status_logger.write(report_headings)
+            sys.stdout.write("\r" + report_headings + "\n")
         
         error_message = None
         
@@ -352,26 +284,7 @@ def buildModel(args):
             else:
                 error_message = None
                             
-#            buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
                 buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason = ret[key]
-                        
-#            if settings.USE_MYSQL:
-#                # Write row of data to database
-#                db_operator.insert_data_row(scene_id_index,
-#                                            date_index,
-#                                            buoy_id_index,
-#                                            [
-#                                                bulk_temp,
-#                                                skin_temp,
-#                                                buoy_lat,
-#                                                buoy_lon,
-#                                                mod_ltoa,
-#                                                img_ltoa,
-#                                                error
-#                                            ],
-#                                            image_index,
-#                                            status,
-#                                            error_message)
             
             
             # Convert tuple to text and remove first and last parentheses
@@ -381,13 +294,6 @@ def buildModel(args):
                 output_logger.write(log_text)
             elif (args.caller == 'menu'):
                 sys.stdout.write("\r" + log_text + "\n")
-            
-#            if (args.caller != 'tarca_gui'):
-#                print(log_text)
-            
-#            status_logger.write(log_text)
-#            print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
-#                buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message)
 
         # Erases all the downloaded data if configured
         if settings.CLEAN_FOLDER_ON_COMPLETION:
@@ -403,7 +309,6 @@ def buildModel(args):
                     else:
                         error_message = None
                     
-#                    buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason, scene_id_index, date_index, buoy_id_index, image_index = ret[key]
                     buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason = ret[key]
                     print(args.scene_id, date.strftime('%Y/%m/%d'), buoy_id, bulk_temp, skin_temp, buoy_lat, \
                         buoy_lon, *mod_ltoa.values(), *img_ltoa.values(), *error.values(), status, error_message, file=f, sep=', ')
@@ -460,7 +365,6 @@ def clear_downloads(status_logger):
     
     if (args.caller != 'tarca_gui'):
         sys.stdout.write("\r" + log_text + "\n\n")
-        #sys.stdout.write("\r  Cleanup completed!!!\n\n")
 
     status_logger.write(log_text)
 

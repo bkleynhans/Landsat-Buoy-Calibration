@@ -1,0 +1,210 @@
+###
+#
+# CIS Top of Atmosphere Radiance Calibration
+#
+# Program Description : Menu program for the Landsat Buoy Calibration program
+# Created By          : Benjamin Kleynhans
+# Creation Date       : June 20, 2019
+# Authors             : Benjamin Kleynhans
+#
+# Last Modified By    : Benjamin Kleynhans
+# Last Modified Date  : June 20, 2019
+# Filename            : cis-tarca.py
+#
+###
+
+# Imports
+
+import sys, os, inspect, pdb
+import time
+import subprocess as sp
+
+ERASE_LINE = '\x1b[2K'
+
+PROJECT_ROOT = ''
+GUI_ROOT = os.path.join(PROJECT_ROOT, 'gui/')
+
+# Calculate fully qualified path to location of program execution
+def get_module_path():
+    
+    filename = inspect.getfile(inspect.currentframe())
+    path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+
+    return path, filename
+
+
+# Create any folders that are required and not currently available
+def check_required_directories():
+    
+    from tools import test_paths
+        
+    required_directories = {
+            'input',
+            'input/batches',
+            'output',
+            'output/processed_images',
+            'output/single',
+            'output/batches',
+            'output/batches/data',            
+            'output/batches/graphs',
+            'logs',
+            'logs/status',
+            'logs/status/single',
+            'logs/status/batch',
+            'logs/output',
+            'logs/output/single',
+            'logs/output/batch'}
+    
+    for directory in required_directories:
+        if not test_paths.main([directory, "-tdirectory"]):
+            test_paths.createDirectory(directory)
+            
+            
+# Set environment variables to locate current execution path
+def set_path_variables():
+    
+    check_required_directories()
+    
+    path, filename = get_module_path()
+
+    sys.path.append(path)
+    sys.path.append(path + "/buoycalib")
+    sys.path.append(path + "/downloaded_data")
+    sys.path.append(path + "/gui")
+    sys.path.append(path + "/input")
+    sys.path.append(path + "/logs")
+    sys.path.append(path + "/modules")
+    sys.path.append(path + "/output")
+    sys.path.append(path + "/term")    
+    sys.path.append(path + "/tools")    
+
+
+# Tests whether the online data sources are available
+def source_test(address, missing_sources):
+    
+    import test_paths    
+            
+    if not test_paths.main([address, '-tserver']):
+        #sys.stdout.write("\r " + address)
+        
+        #path_test_timer()
+        
+        sys.stdout.write(" --> NOT AVAILABLE!!!")
+        sys.stdout.flush()
+        
+        missing_sources.append(address)
+    else:
+        #sys.stdout.write(ERASE_LINE)
+        #sys.stdout.write('\r ' + address)
+        
+        #path_test_timer()
+        
+        sys.stdout.write(" >>> available.")
+        sys.stdout.flush()
+        
+        missing_sources = None
+        
+    time.sleep(0.5)
+        
+    return missing_sources
+
+
+# Test if all data sources specified in buoycalib/settings.py are present
+def check_sources():
+    
+    import settings
+    
+    sources_available = True
+    
+    sources = []
+    
+    sources.append(settings.MERRA_SERVER)
+    sources.append(settings.NARR_SERVER)
+    sources.append(settings.NOAA_SERVER)
+    sources.append(settings.LANDSAT_S3_SERVER)
+    sources.append(settings.LANDSAT_EE_SERVER)
+    
+    if settings.USE_MYSQL:
+        sources.append(settings.SQL_SERVER)
+    
+    missing_sources = []
+    
+    for source in sources:
+        sys.stdout.write(ERASE_LINE)
+        sys.stdout.write('\r Testing >>> ' + source)
+        source = source_test(source, missing_sources)
+            
+    if (len(missing_sources)):
+        sources_available = False
+        
+    return sources_available, missing_sources
+
+
+def parseArgs(args):
+
+    import argparse
+
+    parser = argparse.ArgumentParser(description='Calculate and compare the Top of Atmosphere Radiance values of a LandSat or Merra image using the '
+                                     'modelled theoretical composition of atmospheric data.  NOAA buoy recorded data is used along with projections with MODTRAN.  '
+                                     'Other features include split window.')
+
+    parser.add_argument('-i', '--interface', default='gui', choices=['gui', 'terminal'], help='Choose if you want to use the graphical or terminal based interface.')
+
+    return parser.parse_args(args)
+
+
+def main(args):
+
+    PROJECT_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    
+    sp.call('clear', shell = True)
+    
+    set_path_variables()
+    
+#    from buoycalib import settings
+    
+    print()
+    print(" Please be patient while we test if the required data sources are available")
+    print()
+    
+    data_sources_available, missing_sources = check_sources()
+    
+    if (data_sources_available):
+        
+        sys.stdout.write(ERASE_LINE)
+        sys.stdout.write("\r     --> All data sources are accounted for <--")
+        print()
+        
+        from gui import tarca_gui
+        from term import menu
+        
+        launch = parseArgs(args)
+        
+        if launch.interface == 'gui':
+            tarca_gui.main(PROJECT_ROOT)
+        else:
+            menu.main(PROJECT_ROOT)
+                
+    else:        
+        print("\n\n!!!")
+        print("!")
+        print("! The program has quit because the following data source/s are currently " \
+                "not available !")
+        print("!")
+        print("!!!")
+        print("!")
+                
+        for source in missing_sources:
+            print("!    >>  {}".format(source))
+        
+        print("!")
+        print("!!!\n")
+        
+    
+        
+    sp.call('clear', shell = True)
+    
+
+if __name__ == '__main__':
+
+    args = main(sys.argv[1:])

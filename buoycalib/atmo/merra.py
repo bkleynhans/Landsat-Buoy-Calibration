@@ -44,7 +44,7 @@ def process(date, lat_oi, lon_oi, verbose=False):
 
     latidx = tuple(chosen_idxs[0])
     lonidx = tuple(chosen_idxs[1])
-
+    
     t1, t2 = data.closest_hours(atmo_data.variables['time'][:].data,
                                 atmo_data.variables['time'].units, date)
     t1_dt = num2date(atmo_data.variables['time'][t1], atmo_data.variables['time'].units)

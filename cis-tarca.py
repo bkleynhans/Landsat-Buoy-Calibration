@@ -1,4 +1,4 @@
-###
+80###
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
@@ -76,9 +76,9 @@ def set_path_variables():
     sys.path.append(path + "/modules/db")
     sys.path.append(path + "/modules/gui")
     sys.path.append(path + "/modules/stp")
-    sys.path.append(path + "/modules/term")
+    sys.path.append(path + "/modules/core")    
     sys.path.append(path + "/output")
-    sys.path.append(path + "/tools")    
+    sys.path.append(path + "/tools")
 
 
 # Tests whether the online data sources are available
@@ -170,8 +170,8 @@ def main(args):
         sys.stdout.write("\r     --> All data sources are accounted for <--")
         print()
         
+        from modules.core import menu
         from modules.gui import tarca_gui
-        from modules.term import menu
         
         launch = parseArgs(args)
         

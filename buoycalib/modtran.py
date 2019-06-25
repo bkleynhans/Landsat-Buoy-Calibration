@@ -1,7 +1,6 @@
 import datetime
 import os
 import subprocess
-import pdb
 
 import numpy
 
@@ -28,10 +27,18 @@ def process(atmosphere, lat, lon, date, directory, temperature):
 
     run(directory)
     tape6_filename = os.path.join(directory, 'tape6')
-
+    
     wavelengths, upwell_rad, gnd_reflect, total, transmission = parse_tape6(tape6_filename)
+    
+    modtran_data = {
+                'wavelengths': wavelengths,
+                'upwell_rad': upwell_rad,
+                'gnd_reflect': gnd_reflect,
+                'transmission': transmission
+            }
 
-    return wavelengths, upwell_rad, gnd_reflect, transmission
+#    return wavelengths, upwell_rad, gnd_reflect, transmission
+    return modtran_data
 
 
 def make_tape5s(profile, lat, lon, date, directory, temperature):

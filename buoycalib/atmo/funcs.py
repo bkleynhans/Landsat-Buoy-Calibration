@@ -1,5 +1,6 @@
 import numpy
 import utm
+import pdb
     
 def choose_points(lat, lon, buoy_lat, buoy_lon, flat=False):
     """
@@ -12,7 +13,7 @@ def choose_points(lat, lon, buoy_lat, buoy_lon, flat=False):
     Returns:
         chosen indices, coordinates of the 4 closest points (euclidean)
     """
-
+    
     distances = (lat - buoy_lat)**2 + (lon - buoy_lon)**2
     dist_args_sorted = numpy.argsort(distances.flatten())
 

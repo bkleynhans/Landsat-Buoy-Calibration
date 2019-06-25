@@ -323,9 +323,19 @@ def info(buoy_id, file, overpass_date):
         skin_temp, bulk_temp = calc_skin_temp(buoy_id, data, dates, headers, overpass_date, buoy_depth)
     except BuoyDataException as e:
         raise BuoyDataException(str(e))
+        
+    buoy_data = {
+             'buoy_lat': b.lat,
+             'buoy_lon': b.lon,
+             'buoy_depth': b.thermometer_depth,
+             'bulk_temp': bulk_temp,
+             'skin_temp': skin_temp,
+             'lower_atmo': [surf_press, surf_airtemp, surf_dewpnt, surf_rh]
+         }
     
-    return b.lat, b.lon, b.thermometer_depth, bulk_temp, skin_temp, [surf_press, surf_airtemp, surf_dewpnt, surf_rh] # The returning array(last 4 variables) are never used
-
+#    return b.lat, b.lon, b.thermometer_depth, bulk_temp, skin_temp, [surf_press, surf_airtemp, surf_dewpnt, surf_rh] # The returning array(last 4 variables) are never used
+    return buoy_data
+    
 
 def load(filename):
     """
@@ -384,7 +394,10 @@ def load(filename):
 
 def calc_bulk_temp(w_temp_slice):
     
-    bulk_temp = numpy.nanmean(w_temp_slice)
+    bulk_temp = (float(0))
+    
+    if not (len(w_temp_slice) == numpy.count_nonzero(numpy.isnan(w_temp_slice))):
+        bulk_temp = numpy.nanmean(w_temp_slice)
     
     return bulk_temp
 
@@ -436,7 +449,7 @@ def calc_skin_temp_old(buoy_id, data, dates, headers, overpass_date, buoy_depth)
     
     # 24 hour average wind Speed at 10 meters (measured at 5 meters) 
     u_m = wind_speed_height_correction(numpy.nanmean(wind_spd), anemometer_height, 10) # Equasion 2.9 Frank Pedula's thesis, page 23
-    
+        
     #avg_wtmp = numpy.nanmean(w_temp)
     bulk_temp_celsius = calc_bulk_temp(w_temp)
 

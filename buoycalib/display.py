@@ -120,7 +120,17 @@ def landsat_preview(scene_id, buoy_id, source='merra', preview_file='landsat_pre
         image = cv2.imread(image_file, 0)
         image = cv2.resize(image, (512, 512))
 
-    return image, file_downloaded
+
+    image_data = {
+            'image': image,
+            'overpass_date': date,
+            'directory': directory,
+            'metadata': metadata,
+            'file_downloaded': file_downloaded
+        }
+
+#    return image, date, directory, metadata, file_downloaded
+    return image_data
     
 
 def web_draw_latlon(image_file, corners, text=[], loc=[], r=5, color=(255, 0, 0), size=(300,300)):

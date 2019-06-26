@@ -15,6 +15,12 @@ SQL_CONFIGURED = False
 DEFAULT_EMIS_B10 = 0.988
 DEFAULT_EMIS_B11 = 0.98644
 
+# Define locations for default log files used by Gui
+DEFAULT_OUTPUT_LOG = 'logs/output/default.output'
+DEFAULT_STATUS_LOG = 'logs/status/default.status'
+DEFAULT_SINGLE_SAVE_FILE = 'output/single/results.txt'
+DEFAULT_BATCH_SAVE_PATH = 'output/batches/data/'
+
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')
 

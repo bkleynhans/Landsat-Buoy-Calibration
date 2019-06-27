@@ -21,11 +21,12 @@ from buoycalib import settings
 from tools.process_logger import Process_Logger
 from modules.core.landsat.landsat_single import Landsat_Single
 from modules.core.landsat.landsat_batch import Landsat_Batch
+from modules.core.landsat.landsat_partial_single import Landsat_Partial_Single
 
 class Model:
     
 #    def __init__(self, caller, args):
-    def __init__(self, caller, process, source, atmo_source, display_image, project_root, verbose):
+    def __init__(self, caller, process, source, atmo_source, display_image, project_root, verbose, partial_data=None):
         
         warnings.filterwarnings("ignore")
         
@@ -34,22 +35,22 @@ class Model:
         self.args['caller'] = caller
         self.args['process'] = process
         
-        if process == 'single':
+        if (process == 'single') or (process == 'partial_single'):
             self.args['scene_id'] = source
-        elif process == 'batch':
+        elif (process == 'batch') or (process == 'partial_batch'):
             self.args['batch_file_name'] = source
         
         self.args['atmo_source'] = atmo_source
         self.args['display_image'] = display_image
         self.args['project_root'] = project_root
         self.args['output_directory'] = os.path.join(project_root, 'output')
-        self.args['verbose'] = verbose
+        self.args['verbose'] = verbose        
+        self.args['partial_data'] = partial_data
         
         # Create an instance copy of arguments
 #        self.args = args
         
 #        self.args['output_directory'] = os.path.join(project_root, 'output')
-        
         self.create_loggers()
         
         self.process_arguments()
@@ -74,13 +75,36 @@ class Model:
                 self.results = Landsat_Single(self.args)
         
             elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
-                pass        
+                pass
         
         elif self.args['process'] == 'batch':
             
             self.args['savefile'] = settings.DEFAULT_BATCH_SAVE_PATH
             
             self.analyze_batch()
+            
+        elif self.args['process'] == 'partial_single':
+            
+            self.args['savefile'] = settings.DEFAULT_PARTIAL_SINGLE_SAVE_FILE
+        
+            if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
+                    
+                self.results = Landsat_Partial_Single(self.args)
+        
+            elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
+                pass
+        
+        elif self.args['process'] == 'partial_batch':
+            
+            self.args['savefile'] = settings.DEFAULT_PARTIAL_BATCH_SAVE_FILE
+        
+            if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
+                    
+                pass
+#                self.results = Landsat_Partial_Batch(self.args)
+        
+            elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
+                pass
             
                     
     def analyze_batch(self):
@@ -190,42 +214,3 @@ class Model:
         total_size = total_size / 1000000
         
         return total_size
-    
-    
-## Process initialization arguments
-#def parseArgs(args):
-#
-#    import argparse
-#
-#    parser = argparse.ArgumentParser(description='Compute and compare the radiance values of \
-#     a landsat image to the propogated radiance of a NOAA buoy, using atmospheric data and MODTRAN. ')
-#
-##    parser.add_argument('scene_id', help='LANDSAT or MODIS scene ID. Examples: LC08_L1TP_017030_20170703_20170715_01_T1, MOD021KM.A2011154.1650.006.2014224075807.hdf')
-##    parser.add_argument('-a', '--atmo_source', default = 'merra', choices=['merra', 'narr'], help='Source of atmospheric data')
-##    parser.add_argument('-v', '--verbose', default=False, action='store_true')
-##    parser.add_argument('-s', '--savefile', default='output/single/results.txt')
-##    parser.add_argument('-d', '--project_root', help='Working directory of the program')
-##    parser.add_argument('-p', '--process', default = 'single', choices=['single', 'batch'])
-##    parser.add_argument('-w', '--warnings', default=False, action='store_true')
-##    parser.add_argument('-o', '--output_directory', default = '', help = 'Output directory for results')
-## Allow ability to disable image display
-##    parser.add_argument('-n', '--display_image', default='true')
-## Add caller information
-##    parser.add_argument('-c', '--caller', help='The name or reference of the file calling this function')
-## Add log file locations
-##    parser.add_argument('-t', '--statuslog', default = 'logs/status/default.status', help='Status file directory')
-##    parser.add_argument('-u', '--outputlog', default = 'logs/output/default.output', help='Output file directory')
-#
-#    return parser.parse_args(args)
-#
-#
-## Program entry from different source
-#def main(args):
-#
-#    Model(parseArgs(args))
-#
-#
-## Command line program entry
-#if __name__ == '__main__':
-#
-#    args = main(sys.argv[1:])

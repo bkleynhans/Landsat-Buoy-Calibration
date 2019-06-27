@@ -19,7 +19,9 @@ DEFAULT_EMIS_B11 = 0.98644
 DEFAULT_OUTPUT_LOG = 'logs/output/default.output'
 DEFAULT_STATUS_LOG = 'logs/status/default.status'
 DEFAULT_SINGLE_SAVE_FILE = 'output/single/results.txt'
+DEFAULT_PARTIAL_SINGLE_SAVE_FILE = 'output/partialsingle/results.txt'
 DEFAULT_BATCH_SAVE_PATH = 'output/batches/data/'
+DEFAULT_PARTIAL_BATCH_SAVE_FILE = 'output/partialbatch/results.txt'
 
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')

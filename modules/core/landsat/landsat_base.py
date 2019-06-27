@@ -144,15 +144,40 @@ class Landsat_Base():
             self.buoy_process_monitor[buoy_id].stop_spinner()
             
             return
-         
-        self.calculate_atmosphere()
-                    
-        modtran_data = self.run_modtran(buoy_id)
+        
+        # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
+        self.calculate_atmosphere(
+                self.args['atmo_source'],
+                self.image_data['overpass_date'],
+                self.buoy_data['buoy_lat'],
+                self.buoy_data['buoy_lon'],
+                self.args['verbose']
+            )
+       
+        modtran_output_file = '{0}_{1}'.format(self.args['scene_id'], buoy_id)
+        
+        # Pass in paramteres directly because run_modtran receives requests from other sources also
+        modtran_data = self.run_modtran(
+                settings.MODTRAN_BASH_DIR,
+                modtran_output_file,
+                self.buoy_data['buoy_lat'],
+                self.buoy_data['buoy_lon'],
+                self.image_data['overpass_date'],
+                self.buoy_data['skin_temp']
+            )
         
         img_ltoa = {}
         mod_ltoa = {}
         
-        img_ltoa, mod_ltoa = self.run_ltoa(modtran_data, img_ltoa, mod_ltoa)
+        # Pass in paramteres directly because run_ltao receives requests from other sources also
+        img_ltoa, mod_ltoa = self.run_ltoa(
+                modtran_data,
+                img_ltoa,
+                mod_ltoa,
+                self.buoy_data['skin_temp'],
+                self.buoy_data['buoy_lat'],
+                self.buoy_data['buoy_lon']
+            )
         
         error = error_bar.error_bar(
                         self.args['scene_id'], 
@@ -183,52 +208,54 @@ class Landsat_Base():
         self.buoy_process_monitor[buoy_id].stop_spinner()
         
         
-    def calculate_atmosphere(self):
+    def calculate_atmosphere(self, source, overpass_date, lat, lon, verbose = False):
         
         # Atmosphere
-        if self.args['atmo_source'] == 'merra':             
+        if source == 'merra':             
             self.atmosphere = atmo.merra.process(
-                    self.image_data['overpass_date'],
-                    self.buoy_data['buoy_lat'],
-                    self.buoy_data['buoy_lon'],
-                    self.args['verbose']
+                    overpass_date,
+                    lat,
+                    lon,
+                    verbose
                 )         
-        elif self.args['atmo_source'] == 'narr':
-                    self.atmosphere = atmo.narr.process(
-                    self.image_data['overpass_date'],
-                    self.buoy_data['buoy_lat'],
-                    self.buoy_data['buoy_lon'],
-                    self.args['verbose']
+        elif source == 'narr':
+            self.atmosphere = atmo.narr.process(
+                    overpass_date,
+                    lat,
+                    lon,
+                    verbose
                  )
         else:
             raise ValueError('atmo_source is not one of (narr, merra)')
             
         
      # MODTRAN
-    def run_modtran(self, buoy_id):
+    def run_modtran(self, output_directory, output_file, lat, lon, overpass_date, skin_temp):
         
-        modtran_directory = '{0}/{1}_{2}'.format(settings.MODTRAN_BASH_DIR, self.args['scene_id'], buoy_id)
+#        modtran_directory = '{0}/{1}_{2}'.format(settings.MODTRAN_BASH_DIR, self.args['scene_id'], buoy_id)
+        modtran_directory = '{0}/{1}'.format(output_directory, output_file)
         
         modtran_data = modtran.process(
                             self.atmosphere,
-                            self.buoy_data['buoy_lat'],
-                            self.buoy_data['buoy_lon'],
-                            self.image_data['overpass_date'],
+                            lat,
+                            lon,
+                            overpass_date,
                             modtran_directory,
-                            self.buoy_data['skin_temp']
+                            skin_temp
                         )
     
         return modtran_data
     
     # LTOA calcs
-    def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa):
+    def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa, skin_temp, lat, lon):
         
         mod_ltoa_spectral = radiance.calc_ltoa_spectral(
                                         modtran_data['wavelengths'],
                                         modtran_data['upwell_rad'],
                                         modtran_data['gnd_reflect'],
                                         modtran_data['transmission'],
-                                        self.buoy_data['skin_temp'])
+                                        skin_temp
+                                    )
         
         try:
             for b in self.BANDS:
@@ -236,8 +263,8 @@ class Landsat_Base():
                 img_ltoa[b] = sat.landsat.calc_ltoa(
                                         self.image_data['directory'],
                                         self.image_data['metadata'],
-                                        self.buoy_data['buoy_lat'],
-                                        self.buoy_data['buoy_lon'],
+                                        lat,
+                                        lon,
                                         b
                                     )
                 mod_ltoa[b] = radiance.calc_ltoa(modtran_data['wavelengths'], mod_ltoa_spectral, RSR_wavelengths, RSR)
@@ -289,7 +316,7 @@ class Landsat_Base():
         # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
         if not (test_paths.main([self.args['savefile'], "-tfile"])):
             output_file = open(self.args['savefile'], 'w+')
-            output_file.write('#Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
+            output_file.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
             output_file.write("%s\n" % current_line)
             output_file.close()
         else:

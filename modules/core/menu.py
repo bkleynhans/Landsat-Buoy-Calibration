@@ -18,16 +18,9 @@
 #import inspect
 import sys
 import os
-#import time
 import cv2
 import subprocess as sp
-from os.path import join, abspath
 from buoycalib import settings
-#import datetime
-#import pdb
-from modules.core import forward_model
-from modules.core import forward_model_batch
-from modules.core import model
 from modules.core.model import Model
 
 ERASE_LINE = '\x1b[2K'    
@@ -90,9 +83,7 @@ def f_model_batch_merra(project_root):
             else:
             
                 # Launch batch process job
-#                forward_model_batch.main([batchFile, display_images, '-cmenu', ('-d' + project_root)])
-#                model.main([batchFile, display_images, '-cmenu', ('-d' + project_root), '-pbatch'])
-                Model('menu', 'batch', batchFile, 'merra', display_images, project_root, False)
+                Model('menu', 'batch', batchFile, 'merra', display_images, project_root, False, None)
 
 
 # Request Scene ID for single scene to calculate
@@ -117,16 +108,15 @@ def f_model(project_root):
         if sceneId.upper() != 'X':            
             
             # Launch single scene ID process job
-#            forward_model.main([sceneId, display_images, '-cmenu', ('-d' + project_root)])
-#            model.main([sceneId, display_images, '-cmenu', ('-d' + project_root), '-psingle'])
-            Model('menu', 'single', sceneId, 'merra', display_images, project_root, False)
+            Model('menu', 'single', sceneId, 'merra', display_images, project_root, False, None)
             
             
 # Request information to perform partial calculation
 # scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
 def f_model_partial(project_root):
     
-    display_images = False
+    display_images = display_processed_images(False)
+    partial_data = {}
     
     sceneId = input("\n Please enter the Scene ID to continue or 'X' to exit : ")
     
@@ -144,6 +134,18 @@ def f_model_partial(project_root):
     
         if sceneId.upper() != 'X':
             
+            # Get skin temperature from user
+            skin_temp = input("\n Please enter the surface temperature : ")
+            
+            # Perform data validation (200 - 350 K)
+            if not is_valid_temp(skin_temp):
+                while not is_valid_temp(skin_temp):
+                    skin_temp = input("\n The skin temperature you entered is not in the valid range of 200 to 350, please try again : ")
+            
+            skin_temp = float(skin_temp)
+        
+            partial_data['skin_temp'] = skin_temp
+            
             # Get latitude from user
             lat = input("\n Please enter the latitude for the supplied surface temperature (decimal range -90 to 90) : ")
             
@@ -151,8 +153,10 @@ def f_model_partial(project_root):
             if not is_valid_latitude(lat):
                 while not is_valid_latitude(lat):
                     lat = input("\n The Latitude you entered is not in the valid range of -90 to 90, please try again : ")
-            else:
-                lat = float(lat)
+            
+            lat = float(lat)
+            
+            partial_data['lat'] = lat
             
             # Get longtitude from user
             lon = input("\n Please enter the longtitude for the supplied surface temperature (decimal range -180  to 180) : ")
@@ -161,8 +165,10 @@ def f_model_partial(project_root):
             if not is_valid_longtitude(lon):
                 while not is_valid_longtitude(lon):
                     lon = input("\n The Longtitude you entered is not in the valid range of -180 to 180, please try again : ")
-            else:
-                lon = float(lon)
+            
+            lon = float(lon)
+        
+            partial_data['lon'] = lon
         
             # Get band 10 emissivity from user
             emis_b10 = input("\n Please enter the emissivity for Band 10 (Press enter for default %s) : " % settings.DEFAULT_EMIS_B10)
@@ -179,7 +185,9 @@ def f_model_partial(project_root):
                     emis_b10 = float(emis_b10)
             else:
                 emis_b10 = settings.DEFAULT_EMIS_B10
-                    
+            
+            partial_data['emis_b10'] = emis_b10
+            
             # Get band 11 emissivity from user
             emis_b11 = input("\n Please enter the emissivity for Band 11 (Press enter for default %s) : " % settings.DEFAULT_EMIS_B11)
     
@@ -196,9 +204,10 @@ def f_model_partial(project_root):
             else:
                 emis_b11 = settings.DEFAULT_EMIS_B11
             
+            partial_data['emis_b11'] = emis_b11
+            
             # Launch single scene ID process job
-            #forward_model.main([sceneId, display_images, '-cmenu'])
-            print('WIP')
+            Model('menu', 'partial_single', sceneId, 'merra', display_images, project_root, False, partial_data)
             
 
 def data_entered(input_value):
@@ -238,6 +247,24 @@ def is_valid_longtitude(input_value):
             input_value = float(input_value)
             
             if ((input_value >= -180) and (input_value <= 180)):
+                returnValue = True            
+                
+        except ValueError:
+            pass
+    
+    return returnValue
+
+
+# Test if the supplied surface temperature is within the valid range
+def is_valid_temp(input_value):
+    
+    returnValue = False
+    
+    if data_entered(input_value):
+        try:
+            input_value = float(input_value)
+            
+            if ((input_value >= 200) and (input_value <= 350)):
                 returnValue = True            
                 
         except ValueError:
@@ -417,12 +444,7 @@ def menu():
 def main(project_root):
     
     sp.call('clear', shell = True)
-
-#    set_path_variables()
-
     
-
-    menuInput = ""
     result = ""
     
     successful_entry = None

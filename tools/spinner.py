@@ -22,12 +22,13 @@ import time
 class Spinner():
     
     SPINNER = itertools.cycle(['-','/','|','\\'])
+    THREAD_NAME = 'spinner'
     
     def __init__(self):
         
         self.active = True
                 
-        self.spinner = threading.Thread(target=self.make_spinner)
+        self.spinner_thread = threading.Thread(target=self.make_spinner)
         
         
     # Start the spinner
@@ -43,7 +44,7 @@ class Spinner():
     # Start the spinner
     def start_spinner(self):
         
-        self.spinner.start()
+        self.spinner_thread.start()
         
     # Stop the spinner
     def stop_spinner(self):

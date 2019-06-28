@@ -26,7 +26,7 @@ from modules.core.landsat.landsat_partial_single import Landsat_Partial_Single
 class Model:
     
 #    def __init__(self, caller, args):
-    def __init__(self, caller, process, source, atmo_source, display_image, project_root, verbose, partial_data=None):
+    def __init__(self, caller, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):
         
         warnings.filterwarnings("ignore")
         
@@ -46,6 +46,8 @@ class Model:
         self.args['output_directory'] = os.path.join(project_root, 'output')
         self.args['verbose'] = verbose        
         self.args['partial_data'] = partial_data
+        self.args['status_log'] = status_log
+        self.args['output_log'] = output_log
         
         # Create an instance copy of arguments
 #        self.args = args
@@ -59,9 +61,16 @@ class Model:
     # Create the data loggers for gui display
     def create_loggers(self):
         
-        # Initialize the loggers for process feedback        
-        self.status_logger = Process_Logger(settings.DEFAULT_STATUS_LOG)
-        self.output_logger = Process_Logger(settings.DEFAULT_OUTPUT_LOG)
+        # Initialize the loggers for process feedback
+        if self.args['status_log'] == None:
+            self.status_logger = Process_Logger(settings.DEFAULT_STATUS_LOG)
+        else:
+            self.args['status_logger'] = Process_Logger(self.args['status_log'])
+            
+        if self.args['output_log'] == None:
+            self.output_logger = Process_Logger(settings.DEFAULT_OUTPUT_LOG)
+        else:
+            self.args['output_logger'] = Process_Logger(self.args['output_log'])
     
     
     def process_arguments(self):

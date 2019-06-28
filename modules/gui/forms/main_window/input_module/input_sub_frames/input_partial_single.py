@@ -65,10 +65,10 @@ class Input_Partial_Single(Gui_Frame):
         master.tab(1, state = 'hidden')
         
         self.create_scene_id(master)
+        self.create_surface_temperature(master)
         self.create_lat(master)
         self.create_lon(master)
         self.create_emissivity(master)
-        self.create_surface_temperature(master)
         
         
         #### --> Date Picker removed, will now get date from LandSat ID

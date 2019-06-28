@@ -16,8 +16,8 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-from tkinter import messagebox
-from tkcalendar import Calendar, DateEntry
+#from tkinter import messagebox
+#from tkcalendar import Calendar, DateEntry
 from datetime import date
 from gui.forms.base_classes.gui_frame import Gui_Frame
 from buoycalib import settings
@@ -170,49 +170,52 @@ class Input_Partial_Single(Gui_Frame):
                 )
         
     
+    # Create Surface Temperature entry area in frame
+    def create_surface_temperature(self, master):
+        
+        # Read in the surface temperature
+        ttk.Label(master.frames[self.frame_name], text = 'Surface Temperature (K) : ', width = 20).grid(row = 3, column = 0, padx = 10, pady = 10, sticky = 'w')
+        
+        master.input_values['surface_temp'] = ttk.Entry(master.frames[self.frame_name], width = 30)
+        master.input_values['surface_temp'].grid(row = 3, column = 1, padx = 10, pady = 10, sticky = 'e')
+        
+        
     # Create Latitude entry area in frame
     def create_lat(self, master):
         
         # Read in the latitude
-        ttk.Label(master.frames[self.frame_name], text = 'Latitude (dec) : ', width = 20).grid(row = 3, column = 0, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(master.frames[self.frame_name], text = 'Latitude (dec) : ', width = 20).grid(row = 4, column = 0, padx = 10, pady = 10, sticky = 'w')
         
         master.input_values['lat'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.input_values['lat'].grid(row = 3, column = 1, padx = 10, pady = 10, sticky = 'e')
+        master.input_values['lat'].grid(row = 4, column = 1, padx = 10, pady = 10, sticky = 'e')
     
     
     # Create Longtitude entry area in frame
     def create_lon(self, master):
         
         # Read in the longtitude
-        ttk.Label(master.frames[self.frame_name], text = 'Longtitude (dec) : ', width = 20).grid(row = 4, column = 0, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(master.frames[self.frame_name], text = 'Longtitude (dec) : ', width = 20).grid(row = 5, column = 0, padx = 10, pady = (10, 0), sticky = 'w')
         
         master.input_values['lon'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.input_values['lon'].grid(row = 4, column = 1, padx = 10, pady = 10, sticky = 'e')
+        master.input_values['lon'].grid(row = 5, column = 1, padx = 10, pady = (10, 0), sticky = 'e')
     
     
     # Create Latitude entry area in frame
     def create_emissivity(self, master):
         
         # Read in the latitude
-        ttk.Label(master.frames[self.frame_name], text = 'Emissivity Band 10 : ', width = 20).grid(row = 3, column = 2, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(master.frames[self.frame_name], text = 'Emissivity Band 10 : ', width = 20).grid(row = 4, column = 2, padx = 10, pady = 10, sticky = 'w')
         
         master.input_values['emissivity_b10'] = ttk.Entry(master.frames[self.frame_name], width = 30)
         master.input_values['emissivity_b10'].insert('end', settings.DEFAULT_EMIS_B10)
-        master.input_values['emissivity_b10'].grid(row = 3, column = 3, padx = 10, pady = 10, sticky = 'e')
+        master.input_values['emissivity_b10'].grid(row = 4, column = 3, padx = 10, pady = 10, sticky = 'e')
         
         # Read in the longtitude
-        ttk.Label(master.frames[self.frame_name], text = 'Emissivity Band 11 : ', width = 20).grid(row = 4, column = 2, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(master.frames[self.frame_name], text = 'Emissivity Band 11 : ', width = 20).grid(row = 5, column = 2, padx = 10, pady = (10, 0), sticky = 'w')
         
         master.input_values['emissivity_b11'] = ttk.Entry(master.frames[self.frame_name], width = 30)
         master.input_values['emissivity_b11'].insert('end', settings.DEFAULT_EMIS_B11)
-        master.input_values['emissivity_b11'].grid(row = 4, column = 3, padx = 10, pady = 10, sticky = 'e')
+        master.input_values['emissivity_b11'].grid(row = 5, column = 3, padx = 10, pady = (10, 0), sticky = 'e')
     
     
-    # Create Surface Temperature entry area in frame
-    def create_surface_temperature(self, master):
-        
-        # Read in the surface temperature
-        ttk.Label(master.frames[self.frame_name], text = 'Surface Temperature (K) : ', width = 20).grid(row = 5, column = 0, padx = 10, pady = (10, 0), sticky = 'w')
-        
-        master.input_values['surface_temp'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.input_values['surface_temp'].grid(row = 5, column = 1, padx = 10, pady = (10, 0), sticky = 'e')
+    

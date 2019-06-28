@@ -18,13 +18,14 @@
 import threading
 import cv2
 
-
 class Display_Image():
+    
+    THREAD_NAME = 'image'
     
     def __init__(self, data):
         
-        display_image_thread = threading.Thread(target=self.open_image, args=(data, ))
-        display_image_thread.start()
+        self.display_image_thread = threading.Thread(target=self.open_image, args=(data, ))
+        self.display_image_thread.start()
 
     # Display the image to the screen for 60 seconds, or until the window is closed.
     def open_image(self, data):

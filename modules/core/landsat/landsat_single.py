@@ -16,9 +16,9 @@
 
 # Imports
 import sys, pdb
-from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, display, error_bar)
+from buoycalib import (sat, buoy, settings)
 from modules.core.landsat.landsat_base import Landsat_Base
-from modules.core import model
+#from modules.core import model
 import datetime
 
 class Landsat_Single(Landsat_Base):
@@ -27,9 +27,16 @@ class Landsat_Single(Landsat_Base):
         
         super(Landsat_Single, self).__init__(args)
         
+        self.build_single_file_path()
+        
         self.download_image(self.args['scene_id'])
         
         self.analyze_image()
+        
+        sys.stdout.write('\n')
+        self.print_report_headings()
+        sys.stdout.write('\n')
+        sys.stdout.flush()
         
         self.process_scene()
         
@@ -64,13 +71,9 @@ class Landsat_Single(Landsat_Base):
                     'failed',
                     'No Landsat image available'
                 )
-    
+            
     
     def process_scene(self):
         
-        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
-        report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
-
-        self.log(report_headings)
         
-        self.print_output_to_screen()
+        self.print_and_save_output()

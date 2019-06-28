@@ -105,4 +105,4 @@ class Split_Window(STP_Base):
         lst_1 = self.data['T_plus'] * (self.coeff_rh90[1] + self.coeff_rh90[2] * self.data['e_min'] + self.coeff_rh90[3] * self.data['e_change'])
         lst_2 = self.data['T_min'] * (self.coeff_rh90[4] + self.coeff_rh90[5] * self.data['e_min'] + self.coeff_rh90[6] * self.data['e_change'] + self.coeff_rh90[7] * self.data['T_quad'])
         
-        self.data['LST'] = lst_0 + lst_1 + lst_2
+        self.data['LST_SW'] = lst_0 + lst_1 + lst_2

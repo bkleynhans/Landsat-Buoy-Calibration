@@ -115,7 +115,7 @@ def f_model(project_root):
 # scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
 def f_model_partial(project_root):
     
-    display_images = display_processed_images(False)
+    display_images = False
     partial_data = {}
     
     sceneId = input("\n Please enter the Scene ID to continue or 'X' to exit : ")
@@ -385,7 +385,7 @@ def display_processed_images(batch):
         display_images = input(question)
         display_images = display_images.upper()
         
-        while display_images[0] != "Y" and display_images[0] != "N":
+        while len(display_images) < 1 or (display_images[0] != "Y" and display_images[0] != "N"):
             display_images = input(" Your entry is invalid, please select Y for YES or N for NO : ")
             display_images = display_images.upper()
         

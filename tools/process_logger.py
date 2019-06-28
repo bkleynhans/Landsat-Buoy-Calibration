@@ -38,10 +38,14 @@ class Process_Logger():
                 'logs',
                 'logs/status',
                 'logs/status/single',
+                'logs/status/partial_single',
                 'logs/status/batch',
+                'logs/status/partial_batch',
                 'logs/output',
                 'logs/output/single',
-                'logs/output/batch'
+                'logs/output/partial_single',
+                'logs/output/batch',
+                'logs/output/partial_batch'
             }
         
         for directory in self.required_directories:

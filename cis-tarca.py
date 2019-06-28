@@ -18,6 +18,7 @@
 import sys, os, inspect, pdb
 import time
 import subprocess as sp
+import ctypes
 
 ERASE_LINE = '\x1b[2K'
 
@@ -44,16 +45,22 @@ def check_required_directories():
             'output',
             'output/processed_images',
             'output/single',
+            'output/partial_single',
             'output/batches',
             'output/batches/data',            
             'output/batches/graphs',
+            'output/partial_batches',
             'logs',
             'logs/status',
             'logs/status/single',
+            'logs/status/partial_single',
             'logs/status/batch',
+            'logs/status/partial_batch',
             'logs/output',
             'logs/output/single',
-            'logs/output/batch'}
+            'logs/output/partial_single',
+            'logs/output/batch',
+            'logs/output/partial_batch'}
     
     for directory in required_directories:
         if not test_paths.main([directory, "-tdirectory"]):
@@ -149,7 +156,10 @@ def parseArgs(args):
 
 
 def main(args):
-
+    
+    X11 = ctypes.CDLL('libX11.so')
+    X11.XInitThreads()
+    
     PROJECT_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     
     sp.call('clear', shell = True)

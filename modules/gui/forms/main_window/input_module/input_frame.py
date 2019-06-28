@@ -17,21 +17,17 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import os, sys
 import datetime
 import time
 import threading
-from buoycalib import (sat, atmo, radiance, modtran, settings)
 from gui.forms.general.progress_bar import Progress_Bar
 from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 from gui.forms.main_window.input_module.input_notebook import Input_Notebook
 from gui.forms.general.error_module.error_window import Error_Window
-import menu
-import forward_model
-import forward_model_batch
-import os, sys
-import numpy
-import warnings
-from modules.stp.sw.split_window import Split_Window
+from modules.core import menu
+from modules.core.model import Model
+from tools import test_paths
 import pdb
 
 
@@ -41,16 +37,16 @@ class Input_Frame(Gui_Label_Frame):
     def __init__(self, master):
                 
         self.path_dictionary = {
-                'relative_status_path': 'logs/status/batch',
-                'relative_output_path': 'logs/output/single',
+                'relative_status_path': '',
+                'relative_output_path': '',
                 'statusfile_name': '',
                 'statusfile_relative_path_and_filename': '',
                 'statusfile_absolute_path': '',
-                'parameterized_statusfile': '',
+                'statusfile_absolute_path_and_filename': '',
                 'outputfile_name': '',
                 'outputfile_relative_path_and_filename': '',
                 'outputfile_absolute_path': '',
-                'parameterized_outputfile': ''
+                'outputfile_absolute_path_and_filename': ''
         }
         
         self.current_datetime = datetime.datetime.now().strftime("%Y-%m-%d_%H%M")
@@ -75,11 +71,20 @@ class Input_Frame(Gui_Label_Frame):
         
         active_tab = master.frames['input_frame'].notebooks['input_notebook'].index(master.frames['input_frame'].notebooks['input_notebook'].select())
         
+        self.path_dictionary['relative_status_path'] = 'logs/status'
+        self.path_dictionary['relative_output_path'] = 'logs/output'
+        
         if (active_tab == 0):
+            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'single')
+            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'single')
             self.process_full_single(master)
         elif (active_tab == 1):
+            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'partial_single')
+            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'partial_single')
             self.process_partial_single(master)
         elif (active_tab == 2):
+            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'batch')
+            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'batch')
             self.process_batch(master)
             
         
@@ -92,9 +97,13 @@ class Input_Frame(Gui_Label_Frame):
         self.process_button.config(command = lambda: self.process_active_tab(master))
         
         
-    def delete_log_files(self, file_absolute_path, file_name):
+    def delete_log_files(self, absolute_path_and_file_name):
         
-        os.unlink(os.path.join(file_absolute_path, file_name))# unlink is ux version of delete
+        # Test if the file exists before deleting it
+        file_exists = test_paths.main([absolute_path_and_file_name, "-tfile"])
+        
+        if file_exists:
+            os.unlink(absolute_path_and_file_name)# unlink is ux version of delete
     
         
     def step_progressbar(self):
@@ -138,7 +147,10 @@ class Input_Frame(Gui_Label_Frame):
                 master.project_root,
                 self.path_dictionary['relative_status_path']
         )        
-        self.path_dictionary['parameterized_statusfile'] = ("-t" + self.path_dictionary['statusfile_relative_path_and_filename'])
+        self.path_dictionary['statusfile_absolute_path_and_filename'] = os.path.join(
+                master.project_root,
+                self.path_dictionary['statusfile_relative_path_and_filename']
+        )
         
         # Create a output logger instance paths
         self.path_dictionary['outputfile_relative_path_and_filename'] = os.path.join(
@@ -149,13 +161,16 @@ class Input_Frame(Gui_Label_Frame):
                 master.project_root, 
                 self.path_dictionary['relative_output_path']
         )
-        self.path_dictionary['parameterized_outputfile'] = ("-u" + self.path_dictionary['outputfile_relative_path_and_filename'])
+        self.path_dictionary['outputfile_absolute_path_and_filename'] = os.path.join(
+                master.project_root,
+                self.path_dictionary['outputfile_relative_path_and_filename']
+        )
     
     
     def clear_watch_files(self, master):#, statusfile_absolute_path, statusfile_name, outputfile_absolute_path, outputfile_name):
         
-        self.delete_log_files(self.path_dictionary['statusfile_absolute_path'], self.path_dictionary['statusfile_name'])
-        self.delete_log_files(self.path_dictionary['outputfile_absolute_path'], self.path_dictionary['outputfile_name'])
+        self.delete_log_files(self.path_dictionary['statusfile_absolute_path_and_filename'])
+        self.delete_log_files(self.path_dictionary['outputfile_absolute_path_and_filename'])
         
     
     def convert_to_float(self, value):
@@ -175,14 +190,46 @@ class Input_Frame(Gui_Label_Frame):
                 self.path_dictionary['outputfile_absolute_path']
         )
         
-        forward_model.main([
-                scene_id,
-                show_images,
-                "-ctarca_gui",
-                ('-d' + master.project_root),
-                self.path_dictionary['parameterized_statusfile'],
-                self.path_dictionary['parameterized_outputfile']
-        ])
+        Model(
+             'tarca_gui',
+             'single',
+             scene_id,
+             'merra',
+             show_images,
+             master.project_root,
+             False,
+             None,
+             self.path_dictionary['statusfile_absolute_path_and_filename'], 
+             self.path_dictionary['outputfile_absolute_path_and_filename']
+        )
+        
+        self.process_complete = True
+        
+        self.kill_watchdogs()
+        
+        self.clear_watch_files(master)
+        
+        
+    def process_partial_scene_id(self, master, scene_id, show_images, partial_data):
+        
+        self.create_watchdogs(
+                master, 
+                self.path_dictionary['statusfile_absolute_path'], 
+                self.path_dictionary['outputfile_absolute_path']
+        )
+        
+        Model(
+             'tarca_gui',
+             'partial_single',
+             scene_id,
+             'merra',
+             show_images,
+             master.project_root,
+             False,
+             partial_data,
+             self.path_dictionary['statusfile_absolute_path_and_filename'], 
+             self.path_dictionary['outputfile_absolute_path_and_filename']
+        )
         
         self.process_complete = True
         
@@ -199,14 +246,18 @@ class Input_Frame(Gui_Label_Frame):
                 self.path_dictionary['outputfile_absolute_path']
         )
         
-        forward_model_batch.main([
-                source_file,
-                show_images,
-                "-ctarca_gui_batch",
-                ('-d' + master.project_root),
-                self.path_dictionary['parameterized_statusfile'],
-                self.path_dictionary['parameterized_outputfile']
-        ])
+        Model(
+             'tarca_gui',
+             'batch',
+             source_file,
+             'merra',
+             show_images,
+             master.project_root,
+             False,
+             None,
+             self.path_dictionary['statusfile_absolute_path_and_filename'], 
+             self.path_dictionary['outputfile_absolute_path_and_filename']
+        )
         
         self.process_complete = True
         
@@ -285,11 +336,6 @@ class Input_Frame(Gui_Label_Frame):
         show_images = messagebox.askyesno(
                 title = "Display Images",
                 message = "Do you wish to display each image as it is processing?")
-        
-        if show_images == True:
-            show_images ='-ntrue'
-        else:
-            show_images = '-nfalse'
     
         return show_images
     
@@ -297,50 +343,141 @@ class Input_Frame(Gui_Label_Frame):
     # Define process for partial_single
     def process_partial_single(self, master, bands=[10, 11]):
 
+        # Keep track of all the invalid entries
+        error_message_list = {
+                'scene_id': ' is not a valid Scene ID',
+                'skin_temp': ' does not fall within the range of 200 to 350 kelvin for a valid skin temperature',
+                'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
+                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
+                'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
+                'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
+            }
+        
+        error_list = {}
+        
         # Clear output windows and disable process button
         self.prepare_window(master)
         
+        # Define dictionary for required values
+        partial_data = {}
+        
         # Read the scene_id from the form
         scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id_partial_single'].get()
-        lat = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lat'].get()
-        lon = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lon'].get()
-        emissivity_b10 = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b10'].get()
-        emissivity_b11 = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b11'].get()
-        skin_temp = master.frames[self.frame_name].notebooks['input_notebook'].input_values['surface_temp'].get()
+        partial_data['skin_temp'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['surface_temp'].get()
+        partial_data['lat'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lat'].get()
+        partial_data['lon'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lon'].get()
+        partial_data['emis_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b10'].get()
+        partial_data['emis_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b11'].get()
         
-        lat = self.convert_to_float(lat)
-        lon = self.convert_to_float(lon)
-        emissivity_b10 = self.convert_to_float(emissivity_b10)
-        emissivity_b11 = self.convert_to_float(emissivity_b11)
-        skin_temp = self.convert_to_float(skin_temp)
+        partial_data['skin_temp'] = self.convert_to_float(partial_data['skin_temp'])
+        partial_data['lat'] = self.convert_to_float(partial_data['lat'])
+        partial_data['lon'] = self.convert_to_float(partial_data['lon'])
+        partial_data['emis_b10'] = self.convert_to_float(partial_data['emis_b10'])
+        partial_data['emis_b11'] = self.convert_to_float(partial_data['emis_b11'])
         
-        overpass_date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, bands[:])
         
-        atmosphere = atmo.merra.process(overpass_date, lat, lon)
+        # Check if the scene id is valid
+        if (scene_id != None):        
+            if not menu.is_valid_id(scene_id):
+                
+                error_list['scene_id'] = scene_id
         
-        # MODTRAN
-        modtran_directory = '{0}/{1}'.format(settings.MODTRAN_GUI_DIR, scene_id)
-        wavelengths, upwell_rad, gnd_reflect, transmission = modtran.process(atmosphere,lat, lon, overpass_date, modtran_directory, skin_temp)
+        # Check if the skin temperature is valid
+        if (partial_data['skin_temp'] != None):
+            if not menu.is_valid_temp(partial_data['skin_temp']):
+                
+                error_list['skin_temp'] = partial_data['skin_temp']  
         
-        # LTOA calcs
-        mod_ltoa_spectral = radiance.calc_ltoa_spectral(wavelengths, upwell_rad, gnd_reflect, transmission, skin_temp)
+        # Check if the latitude is valid
+        if (partial_data['lat'] != None):
+            if not menu.is_valid_latitude(partial_data['lat']):
+                
+                error_list['lat'] = partial_data['lat']
+                
+        # Check if the longtitude is valid
+        if (partial_data['lon'] != None):
+            if not menu.is_valid_longtitude(partial_data['lon']):
+                    
+                error_list['lon'] = partial_data['lon']
+                
+                
+        # Check if the emissivity for band 10 is valid
+        if (partial_data['emis_b10'] != None):
+            if not menu.is_valid_emissivity(partial_data['emis_b10']):
+                
+                error_list['emis_b10'] = partial_data['emis_b10']
+                
+                
+        # Check if the emissivity for band 11 is valid
+        if (partial_data['emis_b11'] != None):
+            if not menu.is_valid_emissivity(partial_data['emis_b11']):
+                
+                error_list['emis_b11'] = partial_data['emis_b11']
+                
+        
+        if len(error_list) == 0:
+            
+            # Create a status logger instance
+            self.path_dictionary['statusfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".status"
 
-        img_ltoa = {}
-        mod_ltoa = {}
-        rsrs = {b:settings.RSR_L8[b] for b in bands}
+            # Create a output logger instance
+            self.path_dictionary['outputfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".output"
         
-        try:
-            for b in bands:
-                RSR_wavelengths, RSR = numpy.loadtxt(rsrs[b], unpack=True)
-                img_ltoa[b] = sat.landsat.calc_ltoa(directory, metadata, lat, lon, b)
-                mod_ltoa[b] = radiance.calc_ltoa(wavelengths, mod_ltoa_spectral, RSR_wavelengths, RSR)
-        except RuntimeError as e:
-            warnings.warn(str(e), RuntimeWarning)
-        
-        # split window
-        sw = Split_Window(img_ltoa[10], img_ltoa[11], emissivity_b10, emissivity_b11)
-        
-        pdb.set_trace()
+            self.build_paths(master)
+            
+            # Create a progress bar to show activity
+            self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
+            self.progressbar.progressbar.config(mode = 'indeterminate')
+            
+            # Progressbar start and stop work with program loop, so manual loop is required for progression
+            self.process_complete = False
+            
+            progressbar_thread = threading.Thread(target = self.step_progressbar)
+            progressbar_thread.start()
+                
+#            self.process_partial_scene_id(master, scene_id, False, partial_data)
+            # Launch single scene ID process job in own thread
+            cis_tarca_thread = threading.Thread(
+                    target = self.process_partial_scene_id, args = (
+                            [master,
+                             scene_id,
+                             False,
+                             partial_data, ]
+                    )
+            )
+                    
+            cis_tarca_thread.start()
+            
+        else:
+            
+            asterisk = '*'
+            nr_asterisks = 65
+            
+            space = ' '
+            nr_spaces = 5
+            
+            header1 = ''.join([char*nr_asterisks for char in asterisk])
+            header1 += '\n'
+            header2 = ''.join([char*nr_spaces for char in space])
+            header2 += '!!!   The following data you entered is incorrect.   !!!'
+            header2 += ''.join([char*nr_spaces for char in space])
+            header2 += '\n'
+            header3 = ''.join([char*nr_asterisks for char in asterisk])
+            
+            message_header = header1 + header2 + header3
+                            
+            message_body = ""
+            
+            for error in error_list:
+                
+                if error_list[error] == '':
+                    message_body += "You did not enter a value for %s\n" % error
+                else:
+                    message_body += "%s %s\n" % (error_list[error], error_message_list[error])
+           
+            Error_Window(master, "partial_single_error_window", "Data Input Errors", message_header, message_body)
+            
+            self.process_button.config(state = 'normal')
             
     
     # Define process for batch
@@ -407,6 +544,7 @@ class Input_Frame(Gui_Label_Frame):
                 message_body = message_body[:-2]
                 
                 Error_Window(master, "batch_error_window", "Batch File Errors", message_header, message_body)
+                
                 
                 self.process_button.config(state = 'normal')
                     

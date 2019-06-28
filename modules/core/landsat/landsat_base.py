@@ -32,6 +32,10 @@ class Landsat_Base():
 
         self.data = {}
         self.args = args
+        self.args['threads'] = []
+        
+        if (self.args['process'] == 'partial_single') or (self.args['process'] == 'partial_batch'):
+            self.buoys = None
     
 
     # Acquire, save and display image if requested
@@ -47,7 +51,7 @@ class Landsat_Base():
                     'image': self.image_data['image']
                 }
             
-            Display_Image(image_data)
+            self.args['threads'].append(Display_Image(image_data))
         
         image_file = '{0}.tif'.format(self.args['scene_id'])
         image_directory = os.path.join(self.args['output_directory'], 'processed_images')
@@ -62,7 +66,12 @@ class Landsat_Base():
         
         # Process one buoy at a time
         for buoy_id in self.buoys:
-            self.buoy_process_monitor[buoy_id] = Spinner()
+            
+            if self.args['caller'] == 'menu':
+                self.buoy_process_monitor[buoy_id] = Spinner()
+                
+                self.args['threads'].append(self.buoy_process_monitor[buoy_id])
+            
             self.buoy_processor(buoy_id)
         
 #        # Process all buoys using threads
@@ -79,7 +88,7 @@ class Landsat_Base():
 #            thread.join()
     
     
-    def log(self, log_text):
+    def log(self, log_type, log_text):
         
         sys.stdout.write('\n')
         
@@ -88,15 +97,19 @@ class Landsat_Base():
             sys.stdout.write("\r" + log_text)
         
         elif (self.args['caller'] == 'tarca_gui'):
-        
-            self.args['status_logger'].write(log_text)
+            if log_type == 'status':
+                self.args['status_logger'].write(log_text)
+            elif log_type == 'output':
+                self.args['output_logger'].write(log_text)
                     
         sys.stdout.flush
         
     def buoy_processor(self, buoy_id):
                     
-        self.log("    Processing buoy %s  " % (buoy_id))
-        self.buoy_process_monitor[buoy_id].start_spinner()
+        self.log('status', "    Processing buoy %s  " % (buoy_id))
+        
+        if self.args['caller'] == 'menu':
+            self.buoy_process_monitor[buoy_id].start_spinner()
         
         try :
             self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'])
@@ -119,8 +132,9 @@ class Landsat_Base():
                      'failed',
                      'file'
                 )
-             
-            self.buoy_process_monitor[buoy_id].stop_spinner()
+            
+            if self.args['caller'] == 'menu':
+                self.buoy_process_monitor[buoy_id].stop_spinner()
             
             return
          
@@ -140,8 +154,9 @@ class Landsat_Base():
                      'failed',
                      str(e)
                 )
-             
-            self.buoy_process_monitor[buoy_id].stop_spinner()
+
+            if self.args['caller'] == 'menu':
+                self.buoy_process_monitor[buoy_id].stop_spinner()
             
             return
         
@@ -205,7 +220,8 @@ class Landsat_Base():
                     ''
                 )
         
-        self.buoy_process_monitor[buoy_id].stop_spinner()
+        if self.args['caller'] == 'menu':
+            self.buoy_process_monitor[buoy_id].stop_spinner()
         
         
     def calculate_atmosphere(self, source, overpass_date, lat, lon, verbose = False):
@@ -277,7 +293,20 @@ class Landsat_Base():
             
         return img_ltoa, mod_ltoa
     
-    def print_output_to_screen(self):
+    
+    def build_single_file_path(self):
+        
+        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
+        
+        
+    def print_report_headings(self):
+        
+        report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
+        
+        self.log('output', report_headings)
+        
+        
+    def print_and_save_output(self):
         
         error_message = None
                 
@@ -286,7 +315,6 @@ class Landsat_Base():
                 error_message = model.Model.get_error_message(self, self.data[self.args['scene_id']][key][10])
             else:
                 error_message = None
-                buoy_id, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod_ltoa, error, img_ltoa, date, status, reason = self.data[self.args['scene_id']][key]
             
             # Convert tuple to text and remove first and last parentheses
             log_text = str(self.args['scene_id']) + ', '                         # scene_id
@@ -305,7 +333,7 @@ class Landsat_Base():
             log_text += str(self.data[self.args['scene_id']][key][9]) + ', '     # status
             log_text += str(error_message)                                       # reason
             
-            self.log(log_text)
+            self.log('output', log_text)
             self.save_output_to_file(log_text)
             
     
@@ -313,22 +341,38 @@ class Landsat_Base():
         
         self.output_file_created = False
         
-        # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
-        if not (test_paths.main([self.args['savefile'], "-tfile"])):
-            output_file = open(self.args['savefile'], 'w+')
-            output_file.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
-            output_file.write("%s\n" % current_line)
-            output_file.close()
+        if (self.args['process'] == 'partial_single') or (self.args['process'] == 'partial_batch'):
+            
+            # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
+            if not (test_paths.main([self.args['savefile'], "-tfile"])):
+                output_file = open(self.args['savefile'], 'w+')
+                output_file.write('Scene_ID, Date, skin_temp, lat, lon, mod1, mod2, img1, img2, emis_10, emis_11, LST_SW, status, reason\n')
+                output_file.write("%s\n" % current_line)
+                output_file.close()
+            else:
+                output_file = open(self.args['savefile'], 'a+')
+                output_file.write("%s\n" % current_line)
+                output_file.close()
+        
         else:
-            output_file = open(self.args['savefile'], 'a+')
-            output_file.write("%s\n" % current_line)
-            output_file.close()
+        
+            # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
+            if not (test_paths.main([self.args['savefile'], "-tfile"])):
+                output_file = open(self.args['savefile'], 'w+')
+                output_file.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
+                output_file.write("%s\n" % current_line)
+                output_file.close()
+            else:
+                output_file = open(self.args['savefile'], 'a+')
+                output_file.write("%s\n" % current_line)
+                output_file.close()
             
             
     def finalize(self):
         
         self.stop_spinners()            
         self.clean_folders()
+        
     
     def clean_folders(self):
         
@@ -339,6 +383,21 @@ class Landsat_Base():
     def stop_spinners(self):
         
         # Stop all spinners that could still be running
-        for buoy_id in self.buoys:
-            if self.buoy_process_monitor[buoy_id].active:
-                self.buoy_process_monitor[buoy_id].stop_spinner()
+        if self.buoys != None:
+            for buoy_id in self.buoys:
+                if self.buoy_process_monitor[buoy_id].active:
+                    self.buoy_process_monitor[buoy_id].stop_spinner()
+        
+        
+    # Destructor.  Usually not needed but in this case required to get rid of threads        
+    def __del__(self):
+        
+        for thread in self.args['threads']:            
+            if thread.THREAD_NAME == 'image':
+                
+                thread.display_image_thread.join()
+                
+            elif thread.THREAD_NAME == 'spinner':
+                
+                thread.spinner_thread.join()
+                

@@ -78,10 +78,10 @@ def modis_latlon2pixel(lat, lon, points):
     return pixels
 
 
-def landsat_preview(scene_id, buoy_id, source='merra', preview_file='landsat_preview.jpg'):
+def landsat_preview(scene_id, buoy_id, shared_args, source='merra', preview_file='landsat_preview.jpg'):
     # get scene visible image
 
-    date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, ['10'])
+    date, directory, metadata, file_downloaded = sat.landsat.download(scene_id, shared_args)
     
     if file_downloaded:
         image_file = glob.glob('{0}/*_B10.TIF'.format(directory))[0]

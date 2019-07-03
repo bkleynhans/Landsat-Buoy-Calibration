@@ -59,16 +59,30 @@ class Process_Logger():
         file = open(self.filename, 'w+')
         file.close()
         
+        
+    # Remove the old log file
+    def __delete_file(self):
+        
+        if os.path.isfile(self.filename):
+            # unlink is ux version of delete for files
+            os.unlink(self.filename)
     
     # Append to the log file
-    def __append_to_log(self, input_text, newline):
+    def __append_to_log(self, input_text):
         
         file = open(self.filename, 'a')
         file.write(input_text)
-        
-        if (newline):
-            file.write('\n')
+        file.write('\n')
             
+        file.close()
+    
+    
+    # Replace the contets of the log file
+    def __update_log(self, input_text):
+        
+        file = open(self.filename, 'w')
+        file.write(input_text)
+        
         file.close()
         
     
@@ -78,6 +92,8 @@ class Process_Logger():
         
         if not os.path.exists(self.filename):
             self.__create_file()
-            self.__append_to_log(input_text, newline)
+            
+        if newline:
+            self.__append_to_log(input_text)
         else:
-            self.__append_to_log(input_text, newline)
+            self.__update_log(input_text)

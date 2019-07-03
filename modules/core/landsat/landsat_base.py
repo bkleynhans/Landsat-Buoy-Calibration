@@ -43,7 +43,25 @@ class Landsat_Base():
         
         self.args['scene_id'] = scene_id        
         self.data[self.args['scene_id']] = {}
-        self.image_data = display.landsat_preview(scene_id ,'')
+        
+        if self.args['caller'] == 'menu':
+            self.shared_args = {
+                'log_status': None,
+                'log_output': None,
+                'caller': self.args['caller'],
+                'scene_filename': '',
+                'bands': self.BANDS
+            }            
+        elif self.args['caller'] == 'tarca_gui':
+            self.shared_args = {
+                'log_status': self.args['status_logger'],
+                'log_output': self.args['output_logger'],
+                'caller': self.args['caller'],
+                'scene_filename': '',
+                'bands': self.BANDS
+            }
+                
+        self.image_data = display.landsat_preview(scene_id, '', self.shared_args)
         
         if self.args['display_image']:
             image_data = {
@@ -88,7 +106,8 @@ class Landsat_Base():
 #            thread.join()
     
     
-    def log(self, log_type, log_text):
+    # Add to log for functions that are part of this OOP design
+    def log(self, log_type, log_text, add_newline = True):
         
         sys.stdout.write('\n')
         
@@ -98,11 +117,12 @@ class Landsat_Base():
         
         elif (self.args['caller'] == 'tarca_gui'):
             if log_type == 'status':
-                self.args['status_logger'].write(log_text)
+                self.args['status_logger'].write(log_text, add_newline)
             elif log_type == 'output':
-                self.args['output_logger'].write(log_text)
+                self.args['output_logger'].write(log_text, add_newline)
                     
         sys.stdout.flush
+    
         
     def buoy_processor(self, buoy_id):
                     
@@ -112,7 +132,7 @@ class Landsat_Base():
             self.buoy_process_monitor[buoy_id].start_spinner()
         
         try :
-            self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'])
+            self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'], self.shared_args)
             
             self.buoy_data = buoy.info(buoy_id, self.buoy_file, self.image_data['overpass_date'])
             
@@ -203,8 +223,9 @@ class Landsat_Base():
                         self.buoy_data['buoy_lat'],
                         self.buoy_data['buoy_lon'],
                         self.rsrs,
-                        self.BANDS
-                        )
+                        self.BANDS,
+                        self.shared_args
+                    )
         
         self.data[self.args['scene_id']][buoy_id] = (
                     buoy_id,
@@ -232,15 +253,19 @@ class Landsat_Base():
                     overpass_date,
                     lat,
                     lon,
+                    self.shared_args,
                     verbose
                 )         
         elif source == 'narr':
-            self.atmosphere = atmo.narr.process(
-                    overpass_date,
-                    lat,
-                    lon,
-                    verbose
-                 )
+            pass
+        # this code has not been updated
+#            self.atmosphere = atmo.narr.process(
+#                    overpass_date,
+#                    lat,
+#                    lon,
+#                    self.shared_args,
+#                    verbose
+#                 )
         else:
             raise ValueError('atmo_source is not one of (narr, merra)')
             
@@ -297,6 +322,8 @@ class Landsat_Base():
     def build_single_file_path(self):
         
         self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
+        
+        self.delete_file(self.args['savefile'])
         
         
     def print_report_headings(self):
@@ -370,7 +397,9 @@ class Landsat_Base():
             
     def finalize(self):
         
-        self.stop_spinners()            
+        if self.args['caller'] == 'menu':
+            self.stop_spinners()            
+
         self.clean_folders()
         
     
@@ -388,7 +417,15 @@ class Landsat_Base():
                 if self.buoy_process_monitor[buoy_id].active:
                     self.buoy_process_monitor[buoy_id].stop_spinner()
         
+
+    # Delete file either by relative or absolute path    
+    def delete_file(self, filename):
         
+        if os.path.isfile(filename):
+            # unlink is ux version of delete for files
+            os.unlink(filename)
+    
+    
     # Destructor.  Usually not needed but in this case required to get rid of threads        
     def __del__(self):
         

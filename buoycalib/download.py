@@ -21,7 +21,7 @@ class RemoteFileException(Exception):
     pass
 
 
-def url_download(url, out_dir, _filename=None, auth=None):
+def url_download(url, out_dir, shared_args, _filename=None, auth=None):
     """ download a file (ftp or http), optional auth in (user, pass) format """
 
     if not os.path.exists(out_dir):
@@ -34,16 +34,16 @@ def url_download(url, out_dir, _filename=None, auth=None):
         return filepath
 
     if url[0:3] == 'ftp':
-        download_ftp(url, filepath)
+        download_ftp(url, filepath, shared_args)
     else:
-        download_http(url, filepath, auth)
+        download_http(url, filepath, shared_args, auth)
 
     return filepath
 
 
-def download_http(url, filepath, auth=None):
+def download_http(url, filepath, shared_args, auth=None):
     """ download a http or https resource using requests. """
-    
+        
     with requests.Session() as session:
         req = session.request('get', url)
 
@@ -51,12 +51,16 @@ def download_http(url, filepath, auth=None):
             resource = session.get(req.url, auth=auth)
     
             if resource.status_code != 200:
-                raise RemoteFileException('url: {0} does not exist'.format(url))
+                error_string = '\n    url: {0} does not exist, trying other sources\n'.format(url)
+                    
+                raise RemoteFileException(error_string)
         else:
             resource = session.get(req.url)
             
             if resource.status_code != 200:
-                raise RemoteFileException('url: {0} does not exist'.format(url))
+                error_string = '\n    url: {0} does not exist, trying other sources\n'.format(url)
+                    
+                raise RemoteFileException(error_string)
             
         with open(filepath, 'wb') as f:
             f.write(resource.content)
@@ -64,7 +68,7 @@ def download_http(url, filepath, auth=None):
     return filepath
 
 
-def download_ftp(url, filepath):
+def download_ftp(url, filepath, shared_args):
     """ download an FTP resource. """
     
     total_size = 0
@@ -74,7 +78,9 @@ def download_ftp(url, filepath):
         total_size = int(request.getheader('Content-Length').strip())
     except urllib.error.URLError as e:
         print(url)
-        raise RemoteFileException('url: {0} does not exist'.format(url))
+        error_string = '\n    url: {0} does not exist, trying other sources\n'.format(url)
+                    
+        raise RemoteFileException(error_string)
         
     downloaded = 0
     filename = filepath[len(filepath) - filepath[::-1].index('/'):]
@@ -82,9 +88,15 @@ def download_ftp(url, filepath):
     with open(filepath, 'wb') as fileobj:
         print()
         
-        while True:            
-            sys.stdout.write(" Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000)))
-            sys.stdout.flush()
+        while True:
+            output_string = "   Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
+            
+            if shared_args['caller'] == 'tarca_gui':
+                shared_args['log_status'].write(output_string, True)
+            elif shared_args['caller'] == 'menu':
+                sys.stdout.write(output_string)
+                sys.stdout.flush()
+            
             chunk = request.read(CHUNK)
             if not chunk:
                 break
@@ -97,7 +109,7 @@ def download_ftp(url, filepath):
 
 
 def ungzip(filepath):
-    """ un-gzip a fiile (equivalent `gzip -d filepath`) """
+    """ un-gzip a file (equivalent `gzip -d filepath`) """
     
     new_filepath = filepath.replace('.gz', '')
 
@@ -114,10 +126,14 @@ def ungzip(filepath):
 
 def untar(filepath, directory):
     """ extract all files from a tar archive (equivalent `tar -xvf filepath directory`)"""
+    
+    scene_filename = ''
+    
     with tarfile.open(filepath, 'r') as tf:
+        scene_filename = tf.getmembers()[0].name[:(tf.getmembers()[0].name).rfind('.')]
         tf.extractall(directory)
 
-    return directory
+    return directory, scene_filename
 
 
 def _remote_file_exists(url, auth=None):
@@ -163,13 +179,11 @@ def connect_earthexplorer_no_proxy(username, password):
     return True
 
 
-def download_earthexplorer(url, filepath):
+def download_earthexplorer(url, filepath, shared_args):
     """ 
     Slightly lower level downloading implemenation that handles earthexplorer's redirection.
     inspired by: https://github.com/olivierhagolle/LANDSAT-Download
     """ 
-
-    #pdb.set_trace()
 
     try:
         req = urllib.request.urlopen(url)
@@ -190,8 +204,14 @@ def download_earthexplorer(url, filepath):
             print()
             
             while True:
-                sys.stdout.write(" Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000)))
-                sys.stdout.flush()
+                output_string = "   Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
+                
+                if shared_args['caller'] == 'tarca_gui':
+                    shared_args['log_status'].write(output_string, True)
+                elif shared_args['caller'] == 'menu':
+                    sys.stdout.write(output_string)
+                    sys.stdout.flush()
+                    
                 chunk = req.read(CHUNK)
                 if not chunk: break
                 fp.write(chunk)

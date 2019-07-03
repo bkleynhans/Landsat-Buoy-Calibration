@@ -7,7 +7,7 @@ from .. import (settings, interp)
 from ..download import url_download
 
 
-def download(date):
+def download(date, shared_args):
     """
     Download MERRA data via ftp.
 
@@ -22,16 +22,16 @@ def download(date):
     url = settings.MERRA_URL % (date.strftime('%Y'), date.strftime('%m'),
                                 date.strftime('%Y%m%d'))
 
-    filename = url_download(url, settings.MERRA_DIR, auth=settings.MERRA_LOGIN)
+    filename = url_download(url, settings.MERRA_DIR, shared_args, auth=settings.MERRA_LOGIN)
     return filename
 
 
-def process(date, lat_oi, lon_oi, verbose=False):
+def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     """
     process atmospheric data, yield an atmosphere
     """
     
-    filename = download(date)
+    filename = download(date, shared_args)
 
     atmo_data = data.open_netcdf4(filename)
 
@@ -124,8 +124,8 @@ def process(date, lat_oi, lon_oi, verbose=False):
         return valid_data
     
 
-def error_bar_atmos(date, lat_oi, lon_oi, verbose=False):
-    filename = download(date)
+def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
+    filename = download(date, shared_args)
     atmo_data = data.open_netcdf4(filename)
 
     # choose points

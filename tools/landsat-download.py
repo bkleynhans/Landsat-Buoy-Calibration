@@ -18,4 +18,4 @@ if __name__ == '__main__':
 
     for scene in args.scene_id:
         print(scene, directory, args.bands)
-        sat.landsat.download(scene, args.bands, directory)
+        sat.landsat.download(scene, args.bands, status_logger, directory)

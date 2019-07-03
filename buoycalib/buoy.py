@@ -251,7 +251,7 @@ def all_datasets():
     return buoy_stations
 
 
-def download(id, date, directory=settings.NOAA_DIR):
+def download(id, date, shared_args, directory=settings.NOAA_DIR):
     """
     Download and unzip appripriate buoy data from url.
 
@@ -264,7 +264,7 @@ def download(id, date, directory=settings.NOAA_DIR):
     else:
         url = settings.NOAA_URLS[1] % (date.strftime('%b'), id, date.strftime('%-m'), datetime.datetime.now().strftime('%Y'))
 
-    filename = url_download(url, directory)
+    filename = url_download(url, directory, shared_args)
 
     if '.gz' in filename:
         filename = ungzip(filename)

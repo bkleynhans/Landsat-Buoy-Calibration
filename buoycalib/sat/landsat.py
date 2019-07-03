@@ -1,6 +1,7 @@
 import datetime
 import glob
 import pdb
+import sys
 
 from osgeo import gdal, osr
 import ogr
@@ -12,13 +13,15 @@ from . import image_processing as img
 
 import test_paths
 
-def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
+def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
     """ Download a landsat image and load its metadata.
 
     Amazon S3 is faster but only has images from 2017 - present
     Website: https://aws.amazon.com/public-datasets/landsat/
     EarthExplorer is slower: https://earthexplorer.usgs.gov/
     """
+    
+    bands = shared_args['bands'].copy()
     
     landsat_versions = ['00', '01', '02', '03', '04',  # Will have to find a way to determine the number of versions available
                         '05', '06', '07', '08', '09']
@@ -35,11 +38,17 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
             targzfile = directory + "/" + scene_id + ".tar.gz"
             
             try:
-                print(" Extracting {}.tar.gz\n".format(scene_id))
+                output_string = ("   Extracting {}.tar.gz\n".format(scene_id))
+                
+                if shared_args['caller'] == 'tarca_gui':
+                    shared_args['log_status'].write(output_string, True)
+                elif shared_args['caller'] == 'menu':
+                    sys.stdout.write(output_string)
+                    sys.stdout.flush()
                 
                 tarfile = ungzip(targzfile)
                 os.remove(targzfile)
-                directory = untar(tarfile, directory)
+                directory, shared_args['scene_filename'] = untar(tarfile, directory)
                 os.remove(tarfile)
                 
                 file_downloaded = True
@@ -58,7 +67,7 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
             for band in bands:
                 # get url for the band
                 url = amazon_s3_url(scene_id, band)   # amazon s3 only has stuff from 2017 on
-                fp = url_download(url, directory)
+                fp = url_download(url, directory, shared_args)
                 file_downloaded = True
     
         except RemoteFileException:   # try to use EarthExplorer
@@ -68,20 +77,27 @@ def download(scene_id, bands, directory_=settings.LANDSAT_DIR):
     
                     entity_id = product2entityid(scene_id, version)
                     url = earthexplorer_url(entity_id)
-    
+                    
                     try:
-                        targzfile = download_earthexplorer(url, directory+'/'+entity_id+'.tar.gz')
+                        targzfile = download_earthexplorer(url, directory+'/'+entity_id+'.tar.gz', shared_args)
                         file_downloaded = True
     
                     except RemoteFileException:
                         continue
                     
-                    print(" Extracting {}\n".format(targzfile))
+                    output_string = ("   Extracting {}\n".format(targzfile))
+                
+                    if shared_args['caller'] == 'tarca_gui':
+                        shared_args['log_status'].write(output_string, True)
+                    elif shared_args['caller'] == 'menu':
+                        sys.stdout.write(output_string)
+                        sys.stdout.flush()
                     
                     tarfile = ungzip(targzfile)
                     os.remove(targzfile)
-                    directory = untar(tarfile, directory)
+                    directory, shared_args['scene_filename'] = untar(tarfile, directory)
                     os.remove(tarfile)
+                    
                     break
                 
             else:
@@ -155,7 +171,6 @@ def parse_L8(scene_id):
         parsed['row'] = scene_id[13:16]
         parsed['id'] = scene_id
     else:
-        pdb.set_trace()
         raise Exception('Received incorrect scene: {0}'.format(scene_id))
 
     return parsed

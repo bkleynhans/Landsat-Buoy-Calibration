@@ -6,8 +6,8 @@ from . import (modtran, atmo, sat, radiance, settings)
 from .atmo import merra
 
 
-def error_bar(scene_id, buoy_id, skin_temp, skin_temp_std, overpass_date, buoy_lat, buoy_lon, rsrs, bands):
-    atmos = merra.error_bar_atmos(overpass_date, buoy_lat, buoy_lon)
+def error_bar(scene_id, buoy_id, skin_temp, skin_temp_std, overpass_date, buoy_lat, buoy_lon, rsrs, bands, shared_args):
+    atmos = merra.error_bar_atmos(overpass_date, buoy_lat, buoy_lon, shared_args)
 
     modeled_ltoas = {b:[] for b in bands}
     for temp in [skin_temp+skin_temp_std, skin_temp-skin_temp_std]:

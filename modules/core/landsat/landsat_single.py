@@ -75,5 +75,4 @@ class Landsat_Single(Landsat_Base):
     
     def process_scene(self):
         
-        
         self.print_and_save_output()

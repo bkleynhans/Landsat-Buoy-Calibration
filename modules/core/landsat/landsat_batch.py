@@ -15,7 +15,7 @@
 ###
 
 # Imports
-import sys, pdb
+import os, sys, pdb
 from modules.core.landsat.landsat_single import Landsat_Single
 
 
@@ -31,14 +31,14 @@ class Landsat_Batch(Landsat_Single):
         
         for scene in self.args['landsat_scenes']:
             sys.stdout.write('\n')
-            self.log('status', "  Starting analysis of scene {}".format(scene))
+            self.log('status', " Starting analysis of scene {}".format(scene))
             sys.stdout.write('\n')
             
             self.download_image(scene)
             self.analyze_image()
             
             sys.stdout.write('\n')
-            self.log('status', "  Analysis completed for scene {}".format(scene))
+            self.log('status', " Analysis completed for scene {}".format(scene))
             sys.stdout.write('\n')
             sys.stdout.flush()
             
@@ -58,6 +58,8 @@ class Landsat_Batch(Landsat_Single):
         # Build the output file path from the input file path
         batchfile_name = self.args['batch_file_name'][(self.args['batch_file_name'].rfind('/') + 1):]        
         self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + batchfile_name[:batchfile_name.rfind('.')] + '.out'
+        
+        self.delete_file(self.args['savefile'])
         
         
     def process_scene(self):

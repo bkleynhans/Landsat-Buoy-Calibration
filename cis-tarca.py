@@ -1,4 +1,5 @@
-80###
+#!/usr/bin/env python3
+###
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
@@ -14,7 +15,6 @@
 ###
 
 # Imports
-
 import sys, os, inspect, pdb
 import time
 import subprocess as sp

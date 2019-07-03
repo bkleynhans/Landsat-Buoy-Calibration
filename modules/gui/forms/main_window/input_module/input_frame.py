@@ -549,7 +549,7 @@ class Input_Frame(Gui_Label_Frame):
                 self.process_button.config(state = 'normal')
                     
             else:
-                sys.stdout.write("NO ERRORS!!! \n")
+#                sys.stdout.write("NO ERRORS!!! \n")
             
             
                 self.process_button.config(state = 'normal')

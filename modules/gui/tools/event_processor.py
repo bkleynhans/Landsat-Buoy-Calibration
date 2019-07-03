@@ -83,7 +83,7 @@ class Event_Processor(pyinotify.ProcessEvent):
             elif (event.pathname[event.pathname.rfind('output'):] == 'output'):
                 write_new_line_to_gui(self, 'output_frame', 'output_text', new_line)
             
-#             #Information about method and event
+#             #Information about method and event.  Uncomment to see events as they are generated
 #            print("Method name: process_{}()\n"
 #                   "Path name: {}\n"
 #                   "Event Name: {}\n".format(method, event.pathname, event.maskname))

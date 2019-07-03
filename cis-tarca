@@ -1,9 +1,0 @@
-#!/bin/bash
-
-### Investigating which method to use... this is for use with wget
-#touch ~/.netrc
-#echo "machine urs.earthdata.nasa.gov login cisthermal password C15Th3rmal" > ~/.netrc
-#chmod 0600 ~/.netrc
-#touch ~/.urs_cookies
-
-python3 ~/Landsat-Buoy-Calibration/cis-tarca.py

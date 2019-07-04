@@ -57,7 +57,7 @@ class Landsat_Single(Landsat_Base):
             self.process_buoys()
             
         else:
-            self.image_data['overpass_date']= datetime(1, 1, 1, 0, 0)
+            self.image_data['overpass_date'] = datetime.datetime(1, 1, 1, 0, 0)
             self.data[self.args['scene_id']][0] = (
                     0,
                     0,

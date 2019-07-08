@@ -96,8 +96,9 @@ class Input_Frame(Gui_Label_Frame):
         
         self.process_button.config(command = lambda: self.process_active_tab(master))
         
-        
-    def delete_log_files(self, absolute_path_and_file_name):
+    
+    # Delete the specififed file
+    def delete_file(self, absolute_path_and_file_name):
         
         # Test if the file exists before deleting it
         file_exists = test_paths.main([absolute_path_and_file_name, "-tfile"])
@@ -105,12 +106,13 @@ class Input_Frame(Gui_Label_Frame):
         if file_exists:
             os.unlink(absolute_path_and_file_name)# unlink is ux version of delete
     
-        
+    
+    # Used to step the progressbar
     def step_progressbar(self):
                     
         while not self.process_complete:
             
-            self.progressbar.progressbar.step()            
+            self.progressbar.progressbar.step()
             time.sleep(0.02)
             
             
@@ -119,6 +121,7 @@ class Input_Frame(Gui_Label_Frame):
         self.process_button.config(state = 'normal')
         
     
+    # Create the watchdogs that watch the log files which are used to provide feedback to the user in the GUI
     def create_watchdogs(self, master, statusfile_absolute_path, outputfile_absolute_path):
         
         from gui.tools.file_watcher import File_Watcher
@@ -130,12 +133,14 @@ class Input_Frame(Gui_Label_Frame):
         self.output_watchdog.event_notifier.start()
         
     
+    # Destroy the watchdog agents
     def kill_watchdogs(self):
         
         self.status_watchdog.event_notifier.stop()
         self.output_watchdog.event_notifier.stop()
         
         
+    # Build/Define the path variables as used by the program
     def build_paths(self, master):
         
         # Create status logger instance paths
@@ -167,12 +172,14 @@ class Input_Frame(Gui_Label_Frame):
         )
     
     
-    def clear_watch_files(self, master):#, statusfile_absolute_path, statusfile_name, outputfile_absolute_path, outputfile_name):
+    # Delete the log files used to provide feedback to the user in the GUI
+    def clear_watch_files(self, master):
         
-        self.delete_log_files(self.path_dictionary['statusfile_absolute_path_and_filename'])
-        self.delete_log_files(self.path_dictionary['outputfile_absolute_path_and_filename'])
+        self.delete_file(self.path_dictionary['statusfile_absolute_path_and_filename'])
+        self.delete_file(self.path_dictionary['outputfile_absolute_path_and_filename'])
         
     
+    # Convert a value to a float
     def convert_to_float(self, value):
         
         try:
@@ -182,6 +189,8 @@ class Input_Frame(Gui_Label_Frame):
             
         return value
     
+    
+    # Process a scene id
     def process_scene_id(self, master, scene_id, show_images):
         
         self.create_watchdogs(
@@ -209,7 +218,8 @@ class Input_Frame(Gui_Label_Frame):
         
         self.clear_watch_files(master)
         
-        
+    
+    # Perform a partial operation where the user provides lat, lon, surface temperature(Ts)
     def process_partial_scene_id(self, master, scene_id, show_images, partial_data):
         
         self.create_watchdogs(
@@ -238,6 +248,7 @@ class Input_Frame(Gui_Label_Frame):
         self.clear_watch_files(master)
         
     
+    # Process a batch of ID's
     def process_batch_ids(self, master, source_file, show_images):
         
         self.create_watchdogs(
@@ -328,9 +339,10 @@ class Input_Frame(Gui_Label_Frame):
                         message = "The scene id you entered is of an incorrect format.\n\n"
                                     "Please try again")
                 
-                self.process_button.config(state = 'normal')    
+                self.process_button.config(state = 'normal')
+
     
-    
+    # Ask the user if they want to see each image as it is processed
     def ask_show_images(self):
         
         show_images = messagebox.askyesno(
@@ -435,7 +447,6 @@ class Input_Frame(Gui_Label_Frame):
             progressbar_thread = threading.Thread(target = self.step_progressbar)
             progressbar_thread.start()
                 
-#            self.process_partial_scene_id(master, scene_id, False, partial_data)
             # Launch single scene ID process job in own thread
             cis_tarca_thread = threading.Thread(
                     target = self.process_partial_scene_id, args = (
@@ -548,12 +559,7 @@ class Input_Frame(Gui_Label_Frame):
                 
                 self.process_button.config(state = 'normal')
                     
-            else:
-#                sys.stdout.write("NO ERRORS!!! \n")
-            
-            
-                self.process_button.config(state = 'normal')
-                
+            else:                
             
                 if (len(scenes) > 0):
                     

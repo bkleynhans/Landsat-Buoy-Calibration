@@ -9,7 +9,7 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : May 23, 2019
+# Last Modified Date  : July 8, 2019
 # Filename            : tarca_gui.py
 #
 ###
@@ -72,7 +72,7 @@ def main(project_root):
             
     root = Tk()
     root.project_root = project_root
-    #root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
     
     tarca_gui = Tarca_Gui(root)
     

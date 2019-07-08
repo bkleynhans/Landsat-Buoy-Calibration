@@ -48,11 +48,15 @@ class Input_Notebook(Gui_Notebook):
                                       'emissivity_b11': '',
                                       'surface_temp': ''}
                                       
-
+        
+        # Create Full Single frame
         Input_Full_Single(master.notebooks[self.notebook_name])
 
+        # Create Partial Single frame
         Input_Partial_Single(master.notebooks[self.notebook_name])
 
+        # Create Batch frame
         Input_Batch(master.notebooks[self.notebook_name])
         
+        # Add this notebook to the master notebooks list
         master.notebooks[self.notebook_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

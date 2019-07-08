@@ -9,8 +9,8 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : June 21, 2019
-# Filename            : model.py
+# Last Modified Date  : July 8, 2019
+# Filename            : landsat_base.py
 #
 ###
 
@@ -28,12 +28,14 @@ class Landsat_Base():
     
     BANDS = [10, 11]
     
+    # Constructor
     def __init__(self, args):
 
         self.data = {}
         self.args = args
         self.args['threads'] = []
         
+        # Partial single and partial batch processes don't use buoys for calculation
         if (self.args['process'] == 'partial_single') or (self.args['process'] == 'partial_batch'):
             self.buoys = None
     
@@ -44,6 +46,9 @@ class Landsat_Base():
         self.args['scene_id'] = scene_id        
         self.data[self.args['scene_id']] = {}
         
+        # Set the arguments according to the requirements of the module calling the function
+        # menu --> terminal
+        # tarca_gui --> tkinter gui
         if self.args['caller'] == 'menu':
             self.shared_args = {
                 'log_status': None,
@@ -60,15 +65,18 @@ class Landsat_Base():
                 'scene_filename': '',
                 'bands': self.BANDS
             }
-                
+
+        # Download the image file and read the metadata into self.image_data
         self.image_data = display.landsat_preview(scene_id, '', self.shared_args)
         
+        # Checks if the user wanted to have the images displayed
         if self.args['display_image']:
             image_data = {
                     'title': self.args['scene_id'],
                     'image': self.image_data['image']
                 }
             
+            # Open the image in a new window using a thread
             self.args['threads'].append(Display_Image(image_data))
         
         image_file = '{0}.tif'.format(self.args['scene_id'])
@@ -402,6 +410,10 @@ class Landsat_Base():
 
         self.clean_folders()
         
+        for thread in self.args['threads']:            
+            if thread.THREAD_NAME == 'image':                
+                thread.display_image_thread.join()
+        
     
     def clean_folders(self):
         
@@ -429,12 +441,8 @@ class Landsat_Base():
     # Destructor.  Usually not needed but in this case required to get rid of threads        
     def __del__(self):
         
-        for thread in self.args['threads']:            
-            if thread.THREAD_NAME == 'image':
-                
-                thread.display_image_thread.join()
-                
-            elif thread.THREAD_NAME == 'spinner':
+        for thread in self.args['threads']:
+            if thread.THREAD_NAME == 'spinner':
                 
                 thread.spinner_thread.join()
                 

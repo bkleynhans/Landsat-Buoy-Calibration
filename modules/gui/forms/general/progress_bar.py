@@ -16,6 +16,8 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
+import pdb
 
 
 class Progress_Bar():
@@ -33,7 +35,8 @@ class Progress_Bar():
         
         # Create the progressbar object
         self.progressbar_window = Toplevel(master)                              # Create a progressbar toplevel window
-        master.progressbar_window = self.progressbar_window                # Add the progressbar window to the master window as object variable
+        self.progressbar_window.protocol('WM_DELETE_WINDOW', 'do_nothing')      # Don't close the window on X
+        master.progressbar_window = self.progressbar_window                     # Add the progressbar window to the master window as object variable
         master.progressbar_window.resizable(False, False)
                 
         self.progressbar_label = ttk.Label(self.progressbar_window, text = self.text)
@@ -45,3 +48,9 @@ class Progress_Bar():
         self.progressbar_window.progressbar = self.progressbar                  # Add the progressbar to the progressbar window as object variable
                 
         self.progressbar.pack(anchor = 'nw', fill = BOTH, expand = True, padx = 10, pady = (0, 10))
+        
+    
+    # Removes the ability to close the progress bar using the X button
+    def do_nothing(self, master):
+        
+        pass

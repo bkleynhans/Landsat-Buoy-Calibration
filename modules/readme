@@ -1,7 +1,6 @@
-# Just a comment
-
 List of modules in this directory
 
-
-stp - Surface Temperature Products
-
+core  - Base class for forward modeling
+db    - Database module which creates the tables and handles data input
+gui   - A GUI for the program
+stp   - Surface Temperature Products - Different modules for calculating surface temperature

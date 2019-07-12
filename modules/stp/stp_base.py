@@ -23,7 +23,6 @@ class STP_Base():
         
         self.set_path_variables()
         
-        
     
     # Calculate fully qualified path to location of program execution
     def get_module_path(self):

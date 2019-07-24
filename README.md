@@ -1,8 +1,16 @@
 # Landsat Buoy Calibration
 !!!!! DEVELOPMENT IN PROGRESS, THIS DOCUMENT IS OUTDATED !!!!!
 
-Calculates and compares the radiance of a thermal LANDSAT scene to the "ground truth"
-radiance as measured by a NOAA buoy. Based on work in theses by Frank Padula and Monica Cook at RIT.  
+This branch is a variation on the original program that only calculated Top of Atmosphere Radiance using NOAA buoy data.
+
+This branch adds functionality to the original program by implementing both a GUI as well as additional algorithms.  The program has also been largely rewritten to implement Object Oriented Design principles in many areas.  Some of the original modules used (especially those in the buoycalib directory) have not been refactored due to the ad-hoc way in which they were originally implemented since it would require a rewrite of most of the original science modules.  This option will be investigated in future versions.
+
+The current version of the program:
+
+1) Calculates and compares the radiance of a thermal LANDSAT scene to the "ground truth"
+radiance as measured by a NOAA buoy using the Single Channel process. Based on work in theses by Frank Padula and Monica Cook at RIT (Rochester Institute of Technology).  
+2) Calculates Top of Atmosphere radiance using user-entered parameters and LANDSAT scenes using the Single Channel proces. Based on work in theses by Frank Padula and Monica Cook at RIT (Rochester Institute of Technology).
+3) Calculates Land Surface Temperature using user-entered parameters and LANDSAT scenes  using the Split Window process.  Based on research currently in progress by Aaron Gerace at RIT (Rochester Institute of Technology).
 
 If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.
 

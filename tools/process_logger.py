@@ -17,7 +17,7 @@
 # Imports
 import os
 from os.path import join, abspath
-import test_paths
+from tools import test_paths
 
 PACKAGE_BASE = abspath(join(__file__, '../..'))
 
@@ -38,14 +38,14 @@ class Process_Logger():
                 'logs',
                 'logs/status',
                 'logs/status/single',
-                'logs/status/partial_single',
+#                'logs/status/partial_single',
                 'logs/status/batch',
-                'logs/status/partial_batch',
+#                'logs/status/partial_batch',
                 'logs/output',
                 'logs/output/single',
-                'logs/output/partial_single',
+#                'logs/output/partial_single',
                 'logs/output/batch',
-                'logs/output/partial_batch'
+#                'logs/output/partial_batch'
             }
         
         for directory in self.required_directories:

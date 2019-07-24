@@ -37,6 +37,9 @@ class Gui_Label_Frame():
         self.notebooks = {}
         self.gui_label_frame.notebooks = self.notebooks
         
+        self.frames = {}
+        self.gui_label_frame.frames = self.frames
+        
         self.widgets = {}
         self.gui_label_frame.widgets = self.widgets
         

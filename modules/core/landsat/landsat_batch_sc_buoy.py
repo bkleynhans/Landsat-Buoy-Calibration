@@ -16,16 +16,15 @@
 
 # Imports
 import os, sys, pdb
-from modules.core.landsat.landsat_single import Landsat_Single
+from modules.core.landsat.landsat_single_sc_buoy import Landsat_Single_Sc_Buoy
+from modules.core import model
 
 
-class Landsat_Batch(Landsat_Single):
+class Landsat_Batch_Sc_Buoy(Landsat_Single_Sc_Buoy):
     
     def __init__(self, args):
         
-        super(Landsat_Single, self).__init__(args)
-        
-        self.build_file_paths()
+        super(Landsat_Single_Sc_Buoy, self).__init__(args)
         
         heading_counter = 0
         
@@ -53,13 +52,13 @@ class Landsat_Batch(Landsat_Single):
             self.finalize()
         
         
-    def build_file_paths(self):
-        
-        # Build the output file path from the input file path
-        batchfile_name = self.args['batch_file_name'][(self.args['batch_file_name'].rfind('/') + 1):]        
-        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + batchfile_name[:batchfile_name.rfind('.')] + '.out'
-        
-        self.delete_file(self.args['savefile'])
+#    def build_file_paths(self):
+#        
+#        # Build the output file path from the input file path
+#        batchfile_name = self.args['batch_file_name'][(self.args['batch_file_name'].rfind('/') + 1):]        
+#        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + batchfile_name[:batchfile_name.rfind('.')] + '.out'
+#        
+#        self.delete_file(self.args['savefile'])
         
         
     def process_scene(self):

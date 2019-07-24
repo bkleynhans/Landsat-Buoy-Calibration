@@ -9,7 +9,7 @@
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : May 30, 2019
-# Filename            : input_full_single.py
+# Filename            : input_buoy_sc.py
 #
 ###
 
@@ -20,17 +20,20 @@ from tkinter import messagebox
 from gui.forms.base_classes.gui_frame import Gui_Frame
 import pdb
 
-class Input_Full_Single(Gui_Frame):
+class Input_Buoy_Sc_Frame(Gui_Frame):
     
     # Settings Frame constructor
     def __init__(self, master):
         
-        Gui_Frame.__init__(self, master, "input_full_single")
-        self.create_full_single_frame(master)
+        Gui_Frame.__init__(self, master, "input_buoy_sc_frame")                                                              
+        
+        master.frames[self.frame_name].input_values = {'scene_id': ''}
+        
+        self.create_buoy_sc_frame(master)
         
     
     # Create the actual frame as a separate window
-    def create_full_single_frame(self, master):
+    def create_buoy_sc_frame(self, master):
                 
         master.add(master.frames[self.frame_name], text = "Single")
         master.tab(0, state = 'normal')
@@ -39,7 +42,7 @@ class Input_Full_Single(Gui_Frame):
         ttk.Label(
                 master.frames[self.frame_name],
                 text = 'ID : ',
-                width = 15).grid(
+                width = 20).grid(
                         row = 0,
                         column = 0,
                         padx = 10,
@@ -47,11 +50,11 @@ class Input_Full_Single(Gui_Frame):
                         sticky = 'nsew'
                 )
         
-        master.input_values['scene_id_full_single'] = ttk.Entry(master.frames[self.frame_name], width = 60)
-        master.input_values['scene_id_full_single'].grid(
+        master.frames[self.frame_name].input_values['scene_id'] = ttk.Entry(master.frames[self.frame_name], width = 80)
+        master.frames[self.frame_name].input_values['scene_id'].grid(
                 row = 0, 
                 column = 1, 
-                columnspan = 2,
+                columnspan = 3,
                 padx = 10,
                 pady = 10,
                 sticky = 'nsew'
@@ -61,7 +64,7 @@ class Input_Full_Single(Gui_Frame):
         self.reference_label = ttk.Label(
                 master.frames[self.frame_name],
                 text = 'Example IDs :',
-                width = 15).grid(
+                width = 20).grid(
                         row = 1,
                         column = 0,
                         padx = 10,
@@ -82,7 +85,7 @@ class Input_Full_Single(Gui_Frame):
                         sticky = 'nsew'
                 )
         
-        self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 40, borderwidth = 0)
+        self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 50, borderwidth = 0)
         self.scene_id.insert(1.0, "LC80110312017350LGN00")
         self.scene_id.configure(
                 state = 'disabled',
@@ -90,6 +93,7 @@ class Input_Full_Single(Gui_Frame):
         self.scene_id.grid(
                         row = 1,
                         column = 2,
+                        columnspan = 2,
                         padx = 10,
                         pady = 10,
                         sticky = 'nsew'
@@ -106,7 +110,7 @@ class Input_Full_Single(Gui_Frame):
                         sticky = 'nsew'
                 )
         
-        self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 40, borderwidth = 0)
+        self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 50, borderwidth = 0)
         self.scene_id.insert(1.0, "LC08_L1GT_029030_20151209_20160131_01_RT")
         self.scene_id.configure(
                 state = 'disabled',
@@ -114,6 +118,7 @@ class Input_Full_Single(Gui_Frame):
         self.scene_id.grid(
                         row = 2,
                         column = 2,
+                        columnspan = 2,
                         padx = 10,
                         pady = 10,
                         sticky = 'nsew'

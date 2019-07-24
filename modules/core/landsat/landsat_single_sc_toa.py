@@ -16,29 +16,23 @@
 
 # Imports
 import sys, pdb
+from modules.core import model
 from modules.core.landsat.landsat_base import Landsat_Base
-from modules.stp.sw.split_window import Split_Window
-from buoycalib import settings
+#from modules.stp.sw.split_window import Split_Window
+from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, display, error_bar)
+import numpy
 
-class Landsat_Partial_Single(Landsat_Base):
+class Landsat_Single_Sc_Toa(Landsat_Base):
     
     def __init__(self, args):
         
-        super(Landsat_Partial_Single, self).__init__(args)
-        
-        self.build_single_file_path()
+        super(Landsat_Single_Sc_Toa, self).__init__(args)
         
         self.download_image(self.args['scene_id'])
         
         self.get_atmosphere()
         self.get_modtran()
         self.get_ltoa()
-        self.calculate_split_window(
-                self.img_ltoa[10],
-                self.img_ltoa[11],
-                self.args['partial_data']['emis_b10'],
-                self.args['partial_data']['emis_b11']
-            )
         
         sys.stdout.write('\n')
         self.print_report_headings()
@@ -90,11 +84,45 @@ class Landsat_Partial_Single(Landsat_Base):
                 self.args['partial_data']['lon']
             )
     
-    
-    def calculate_split_window(self, img_ltoa10, img_ltoa11, emis_b10, emis_b11):
+    # LTOA calcs
+    def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa, skin_temp, lat, lon):
         
-        self.data[self.args['scene_id']] = Split_Window(img_ltoa10, img_ltoa11, emis_b10, emis_b11).data
+        spec_ref = {
+            10: self.args['partial_data']['emis_b10'],
+            11: self.args['partial_data']['emis_b11']
+        }
         
+        try:
+            for b in self.BANDS:
+                
+                mod_ltoa_spectral = radiance.calc_ltoa_spectral(
+                                        spec_ref[b],
+                                        modtran_data['wavelengths'],
+                                        modtran_data['upwell_rad'],
+                                        modtran_data['gnd_reflect'],
+                                        modtran_data['transmission'],
+                                        skin_temp
+                                    )
+                
+                RSR_wavelengths, RSR = numpy.loadtxt(self.rsrs[b], unpack=True)
+                img_ltoa[b] = sat.landsat.calc_ltoa(
+                                    self.image_data['directory'],
+                                    self.image_data['metadata'],
+                                    lat,
+                                    lon,
+                                    b
+                                )
+                
+                mod_ltoa[b] = radiance.calc_ltoa(modtran_data['wavelengths'], mod_ltoa_spectral, RSR_wavelengths, RSR)
+                
+        except RuntimeError:# as e:
+#                warnings.warn(str(e), RuntimeWarning)
+#                
+#                return
+            pass
+            
+        return img_ltoa, mod_ltoa
+            
         
     def print_report_headings(self):
         
@@ -102,7 +130,7 @@ class Landsat_Partial_Single(Landsat_Base):
         # mod1 / mod2 - modeled / calculated radiance
         # emis_10 / emis_11     - emissivity entered at launch defaults are b10: 0.988 b11: 0.98644
         
-        report_headings = "Scene_ID, Date, skin_temp, lat, lon, mod1, mod2, img1, img2, emis_10, emis_11, LST_SW, status, reason"
+        report_headings = "Scene_ID, Date, Skin_Temp, Lat, Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Emissivity_B10, Emissivity_B11, Status, Reason"
         
         self.log('output', report_headings)
         
@@ -131,7 +159,6 @@ class Landsat_Partial_Single(Landsat_Base):
         log_text += str(self.img_ltoa[11]) + ', '                                           # img_ltoa band 11
         log_text += str(self.args['partial_data']['emis_b10']) + ', '                       # emissivity band 10
         log_text += str(self.args['partial_data']['emis_b11']) + ', '                       # emissivity band 11
-        log_text += str(self.data[self.args['scene_id']]['LST_SW']) + ', '                  # Land Surface Temperature Split Window
         log_text += str(error_message)                                                      # reason
         
         self.log('output', log_text)

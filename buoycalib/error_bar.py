@@ -6,7 +6,7 @@ from . import (modtran, atmo, sat, radiance, settings)
 from .atmo import merra
 
 
-def error_bar(scene_id, buoy_id, skin_temp, skin_temp_std, overpass_date, buoy_lat, buoy_lon, rsrs, bands, shared_args):
+def error_bar(spec_ref, scene_id, buoy_id, skin_temp, skin_temp_std, overpass_date, buoy_lat, buoy_lon, rsrs, bands, shared_args):
     atmos = merra.error_bar_atmos(overpass_date, buoy_lat, buoy_lon, shared_args)
 
     modeled_ltoas = {b:[] for b in bands}
@@ -17,7 +17,7 @@ def error_bar(scene_id, buoy_id, skin_temp, skin_temp_std, overpass_date, buoy_l
             
 #            wavelengths, upwell_rad, gnd_reflect, transmission = modtran.process(atmo, buoy_lat, buoy_lon, overpass_date, modtran_directory, temp)
             modtran_data = modtran.process(atmo, buoy_lat, buoy_lon, overpass_date, modtran_directory, temp)
-            mod_ltoa_spectral = radiance.calc_ltoa_spectral(modtran_data['wavelengths'], modtran_data['upwell_rad'], modtran_data['gnd_reflect'], modtran_data['transmission'], temp)
+            mod_ltoa_spectral = radiance.calc_ltoa_spectral(spec_ref, modtran_data['wavelengths'], modtran_data['upwell_rad'], modtran_data['gnd_reflect'], modtran_data['transmission'], temp)
 
             for b in bands:
                 if scene_id[0:3] == 'MOD':

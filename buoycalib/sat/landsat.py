@@ -11,7 +11,7 @@ from .. import settings
 from ..download import *
 from . import image_processing as img
 
-import test_paths
+from tools import test_paths
 
 def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
     """ Download a landsat image and load its metadata.

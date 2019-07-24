@@ -32,16 +32,12 @@ class Split_Window(STP_Base):
         self.read_coefficients()
         
         # Supplied Band 10 and Band 11 Radiance values
-        self.rad_val = {'B10': float(rad_b10),
-                        'B11': float(rad_b11)}
+        self.rad_val = {10: float(rad_b10),
+                        11: float(rad_b11)}
         
         # Supplied Band 10 and Band 11 Emmissivity
-        self.emis_val = {'B10': float(emis_b10),
-                         'B11': float(emis_b11)}
-        
-        # Band 10 and Band 11 with gain and bias
-        self.gain_bias = {'B10': '',
-                          'B11': ''}
+        self.emis_val = {10: float(emis_b10),
+                         11: float(emis_b11)}
         
         # TIRS Radiance to Apparent Temperature conversion coefficients
         self.conv_coeffs = {'K1_10': float(774.8853),
@@ -54,7 +50,6 @@ class Split_Window(STP_Base):
                                'T11': ''}
         
         # Perform calculations
-        self.add_gain_bias()
         self.calc_apparent_temp()
         self.calc_split_window()
         
@@ -62,7 +57,6 @@ class Split_Window(STP_Base):
         self.data['emissivity'] = self.emis_val
         self.data['conv_coeffs'] = self.conv_coeffs
         self.data['apparent_temps'] = self.apparent_temps
-        self.data['gain_bias'] = self.gain_bias
         
     
     def read_coefficients(self):
@@ -79,30 +73,24 @@ class Split_Window(STP_Base):
                 
         
         self.coeff_rh90 = [float(i) for i in self.coeff_rh90]
-                
-    
-    def add_gain_bias(self):
-        
-        self.gain_bias['B10'] = float(self.rad_val['B10'] * 1.0151 - 0.14774)
-        self.gain_bias['B11'] = float(self.rad_val['B11'] * 1.06644 - 0.46326)
         
     
     def calc_apparent_temp(self):
         
-        self.apparent_temps['T10'] = float(self.conv_coeffs['K2_10'] / np.log(self.conv_coeffs['K1_10'] / self.rad_val['B10'] + 1))
-        self.apparent_temps['T11'] = float(self.conv_coeffs['K2_11'] / np.log(self.conv_coeffs['K1_11'] / self.rad_val['B11'] + 1))
+        self.apparent_temps['T10'] = float(self.conv_coeffs['K2_10'] / np.log(self.conv_coeffs['K1_10'] / self.rad_val[10] + 1))
+        self.apparent_temps['T11'] = float(self.conv_coeffs['K2_11'] / np.log(self.conv_coeffs['K1_11'] / self.rad_val[11] + 1))
     
     
     def calc_split_window(self):
         
         self.data['T_plus'] = float((self.apparent_temps['T10'] + self.apparent_temps['T11']) / 2)
         self.data['T_min'] = float((self.apparent_temps['T10'] - self.apparent_temps['T11']) / 2)
-        self.data['e_min'] = float(((1 - (self.emis_val['B10'] + self.emis_val['B11']) / 2) / ((self.emis_val['B10'] + self.emis_val['B11']) / 2)))
-        self.data['e_change'] = float((self.emis_val['B10'] - self.emis_val['B11']) / (((self.emis_val['B10'] + self.emis_val['B11']) / 2) ** 2))
+        self.data['e_min'] = float(((1 - (self.emis_val[10] + self.emis_val[11]) / 2) / ((self.emis_val[10] + self.emis_val[11]) / 2)))
+        self.data['e_change'] = float((self.emis_val[10] - self.emis_val[11]) / (((self.emis_val[10] + self.emis_val[11]) / 2) ** 2))
         self.data['T_quad'] = float((self.apparent_temps['T10'] - self.apparent_temps['T11']) ** 2)
                 
         lst_0 = self.coeff_rh90[0]
         lst_1 = self.data['T_plus'] * (self.coeff_rh90[1] + self.coeff_rh90[2] * self.data['e_min'] + self.coeff_rh90[3] * self.data['e_change'])
-        lst_2 = self.data['T_min'] * (self.coeff_rh90[4] + self.coeff_rh90[5] * self.data['e_min'] + self.coeff_rh90[6] * self.data['e_change'] + self.coeff_rh90[7] * self.data['T_quad'])
+        lst_2 = (self.data['T_min'] * (self.coeff_rh90[4] + self.coeff_rh90[5] * self.data['e_min'] + self.coeff_rh90[6] * self.data['e_change']) + self.coeff_rh90[7] * self.data['T_quad'])
         
         self.data['LST_SW'] = lst_0 + lst_1 + lst_2

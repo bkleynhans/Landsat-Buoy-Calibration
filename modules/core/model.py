@@ -17,16 +17,19 @@
 # Imports
 import sys, os, pdb
 import shutil, warnings
+from datetime import datetime
 from buoycalib import settings
 from tools.process_logger import Process_Logger
-from modules.core.landsat.landsat_single import Landsat_Single
-from modules.core.landsat.landsat_batch import Landsat_Batch
-from modules.core.landsat.landsat_partial_single import Landsat_Partial_Single
+from tools import test_paths
+from modules.core.landsat.landsat_single_sc_buoy import Landsat_Single_Sc_Buoy
+from modules.core.landsat.landsat_single_sc_toa import Landsat_Single_Sc_Toa
+from modules.core.landsat.landsat_batch_sc_buoy import Landsat_Batch_Sc_Buoy
+from modules.core.landsat.landsat_single_sw_lst import Landsat_Single_Sw_Lst
 
 class Model:
     
 #    def __init__(self, caller, args):
-    def __init__(self, caller, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):
+    def __init__(self, caller, qty, algorithm, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):
         
         warnings.filterwarnings("ignore")
         
@@ -34,12 +37,18 @@ class Model:
         
         self.args['caller'] = caller
         self.args['process'] = process
+        self.args['qty'] = qty
         
-        if (process == 'single') or (process == 'partial_single'):
-            self.args['scene_id'] = source
-        elif (process == 'batch') or (process == 'partial_batch'):
-            self.args['batch_file_name'] = source
+        if (qty == 'single'):
+            if (algorithm == 'sc') or (algorithm == 'sw'):
+                self.args['scene_id'] = source
+                
+        elif (qty == 'batch'):
+            self.args['input_file'] = source
+            input_filename = source[source.rfind('/') + 1:]
+            self.args['batch_file_name'] = input_filename[:input_filename.rfind('.')]
         
+        self.args['algorithm'] = algorithm
         self.args['atmo_source'] = atmo_source
         self.args['display_image'] = display_image
         self.args['project_root'] = project_root
@@ -56,6 +65,9 @@ class Model:
         self.create_loggers()
         
         self.process_arguments()
+        
+        if self.args['caller'] == 'menu':            
+            input("\n\n  Press Enter to continue...")
     
     
     # Create the data loggers for gui display
@@ -75,54 +87,73 @@ class Model:
     
     def process_arguments(self):
         
-        if self.args['process'] == 'single':
-            
-            self.args['savefile'] = settings.DEFAULT_SINGLE_SAVE_FILE
+        self.args['savefile'] = settings.DEFAULT_OUTPUT_PATH
         
-            if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
+        self.build_file_paths()
+        
+        if self.args['qty'] == 'single':
+            
+            if self.args['process'] == 'buoy':
+        
+                if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
+                        
+                    self.results = Landsat_Single_Sc_Buoy(self.args)
+            
+                elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
+                    pass
+                
+            elif self.args['process'] == 'toa':
+                
+                if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
                     
-                self.results = Landsat_Single(self.args)
-        
-            elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
-                pass
-        
-        elif self.args['process'] == 'batch':
+                    self.results = Landsat_Single_Sc_Toa(self.args)
             
-            self.args['savefile'] = settings.DEFAULT_BATCH_SAVE_PATH
+                elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
+                    pass
+                
+            elif self.args['process'] == 'lst':
+                
+                self.results = Landsat_Single_Sw_Lst(self.args)
+        
+        elif self.args['qty'] == 'batch':
             
             self.analyze_batch()
             
-        elif self.args['process'] == 'partial_single':
+        
+    def build_file_paths(self):
+        
+        default_output_path = self.args['savefile'][:self.args['savefile'].rfind('/')]
+        
+        if self.args['qty'] == 'single':        
+            self.args['savefile'] = os.path.join(
+                    default_output_path,
+                    self.args['qty'], 
+                    self.args['algorithm'],
+                    self.args['process'],
+                    self.args['scene_id'] + '.out'
+                )
             
-            self.args['savefile'] = settings.DEFAULT_PARTIAL_SINGLE_SAVE_FILE
+        elif self.args['qty'] == 'batch':
+            self.args['savefile'] = os.path.join(
+                    default_output_path,
+                    self.args['qty'],
+                    'data',
+                    self.args['algorithm'],
+                    self.args['process'],
+                    self.args['batch_file_name'] + '.out'
+                )
         
-            if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
-                    
-                self.results = Landsat_Partial_Single(self.args)
         
-            elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
-                pass
-        
-        elif self.args['process'] == 'partial_batch':
-            
-            self.args['savefile'] = settings.DEFAULT_PARTIAL_BATCH_SAVE_FILE
-        
-            if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
-                    
-                pass
-#                self.results = Landsat_Partial_Batch(self.args)
-        
-            elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
-                pass
-            
-                    
+        self.delete_file(self.args['savefile'])
+
+
     def analyze_batch(self):
         
         self.args['landsat_scenes'] = []
         self.args['modis_scenes'] = []
         
         # Read the file getting rid of all leading and trailing whitespace including newline characters
-        self.scenes = [line.strip() for line in open(self.args['batch_file_name'])]
+        self.scenes = [line.strip() for line in open(self.args['input_file'])]
         
         for scene in self.scenes:
             if scene[0:3] in ('LC8', 'LC0'):   # Landsat Scene
@@ -135,7 +166,7 @@ class Model:
         
         
         if (len(self.args['landsat_scenes']) > 0):
-            self.results = Landsat_Batch(self.args)
+            self.results = Landsat_Batch_Sc_Buoy(self.args)
             
         if (len(self.args['modis_scenes']) > 0):
             pass
@@ -223,3 +254,11 @@ class Model:
         total_size = total_size / 1000000
         
         return total_size
+    
+    
+    # Delete file either by relative or absolute path    
+    def delete_file(self, filename):
+        
+        if os.path.isfile(filename):
+            # unlink is ux version of delete for files
+            os.unlink(filename)

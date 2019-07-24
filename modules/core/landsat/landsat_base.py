@@ -36,7 +36,7 @@ class Landsat_Base():
         self.args['threads'] = []
         
         # Partial single and partial batch processes don't use buoys for calculation
-        if (self.args['process'] == 'partial_single') or (self.args['process'] == 'partial_batch'):
+        if (self.args['process'] == 'toa') or (self.args['process'] == 'lst'):
             self.buoys = None
     
 
@@ -223,17 +223,18 @@ class Landsat_Base():
             )
         
         error = error_bar.error_bar(
-                        self.args['scene_id'], 
-                        buoy_id,
-                        self.buoy_data['skin_temp'],
-                        0.305,
-                        self.image_data['overpass_date'],
-                        self.buoy_data['buoy_lat'],
-                        self.buoy_data['buoy_lon'],
-                        self.rsrs,
-                        self.BANDS,
-                        self.shared_args
-                    )
+            None,
+            self.args['scene_id'], 
+            buoy_id,
+            self.buoy_data['skin_temp'],
+            0.305,
+            self.image_data['overpass_date'],
+            self.buoy_data['buoy_lat'],
+            self.buoy_data['buoy_lon'],
+            self.rsrs,
+            self.BANDS,
+            self.shared_args
+        )
         
         self.data[self.args['scene_id']][buoy_id] = (
                     buoy_id,
@@ -299,12 +300,13 @@ class Landsat_Base():
     def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa, skin_temp, lat, lon):
         
         mod_ltoa_spectral = radiance.calc_ltoa_spectral(
-                                        modtran_data['wavelengths'],
-                                        modtran_data['upwell_rad'],
-                                        modtran_data['gnd_reflect'],
-                                        modtran_data['transmission'],
-                                        skin_temp
-                                    )
+            None,                                                           # Do not supply emissivities, use the values in the water file
+            modtran_data['wavelengths'],
+            modtran_data['upwell_rad'],
+            modtran_data['gnd_reflect'],
+            modtran_data['transmission'],
+            skin_temp
+        )
         
         try:
             for b in self.BANDS:
@@ -327,16 +329,18 @@ class Landsat_Base():
         return img_ltoa, mod_ltoa
     
     
-    def build_single_file_path(self):
-        
-        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
-        
-        self.delete_file(self.args['savefile'])
+#    def build_single_file_path(self):
+#        
+#        pdb.set_trace()
+#        
+#        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
+#        
+#        self.delete_file(self.args['savefile'])
         
         
     def print_report_headings(self):
         
-        report_headings = "Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason"
+        report_headings = "Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason"
         
         self.log('output', report_headings)
         
@@ -381,7 +385,7 @@ class Landsat_Base():
             # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
             if not (test_paths.main([self.args['savefile'], "-tfile"])):
                 output_file = open(self.args['savefile'], 'w+')
-                output_file.write('Scene_ID, Date, skin_temp, lat, lon, mod1, mod2, img1, img2, emis_10, emis_11, LST_SW, status, reason\n')
+                output_file.write('Scene_ID, Date, Skin_Temp, Lat, Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Emissivity_B10, Emissivity_B11, Status, Reason\n')
                 output_file.write("%s\n" % current_line)
                 output_file.close()
             else:
@@ -394,7 +398,7 @@ class Landsat_Base():
             # test_paths checks whether a file exists or not returning True if it exists and False if it does not exist
             if not (test_paths.main([self.args['savefile'], "-tfile"])):
                 output_file = open(self.args['savefile'], 'w+')
-                output_file.write('Scene_ID, Date, Buoy_ID, bulk_temp, skin_temp, buoy_lat, buoy_lon, mod1, mod2, img1, img2, error1, error2, status, reason\n')
+                output_file.write('Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason\n')
                 output_file.write("%s\n" % current_line)
                 output_file.close()
             else:
@@ -406,7 +410,7 @@ class Landsat_Base():
     def finalize(self):
         
         if self.args['caller'] == 'menu':
-            self.stop_spinners()            
+            self.stop_spinners()
 
         self.clean_folders()
         
@@ -430,12 +434,12 @@ class Landsat_Base():
                     self.buoy_process_monitor[buoy_id].stop_spinner()
         
 
-    # Delete file either by relative or absolute path    
-    def delete_file(self, filename):
-        
-        if os.path.isfile(filename):
-            # unlink is ux version of delete for files
-            os.unlink(filename)
+#    # Delete file either by relative or absolute path    
+#    def delete_file(self, filename):
+#        
+#        if os.path.isfile(filename):
+#            # unlink is ux version of delete for files
+#            os.unlink(filename)
     
     
     # Destructor.  Usually not needed but in this case required to get rid of threads        
@@ -443,6 +447,6 @@ class Landsat_Base():
         
         for thread in self.args['threads']:
             if thread.THREAD_NAME == 'spinner':
-                
-                thread.spinner_thread.join()
+                if thread.spinner_thread.isAlive():
+                    thread.spinner_thread.join()
                 

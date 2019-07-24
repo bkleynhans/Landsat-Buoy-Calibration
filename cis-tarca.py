@@ -45,22 +45,27 @@ def check_required_directories():
             'output',
             'output/processed_images',
             'output/single',
-            'output/partial_single',
-            'output/batches',
-            'output/batches/data',            
-            'output/batches/graphs',
-            'output/partial_batches',
+            'output/single/sc',
+            'output/single/sc/buoy',
+            'output/single/sc/toa',
+            'output/single/sw',
+            'output/single/sw/lst',
+            'output/batch',
+            'output/batch/data',
+            'output/batch/data/sc',
+            'output/batch/data/sc/buoy',
+            'output/batch/data/sc/toa',
+            'output/batch/data/sw',
+            'output/batch/data/sw/lst',
+            'output/batch/graphs',
             'logs',
             'logs/status',
             'logs/status/single',
-            'logs/status/partial_single',
             'logs/status/batch',
-            'logs/status/partial_batch',
             'logs/output',
             'logs/output/single',
-            'logs/output/partial_single',
-            'logs/output/batch',
-            'logs/output/partial_batch'}
+            'logs/output/batch'
+        }
     
     for directory in required_directories:
         if not test_paths.main([directory, "-tdirectory"]):

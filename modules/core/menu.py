@@ -26,7 +26,7 @@ from modules.core.model import Model
 ERASE_LINE = '\x1b[2K'    
 
 # Request name of text file containing batch process scene IDs
-def f_model_batch_merra(project_root):
+def model_batch_sc_buoy(project_root):
     
     import test_paths
     
@@ -83,11 +83,11 @@ def f_model_batch_merra(project_root):
             else:
             
                 # Launch batch process job
-                Model('menu', 'batch', batchFile, 'merra', display_images, project_root, False, None)
+                Model('menu', 'batch', 'sc', 'buoy', batchFile, 'merra', display_images, project_root, False, None)
 
 
 # Request Scene ID for single scene to calculate
-def f_model(project_root):
+def model_single_sc_buoy(project_root):
     
     display_images = display_processed_images(False)
     
@@ -108,12 +108,12 @@ def f_model(project_root):
         if sceneId.upper() != 'X':            
             
             # Launch single scene ID process job
-            Model('menu', 'single', sceneId, 'merra', display_images, project_root, False, None)
+            Model('menu', 'single', 'sc', 'buoy', sceneId, 'merra', display_images, project_root, False, None)
             
             
 # Request information to perform partial calculation
 # scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
-def f_model_partial(project_root):
+def model_single_sc_toa(project_root):
     
     display_images = False
     partial_data = {}
@@ -207,7 +207,181 @@ def f_model_partial(project_root):
             partial_data['emis_b11'] = emis_b11
             
             # Launch single scene ID process job
-            Model('menu', 'partial_single', sceneId, 'merra', display_images, project_root, False, partial_data)
+            Model('menu', 'single', 'sc', 'toa', sceneId, 'merra', display_images, project_root, False, partial_data)
+            
+            
+# Request information to perform partial calculation
+# scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
+def model_single_sw_lst(project_root):
+    
+    display_images = False
+    partial_data = {}
+    
+    sceneId = input("\n Please enter the Scene ID to continue or 'X' to exit : ")
+    
+    if sceneId.upper() != 'X':
+        valid_data = is_valid_id(sceneId)
+    
+        if not valid_data:
+            while not valid_data:
+                sceneId = input("\n The Scene ID you entered is invalid, please try again ('X' - exit) : ")
+                
+                if sceneId.upper() != 'X':
+                    valid_data = is_valid_id(sceneId)
+                else:
+                    break
+    
+        if sceneId.upper() != 'X':
+            
+            # Get latitude from user
+            lat = input("\n Please enter the latitude for the supplied surface temperature (decimal range -90 to 90) : ")
+            
+            # Perform data validation        
+            if not is_valid_latitude(lat):
+                while not is_valid_latitude(lat):
+                    lat = input("\n The Latitude you entered is not in the valid range of -90 to 90, please try again : ")
+            
+            lat = float(lat)
+            
+            partial_data['lat'] = lat
+            
+            # Get longtitude from user
+            lon = input("\n Please enter the longtitude for the supplied surface temperature (decimal range -180  to 180) : ")
+            
+            # Perform data validation
+            if not is_valid_longtitude(lon):
+                while not is_valid_longtitude(lon):
+                    lon = input("\n The Longtitude you entered is not in the valid range of -180 to 180, please try again : ")
+            
+            lon = float(lon)
+        
+            partial_data['lon'] = lon
+        
+            # Get band 10 emissivity from user
+            emis_b10 = input("\n Please enter the emissivity for Band 10 (Press enter for default %s) : " % settings.DEFAULT_EMIS_B10)
+            
+            # Perform data validation
+            if data_entered(emis_b10):
+                if not is_valid_emissivity(emis_b10):
+                    while not is_valid_emissivity(emis_b10):
+                        emis_b10 = input("\n The Emissivity you entered for Band 10 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_EMIS_B10)
+                        
+                        if not data_entered(emis_b10):
+                            emis_b10 = settings.DEFAULT_EMIS_B10
+                else:
+                    emis_b10 = float(emis_b10)
+            else:
+                emis_b10 = settings.DEFAULT_EMIS_B10
+            
+            partial_data['emis_b10'] = emis_b10
+            
+            # Get band 11 emissivity from user
+            emis_b11 = input("\n Please enter the emissivity for Band 11 (Press enter for default %s) : " % settings.DEFAULT_EMIS_B11)
+    
+            # Perform data validation
+            if data_entered(emis_b11):
+                if not is_valid_emissivity(emis_b11):
+                    while not is_valid_emissivity(emis_b11):
+                        emis_b11 = input("\n The Emissivity you entered for Band 11 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_EMIS_B11)
+                        
+                        if not data_entered(emis_b11):
+                            emis_b11 = settings.DEFAULT_EMIS_B10
+                else:
+                    emis_b11 = float(emis_b11)
+            else:
+                emis_b11 = settings.DEFAULT_EMIS_B11
+            
+            partial_data['emis_b11'] = emis_b11
+            
+            # Ask if gain and bias needs to be added to the equasion
+            if add_gain_bias():
+                
+                partial_data['add_gain_bias'] = True
+                
+                # Get band 10 gain from user
+                gain_b10 = input("\n Please enter the gain for Band 10 (Press enter for default %s) : " % settings.DEFAULT_GAIN_B10)
+        
+                # Perform data validation
+                if data_entered(gain_b10):
+                    if not is_valid_gain(gain_b10):
+                        while not is_valid_gain(gain_b10):
+                            gain_b10 = input("\n The Gain you entered for Band 10 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_GAIN_B10)
+                            
+                            if not data_entered(gain_b10):
+                                gain_b10 = settings.DEFAULT_GAIN_B10
+                    else:
+                        gain_b10 = float(gain_b10)
+                else:
+                    gain_b10 = settings.DEFAULT_GAIN_B10
+                
+                partial_data['gain_b10'] = gain_b10
+                
+                # Get band 10 bias from user
+                bias_b10 = input("\n Please enter the bias for Band 10 (Press enter for default %s) : " % settings.DEFAULT_BIAS_B10)
+        
+                # Perform data validation
+                if data_entered(bias_b10):
+                    if not is_valid_bias(bias_b10):
+                        while not is_valid_bias(bias_b10):
+                            bias_b10 = input("\n The Gain you entered for Band 10 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_BIAS_B10)
+                            
+                            if not data_entered(bias_b10):
+                                bias_b10 = settings.DEFAULT_BIAS_B10
+                    else:
+                        bias_b10 = float(bias_b10)
+                else:
+                    bias_b10 = settings.DEFAULT_BIAS_B10
+                
+                partial_data['bias_b10'] = bias_b10
+                
+                # Get band 11 gain from user
+                gain_b11 = input("\n Please enter the gain for Band 11 (Press enter for default %s) : " % settings.DEFAULT_GAIN_B11)
+        
+                # Perform data validation
+                if data_entered(gain_b11):
+                    if not is_valid_gain(gain_b11):
+                        while not is_valid_gain(gain_b11):
+                            gain_b11 = input("\n The Gain you entered for Band 11 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_GAIN_B11)
+                            
+                            if not data_entered(gain_b11):
+                                gain_b11 = settings.DEFAULT_GAIN_B11
+                    else:
+                        gain_b11 = float(gain_b11)
+                else:
+                    gain_b11 = settings.DEFAULT_GAIN_B11
+                
+                partial_data['gain_b11'] = gain_b11
+                
+                # Get band 11 bias from user
+                bias_b11 = input("\n Please enter the bias for Band 11 (Press enter for default %s) : " % settings.DEFAULT_BIAS_B11)
+        
+                # Perform data validation
+                if data_entered(bias_b11):
+                    if not is_valid_bias(bias_b11):
+                        while not is_valid_bias(bias_b11):
+                            bias_b11 = input("\n The Gain you entered for Band 11 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_BIAS_B11)
+                            
+                            if not data_entered(bias_b11):
+                                bias_b11 = settings.DEFAULT_BIAS_B11
+                    else:
+                        bias_b11 = float(bias_b11)
+                else:
+                    bias_b11 = settings.DEFAULT_BIAS_B11
+                
+                partial_data['bias_b11'] = bias_b11
+            
+            else:
+                
+                partial_data['add_gain_bias'] = False
+                
+                partial_data['gain_b10'] = 0
+                partial_data['gain_b11'] = 0
+                partial_data['bias_b10'] = 0
+                partial_data['bias_b11'] = 0
+                
+            
+            # Launch single scene ID process job
+            Model('menu', 'single', 'sw', 'lst', sceneId, 'merra', display_images, project_root, False, partial_data)
             
 
 def data_entered(input_value):
@@ -287,6 +461,32 @@ def is_valid_emissivity(input_value):
     except ValueError:
         pass
                 
+    return returnValue
+
+
+def is_valid_gain(input_value):
+    
+    returnValue = False
+    
+    try:
+        returnValue = True
+    
+    except ValueError:
+        pass
+
+    return returnValue
+
+
+def is_valid_bias(input_value):
+    
+    returnValue = False
+    
+    try:
+        returnValue = True
+    
+    except ValueError:
+        pass
+
     return returnValue
 
 
@@ -371,6 +571,39 @@ def export_display_available():
     
     return returnValue
 
+
+# Ask the user if they want to display each image as it is processed
+def add_gain_bias():
+    
+    gain_bias = False
+    
+    question = "\n Do you want to add gain and bias to the calculation? (Y/N) (Press enter for default Y): "
+    
+    add_gb = input(question)
+    add_gb = add_gb.upper()
+    
+    # Perform data validation
+    if data_entered(add_gb):
+        while len(add_gb) < 1 or (add_gb[0] != "Y" and add_gb[0] != "N"):
+            add_gb = input(" Your entry is invalid, please select Y for YES or N for NO : ")
+            add_gb = add_gb.upper()
+        
+            if not data_entered(add_gb):
+                add_gb = "Y"
+            else:
+                add_gb = add_gb.upper()
+    else:
+        add_gb = "Y"
+                    
+        
+    if add_gb[0] == "Y":
+        gain_bias = True
+    else:
+        gain_bias = False
+        
+    return gain_bias
+
+
 # Ask the user if they want to display each image as it is processed
 def display_processed_images(batch):
     
@@ -405,34 +638,36 @@ def display_processed_images(batch):
 def menu():
 
     print()
-    print(" *********************************************************")
-    print(" *                                                       *")
-    print(" *              Landsat Buoy Calibration                 *")
-    print(" *                                                       *")
-    print(" *********************************************************")
-    print(" *                                                       *")
-    print(" *    Please select from one of the following options    *")
-    print(" *                                                       *")
-    print(" *                                                       *")
-    print(" *                 ***  SINGLE JOB  ***                  *")
-    print(" *                                                       *")    
-    print(" *    1. Forward model calculation (MERRA2 / MODIS)      *")
-    print(" *                                                       *")
-    print(" *    2. Forward model partial (supplied surface temp)   *")
-    print(" *                                                       *")
-    print(" *                                                       *")
-    print(" *                 ***  BATCH JOBS  ***                  *")
-    print(" *                                                       *")
-    print(" *    5. Forward model calculation (MERRA2)              *")
-    print(" *                                                       *")
-    print(" *                                                       *")
-    print(" *              ***  TROUBLESHOOTING  ***                *")
-    print(" *                                                       *")
-    print(" *    D. Create database tables                          *")
-    print(" *                                                       *")
-    print(" *    X. Exit                                            *")
-    print(" *                                                       *")
-    print(" *********************************************************")
+    print(" *********************************************************************")
+    print(" *                                                                   *")
+    print(" *                       Landsat Buoy Calibration                    *")
+    print(" *                                                                   *")
+    print(" *********************************************************************")
+    print(" *                                                                   *")
+    print(" *           Please select from one of the following options         *")
+    print(" *                                                                   *")
+    print(" *                                                                   *")
+    print(" *                         ***  SINGLE JOB  ***                      *")
+    print(" *                                                                   *")    
+    print(" *    1. Single Scene - Single Channel using Buoys                   *")
+    print(" *                                                                   *")
+    print(" *    2. Single Scene - Single Channel using Supplied Surface Temp   *")
+    print(" *                                                                   *")
+    print(" *    3. Single Scene - Split Window using Supplied values           *")
+    print(" *                                                                   *")
+    print(" *                                                                   *")
+    print(" *                         ***  BATCH JOBS  ***                      *")
+    print(" *                                                                   *")
+    print(" *    5. Batch Scenes - Single Channel using Buoys                   *")
+#    print(" *                                                       *")
+#    print(" *                                                       *")
+#    print(" *              ***  TROUBLESHOOTING  ***                *")
+#    print(" *                                                       *")
+#    print(" *    D. Create database tables                          *")
+    print(" *                                                                   *")
+    print(" *    X. Exit                                                        *")
+    print(" *                                                                   *")
+    print(" *********************************************************************")
     print()
     menuInput = input("  Selection : ")
 
@@ -454,13 +689,16 @@ def main(project_root):
         result = menu().upper()
 
         if (result == "1"):
-            f_model(project_root)
+            model_single_sc_buoy(project_root)
             
         elif (result == "2"):
-            f_model_partial(project_root)
+            model_single_sc_toa(project_root)
+            
+        elif (result == "3"):
+            model_single_sw_lst(project_root)
 
         elif (result == "5"):
-            f_model_batch_merra(project_root)
+            model_batch_sc_buoy(project_root)
 
         elif (result == "D"):
             print("\n Please wait while we test the database connection\n")

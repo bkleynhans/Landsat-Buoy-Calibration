@@ -36,6 +36,9 @@ class Gui_Frame():
         self.notebooks = {}
         self.gui_frame.notebooks = self.notebooks
         
+        self.frames = {}
+        self.gui_frame.frames = self.frames
+        
         self.widgets = {}
         self.gui_frame.widgets = self.widgets
         

@@ -18,16 +18,14 @@
 import sys, pdb
 from buoycalib import (sat, buoy, settings)
 from modules.core.landsat.landsat_base import Landsat_Base
-#from modules.core import model
+from modules.core import model
 import datetime
 
-class Landsat_Single(Landsat_Base):
+class Landsat_Single_Sc_Buoy(Landsat_Base):
     
     def __init__(self, args):
         
-        super(Landsat_Single, self).__init__(args)
-        
-        self.build_single_file_path()
+        super(Landsat_Single_Sc_Buoy, self).__init__(args)
         
         self.download_image(self.args['scene_id'])
         

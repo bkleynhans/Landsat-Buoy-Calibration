@@ -21,19 +21,22 @@ from tkinter import filedialog
 from gui.forms.base_classes.gui_frame import Gui_Frame
 import pdb
 
-class Input_Batch(Gui_Frame):
+class Input_Batch_Frame(Gui_Frame):
     
     # Settings Frame constructor
     def __init__(self, master):
         
-        Gui_Frame.__init__(self, master, "input_batch")
+        Gui_Frame.__init__(self, master, "input_batch_frame")
+        
+        master.frames[self.frame_name].input_values = {'batch_file' : ''}
+        
         self.create_batch_frame(master)
             
     
     # Display file dialog so user may select the batch file with required data
     def display_file_dialog(self, master):
         
-        master.master.notebooks['input_notebook'].input_values['batch_file'].delete(0, END)
+        master.frames[self.frame_name].input_values['batch_file'].delete(0, END)
         
         file_path = filedialog.askopenfile(
                 initialdir = (master.master.master.project_root + "/input/batches"),
@@ -48,20 +51,29 @@ class Input_Batch(Gui_Frame):
                 
         if (file_path != None):
             
-            master.master.notebooks['input_notebook'].input_values['batch_file'].insert(0, file_path.name)
+            master.frames[self.frame_name].input_values['batch_file'].insert(0, file_path.name)
                         
             
     # Set up the tab requried for processing of Batches.  Type is determined by radio button
     def create_batch_frame(self, master):
         
         master.add(master.frames[self.frame_name], text = "Batch")
-        master.tab(2, state = 'normal')
+        master.tab(3, state = 'normal')
         
         # Read in the source file location
-        ttk.Label(master.frames[self.frame_name], text = 'Source File : ', width = 20).grid(row = 0, column = 0, padx = 10, pady = 10, sticky = 'w')
+        ttk.Label(
+                master.frames[self.frame_name],
+                text = 'Source File : ',
+                width = 20).grid(
+                        row = 0,
+                        column = 0,
+                        padx = 10,
+                        pady = 10,
+                        sticky = 'nsew'
+                )
         
-        master.input_values['batch_file'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.input_values['batch_file'].grid(row = 0, column = 1, columnspan = 2, padx = 10, pady = 10, sticky = 'w')        
+        master.frames[self.frame_name].input_values['batch_file'] = ttk.Entry(master.frames[self.frame_name], width = 30)
+        master.frames[self.frame_name].input_values['batch_file'].grid(row = 0, column = 1, columnspan = 2, padx = 10, pady = 10, sticky = 'nsew')
         
         self.browse_button = ttk.Button(
                 master.frames[self.frame_name],

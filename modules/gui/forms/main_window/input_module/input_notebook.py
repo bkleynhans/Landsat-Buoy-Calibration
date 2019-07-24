@@ -17,9 +17,10 @@
 from tkinter import *
 from tkinter import ttk
 from gui.forms.base_classes.gui_notebook import Gui_Notebook
-from gui.forms.main_window.input_module.input_sub_frames.input_full_single import Input_Full_Single
-from gui.forms.main_window.input_module.input_sub_frames.input_partial_single import Input_Partial_Single
-from gui.forms.main_window.input_module.input_sub_frames.input_batch import Input_Batch
+from gui.forms.main_window.input_module.input_sub_frames.input_buoy_sc_frame import Input_Buoy_Sc_Frame
+from gui.forms.main_window.input_module.input_sub_frames.input_toa_sc_frame import Input_Toa_Sc_Frame
+from gui.forms.main_window.input_module.input_sub_frames.input_lst_sw_frame import Input_Lst_Sw_Frame
+from gui.forms.main_window.input_module.input_sub_frames.input_batch_frame import Input_Batch_Frame
 import pdb
 
 class Input_Notebook(Gui_Notebook):
@@ -32,31 +33,19 @@ class Input_Notebook(Gui_Notebook):
         
         
     # Create the input_notebook object that will contain all the tabs
-    def create_notebook(self, master):
+    def create_notebook(self, master):                                      
         
-        master.notebooks[self.notebook_name].input_values = {'batch_file': '',
-                                      'scene_id_full_single': '',
-                                      'scene_id_partial_single': '',
-                                      'date_frame_container': {
-                                              'frame': '',
-                                              'date_picker': '',
-                                              'date_label': '',
-                                              'date': ''},
-                                      'lat': '',
-                                      'lon': '',
-                                      'emissivity_b10': '',
-                                      'emissivity_b11': '',
-                                      'surface_temp': ''}
-                                      
+        # Create Full Single frame - tab 0 on input_frame as referenced in header_frame
+        Input_Buoy_Sc_Frame(master.notebooks[self.notebook_name])
+
+        # Create Partial Single frame - tab 1 on input_frame as referenced in header_frame
+        Input_Toa_Sc_Frame(master.notebooks[self.notebook_name])
         
-        # Create Full Single frame
-        Input_Full_Single(master.notebooks[self.notebook_name])
+        # Create lst_sw frame - tab 1 on input_frame as referenced in header_frame
+        Input_Lst_Sw_Frame(master.notebooks[self.notebook_name])
 
-        # Create Partial Single frame
-        Input_Partial_Single(master.notebooks[self.notebook_name])
-
-        # Create Batch frame
-        Input_Batch(master.notebooks[self.notebook_name])
+        # Create Batch frame - tab 2 on input_frame as referenced in header_frame
+        Input_Batch_Frame(master.notebooks[self.notebook_name])
         
         # Add this notebook to the master notebooks list
         master.notebooks[self.notebook_name].pack(anchor = 'w', fill = BOTH, expand = True, padx = 10, pady = 10)

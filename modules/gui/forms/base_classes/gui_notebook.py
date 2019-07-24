@@ -33,6 +33,9 @@ class Gui_Notebook():
         
         self.gui_notebook = ttk.Notebook(master)
         
+        self.notebooks = {}
+        self.gui_notebook.notebooks = self.notebooks
+        
         self.frames = {}
         self.gui_notebook.frames = self.frames
         

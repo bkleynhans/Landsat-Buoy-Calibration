@@ -37,8 +37,8 @@ class Input_Frame(Gui_Label_Frame):
     def __init__(self, master):
                 
         self.path_dictionary = {
-                'relative_status_path': '',
-                'relative_output_path': '',
+                'relative_status_log_path': '',
+                'relative_output_log_path': '',
                 'statusfile_name': '',
                 'statusfile_relative_path_and_filename': '',
                 'statusfile_absolute_path': '',
@@ -71,21 +71,26 @@ class Input_Frame(Gui_Label_Frame):
         
         active_tab = master.frames['input_frame'].notebooks['input_notebook'].index(master.frames['input_frame'].notebooks['input_notebook'].select())
         
-        self.path_dictionary['relative_status_path'] = 'logs/status'
-        self.path_dictionary['relative_output_path'] = 'logs/output'
+        self.path_dictionary['relative_status_log_path'] = 'logs/status'
+        self.path_dictionary['relative_output_log_path'] = 'logs/output'
         
-        if (active_tab == 0):
-            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'single')
-            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'single')
-            self.process_full_single(master)
-        elif (active_tab == 1):
-            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'partial_single')
-            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'partial_single')
-            self.process_partial_single(master)
+        if (active_tab == 0) or (active_tab == 1):
+            self.path_dictionary['relative_status_log_path'] = os.path.join(self.path_dictionary['relative_status_log_path'], 'single')
         elif (active_tab == 2):
-            self.path_dictionary['relative_status_path'] = os.path.join(self.path_dictionary['relative_status_path'], 'batch')
-            self.path_dictionary['relative_output_path'] = os.path.join(self.path_dictionary['relative_output_path'], 'batch')
-            self.process_batch(master)
+            self.path_dictionary['relative_status_log_path'] = os.path.join(self.path_dictionary['relative_status_log_path'], 'batch')
+        
+        if (active_tab == 0): # Single Buoy Single Channel
+            self.path_dictionary['relative_output_log_path'] = os.path.join(self.path_dictionary['relative_output_log_path'], 'single')
+            self.process_single_buoy_sc(master)
+        elif (active_tab == 1): # Single ToA Single Channel
+            self.path_dictionary['relative_output_log_path'] = os.path.join(self.path_dictionary['relative_output_log_path'], 'single')
+            self.process_single_toa_sc(master)
+        elif (active_tab == 2): # Single Land Surface Temperature Split Window
+            self.path_dictionary['relative_output_log_path'] = os.path.join(self.path_dictionary['relative_output_log_path'], 'single')
+            self.process_single_lst_sw(master)
+        elif (active_tab == 3): # Batch Buoy Single Channel
+            self.path_dictionary['relative_output_log_path'] = os.path.join(self.path_dictionary['relative_output_log_path'], 'batch')
+            self.process_batch_buoy_sc(master)
             
         
     # Add process button
@@ -145,12 +150,12 @@ class Input_Frame(Gui_Label_Frame):
         
         # Create status logger instance paths
         self.path_dictionary['statusfile_relative_path_and_filename'] = os.path.join(
-                self.path_dictionary['relative_status_path'], 
+                self.path_dictionary['relative_status_log_path'], 
                 self.path_dictionary['statusfile_name']
         )        
         self.path_dictionary['statusfile_absolute_path'] = os.path.join(
                 master.project_root,
-                self.path_dictionary['relative_status_path']
+                self.path_dictionary['relative_status_log_path']
         )        
         self.path_dictionary['statusfile_absolute_path_and_filename'] = os.path.join(
                 master.project_root,
@@ -159,12 +164,12 @@ class Input_Frame(Gui_Label_Frame):
         
         # Create a output logger instance paths
         self.path_dictionary['outputfile_relative_path_and_filename'] = os.path.join(
-                self.path_dictionary['relative_output_path'], 
+                self.path_dictionary['relative_output_log_path'], 
                 self.path_dictionary['outputfile_name']
         )
         self.path_dictionary['outputfile_absolute_path'] = os.path.join(
                 master.project_root, 
-                self.path_dictionary['relative_output_path']
+                self.path_dictionary['relative_output_log_path']
         )
         self.path_dictionary['outputfile_absolute_path_and_filename'] = os.path.join(
                 master.project_root,
@@ -202,6 +207,8 @@ class Input_Frame(Gui_Label_Frame):
         Model(
              'tarca_gui',
              'single',
+             'sc',
+             'buoy',
              scene_id,
              'merra',
              show_images,
@@ -218,9 +225,9 @@ class Input_Frame(Gui_Label_Frame):
         
         self.clear_watch_files(master)
         
-    
-    # Perform a partial operation where the user provides lat, lon, surface temperature(Ts)
-    def process_partial_scene_id(self, master, scene_id, show_images, partial_data):
+        
+    # Process split window
+    def process_lst_sw(self, master, scene_id, show_images, partial_data):
         
         self.create_watchdogs(
                 master, 
@@ -230,7 +237,40 @@ class Input_Frame(Gui_Label_Frame):
         
         Model(
              'tarca_gui',
-             'partial_single',
+             'single',
+             'sw',
+             'lst',
+             scene_id,
+             'merra',
+             show_images,
+             master.project_root,
+             False,
+             partial_data,
+             self.path_dictionary['statusfile_absolute_path_and_filename'], 
+             self.path_dictionary['outputfile_absolute_path_and_filename']
+        )
+                
+        self.process_complete = True
+        
+        self.kill_watchdogs()
+        
+        self.clear_watch_files(master)
+        
+    
+    # Perform a partial operation where the user provides lat, lon, surface temperature(Ts)
+    def process_toa_sc(self, master, scene_id, show_images, partial_data):
+                
+        self.create_watchdogs(
+                master, 
+                self.path_dictionary['statusfile_absolute_path'], 
+                self.path_dictionary['outputfile_absolute_path']
+        )
+        
+        Model(
+             'tarca_gui',
+             'single',
+             'sc',
+             'toa',
              scene_id,
              'merra',
              show_images,
@@ -249,7 +289,7 @@ class Input_Frame(Gui_Label_Frame):
         
     
     # Process a batch of ID's
-    def process_batch_ids(self, master, source_file, show_images):
+    def process_batch_buoy_sc_ids(self, master, source_file, show_images):
         
         self.create_watchdogs(
                 master,
@@ -260,6 +300,8 @@ class Input_Frame(Gui_Label_Frame):
         Model(
              'tarca_gui',
              'batch',
+             'sc',
+             'buoy',
              source_file,
              'merra',
              show_images,
@@ -288,14 +330,24 @@ class Input_Frame(Gui_Label_Frame):
         master.frames['output_frame'].widgets['output_text'].delete('1.0', 'end')
         
         
-    # Define process for full_single
-    def process_full_single(self, master):
+    # Ask the user if they want to see each image as it is processed
+    def ask_show_images(self):
+        
+        show_images = messagebox.askyesno(
+                title = "Display Images",
+                message = "Do you wish to display each image as it is processing?")
+    
+        return show_images
+        
+        
+    # Define process for processing a single scene of Buoy Top of Atmosphere Radiance using Single Channel
+    def process_single_buoy_sc(self, master):
         
         # Clear output windows and disable process button
         self.prepare_window(master)
         
         # Read the scene_id from the form
-        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id_full_single'].get()
+        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_buoy_sc_frame'].input_values['scene_id'].get()
         
         if (scene_id != None):
         
@@ -318,6 +370,7 @@ class Input_Frame(Gui_Label_Frame):
                 # Progressbar start and stop work with program loop, so manual loop is required for progression
                 self.process_complete = False
                 
+#                self.process_scene_id(master, scene_id, show_images)
                 progressbar_thread = threading.Thread(target = self.step_progressbar)
                 progressbar_thread.start()
                 
@@ -342,163 +395,14 @@ class Input_Frame(Gui_Label_Frame):
                 self.process_button.config(state = 'normal')
 
     
-    # Ask the user if they want to see each image as it is processed
-    def ask_show_images(self):
-        
-        show_images = messagebox.askyesno(
-                title = "Display Images",
-                message = "Do you wish to display each image as it is processing?")
-    
-        return show_images
-    
-    
-    # Define process for partial_single
-    def process_partial_single(self, master, bands=[10, 11]):
-
-        # Keep track of all the invalid entries
-        error_message_list = {
-                'scene_id': ' is not a valid Scene ID',
-                'skin_temp': ' does not fall within the range of 200 to 350 kelvin for a valid skin temperature',
-                'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
-                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
-                'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
-                'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
-            }
-        
-        error_list = {}
-        
-        # Clear output windows and disable process button
-        self.prepare_window(master)
-        
-        # Define dictionary for required values
-        partial_data = {}
-        
-        # Read the scene_id from the form
-        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].input_values['scene_id_partial_single'].get()
-        partial_data['skin_temp'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['surface_temp'].get()
-        partial_data['lat'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lat'].get()
-        partial_data['lon'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['lon'].get()
-        partial_data['emis_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b10'].get()
-        partial_data['emis_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].input_values['emissivity_b11'].get()
-        
-        partial_data['skin_temp'] = self.convert_to_float(partial_data['skin_temp'])
-        partial_data['lat'] = self.convert_to_float(partial_data['lat'])
-        partial_data['lon'] = self.convert_to_float(partial_data['lon'])
-        partial_data['emis_b10'] = self.convert_to_float(partial_data['emis_b10'])
-        partial_data['emis_b11'] = self.convert_to_float(partial_data['emis_b11'])
-        
-        
-        # Check if the scene id is valid
-        if (scene_id != None):        
-            if not menu.is_valid_id(scene_id):
-                
-                error_list['scene_id'] = scene_id
-        
-        # Check if the skin temperature is valid
-        if (partial_data['skin_temp'] != None):
-            if not menu.is_valid_temp(partial_data['skin_temp']):
-                
-                error_list['skin_temp'] = partial_data['skin_temp']  
-        
-        # Check if the latitude is valid
-        if (partial_data['lat'] != None):
-            if not menu.is_valid_latitude(partial_data['lat']):
-                
-                error_list['lat'] = partial_data['lat']
-                
-        # Check if the longtitude is valid
-        if (partial_data['lon'] != None):
-            if not menu.is_valid_longtitude(partial_data['lon']):
-                    
-                error_list['lon'] = partial_data['lon']
-                
-                
-        # Check if the emissivity for band 10 is valid
-        if (partial_data['emis_b10'] != None):
-            if not menu.is_valid_emissivity(partial_data['emis_b10']):
-                
-                error_list['emis_b10'] = partial_data['emis_b10']
-                
-                
-        # Check if the emissivity for band 11 is valid
-        if (partial_data['emis_b11'] != None):
-            if not menu.is_valid_emissivity(partial_data['emis_b11']):
-                
-                error_list['emis_b11'] = partial_data['emis_b11']
-                
-        
-        if len(error_list) == 0:
-            
-            # Create a status logger instance
-            self.path_dictionary['statusfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".status"
-
-            # Create a output logger instance
-            self.path_dictionary['outputfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".output"
-        
-            self.build_paths(master)
-            
-            # Create a progress bar to show activity
-            self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
-            self.progressbar.progressbar.config(mode = 'indeterminate')
-            
-            # Progressbar start and stop work with program loop, so manual loop is required for progression
-            self.process_complete = False
-            
-            progressbar_thread = threading.Thread(target = self.step_progressbar)
-            progressbar_thread.start()
-                
-            # Launch single scene ID process job in own thread
-            cis_tarca_thread = threading.Thread(
-                    target = self.process_partial_scene_id, args = (
-                            [master,
-                             scene_id,
-                             False,
-                             partial_data, ]
-                    )
-            )
-                    
-            cis_tarca_thread.start()
-            
-        else:
-            
-            asterisk = '*'
-            nr_asterisks = 65
-            
-            space = ' '
-            nr_spaces = 5
-            
-            header1 = ''.join([char*nr_asterisks for char in asterisk])
-            header1 += '\n'
-            header2 = ''.join([char*nr_spaces for char in space])
-            header2 += '!!!   The following data you entered is incorrect.   !!!'
-            header2 += ''.join([char*nr_spaces for char in space])
-            header2 += '\n'
-            header3 = ''.join([char*nr_asterisks for char in asterisk])
-            
-            message_header = header1 + header2 + header3
-                            
-            message_body = ""
-            
-            for error in error_list:
-                
-                if error_list[error] == '':
-                    message_body += "You did not enter a value for %s\n" % error
-                else:
-                    message_body += "%s %s\n" % (error_list[error], error_message_list[error])
-           
-            Error_Window(master, "partial_single_error_window", "Data Input Errors", message_header, message_body)
-            
-            self.process_button.config(state = 'normal')
-            
-    
-    # Define process for batch
-    def process_batch(self, master):
+    # Define process for batch processing Buoy Top of Atmosphere Radiance using Single Channel
+    def process_batch_buoy_sc(self, master):
         
         # Clear output windows and disable process button
         self.prepare_window(master)
                 
         # Get the batch file from the form
-        source_file = master.frames[self.frame_name].notebooks['input_notebook'].input_values['batch_file'].get()
+        source_file = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_batch_frame'].input_values['batch_file'].get()
         source_file_name = source_file[(source_file.rfind('/') + 1):]
         
         
@@ -587,7 +491,7 @@ class Input_Frame(Gui_Label_Frame):
                     
                     # Launch single scene ID process job in own thread
                     cis_tarca_thread = threading.Thread(
-                            target = self.process_batch_ids, args = (
+                            target = self.process_batch_buoy_sc_ids, args = (
                                     [master, 
                                      source_file, 
                                      show_images, ]
@@ -601,3 +505,287 @@ class Input_Frame(Gui_Label_Frame):
                     messagebox.showwarning(
                             title = "Invalid Input",
                             message = "The file you specified is empty, please select a non-empty file.")
+    
+    
+    # Define process for Top of Atmosphere Radiance data using Single Channel and manual input values
+    def process_single_toa_sc(self, master, bands=[10, 11]):
+
+        # Keep track of all the invalid entries
+        error_message_list = {
+                'scene_id': ' is not a valid Scene ID',
+                'skin_temp': ' does not fall within the range of 200 to 350 kelvin for a valid skin temperature',
+                'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
+                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
+                'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
+                'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
+            }
+        
+        error_list = {}
+        
+        # Clear output windows and disable process button
+        self.prepare_window(master)
+        
+        # Define dictionary for required values
+        partial_data = {}
+                
+        # Read the scene_id from the form
+        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['scene_id'].get()
+        partial_data['skin_temp'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['surface_temp'].get()
+        partial_data['lat'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['lat'].get()
+        partial_data['lon'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['lon'].get()
+        partial_data['emis_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['emissivity_b10'].get()
+        partial_data['emis_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_toa_sc_frame'].input_values['emissivity_b11'].get()
+        
+        partial_data['skin_temp'] = self.convert_to_float(partial_data['skin_temp'])
+        partial_data['lat'] = self.convert_to_float(partial_data['lat'])
+        partial_data['lon'] = self.convert_to_float(partial_data['lon'])
+        partial_data['emis_b10'] = self.convert_to_float(partial_data['emis_b10'])
+        partial_data['emis_b11'] = self.convert_to_float(partial_data['emis_b11'])
+        
+        
+        # Check if the scene id is valid
+        if (scene_id != None):        
+            if not menu.is_valid_id(scene_id):
+                
+                error_list['scene_id'] = scene_id
+        
+        # Check if the skin temperature is valid
+        if (partial_data['skin_temp'] != None):
+            if not menu.is_valid_temp(partial_data['skin_temp']):
+                
+                error_list['skin_temp'] = partial_data['skin_temp']  
+        
+        # Check if the latitude is valid
+        if (partial_data['lat'] != None):
+            if not menu.is_valid_latitude(partial_data['lat']):
+                
+                error_list['lat'] = partial_data['lat']
+                
+        # Check if the longtitude is valid
+        if (partial_data['lon'] != None):
+            if not menu.is_valid_longtitude(partial_data['lon']):
+                    
+                error_list['lon'] = partial_data['lon']
+                
+                
+        # Check if the emissivity for band 10 is valid
+        if (partial_data['emis_b10'] != None):
+            if not menu.is_valid_emissivity(partial_data['emis_b10']):
+                
+                error_list['emis_b10'] = partial_data['emis_b10']
+                
+                
+        # Check if the emissivity for band 11 is valid
+        if (partial_data['emis_b11'] != None):
+            if not menu.is_valid_emissivity(partial_data['emis_b11']):
+                
+                error_list['emis_b11'] = partial_data['emis_b11']
+                
+        
+        if len(error_list) == 0:
+            
+            # Create a status logger instance
+            self.path_dictionary['statusfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".status"
+
+            # Create a output logger instance
+            self.path_dictionary['outputfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".output"
+        
+            self.build_paths(master)
+            
+            # Create a progress bar to show activity
+            self.progressbar = Progress_Bar(master, 'Processing Scene ' + scene_id)
+            self.progressbar.progressbar.config(mode = 'indeterminate')
+            
+            # Progressbar start and stop work with program loop, so manual loop is required for progression
+            self.process_complete = False
+            
+            progressbar_thread = threading.Thread(target = self.step_progressbar)
+            progressbar_thread.start()
+                
+            # Launch single scene ID process job in own thread
+            cis_tarca_thread = threading.Thread(
+                    target = self.process_toa_sc, args = (
+                            [master,
+                             scene_id,
+                             False,
+                             partial_data, ]
+                    )
+            )
+                    
+            cis_tarca_thread.start()
+            
+        else:
+            
+            asterisk = '*'
+            nr_asterisks = 65
+            
+            space = ' '
+            nr_spaces = 5
+            
+            header1 = ''.join([char*nr_asterisks for char in asterisk])
+            header1 += '\n'
+            header2 = ''.join([char*nr_spaces for char in space])
+            header2 += '!!!   The following data you entered is incorrect.   !!!'
+            header2 += ''.join([char*nr_spaces for char in space])
+            header2 += '\n'
+            header3 = ''.join([char*nr_asterisks for char in asterisk])
+            
+            message_header = header1 + header2 + header3
+                            
+            message_body = ""
+            
+            for error in error_list:
+                
+                if error_list[error] == '':
+                    message_body += "You did not enter a value for %s\n" % error
+                else:
+                    message_body += "%s %s\n" % (error_list[error], error_message_list[error])
+           
+            Error_Window(master, "partial_single_error_window", "Data Input Errors", message_header, message_body)
+            
+            self.process_button.config(state = 'normal')
+            
+
+    # Define process for Land Surface Temperature using Split Window
+    def process_single_lst_sw(self, master):
+        
+        # Keep track of all the invalid entries
+        error_message_list = {
+                'scene_id': ' is not a valid Scene ID',
+                'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
+                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
+                'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
+                'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
+            }
+        
+        error_list = {}
+        
+        # Clear output windows and disable process button
+        self.prepare_window(master)
+        
+        # Define dictionary for required values
+        partial_data = {}
+        
+        # Read the scene_id from the form
+        scene_id = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['scene_id'].get()
+        partial_data['lat'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['lat'].get()
+        partial_data['lon'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['lon'].get()
+        partial_data['emis_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['emissivity_b10'].get()
+        partial_data['emis_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['emissivity_b11'].get()
+        
+        # There is no .get() method for the ttk.Checkbutton object, therefore an even listener is added to the element 
+        # and the value in the variable changed based on the "change" event from the checkbutton
+        partial_data['add_gain_bias'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].input_values['add_gain_bias']
+        
+        # Convert all entered data to float values
+        partial_data['lat'] = self.convert_to_float(partial_data['lat'])
+        partial_data['lon'] = self.convert_to_float(partial_data['lon'])
+        partial_data['emis_b10'] = self.convert_to_float(partial_data['emis_b10'])
+        partial_data['emis_b11'] = self.convert_to_float(partial_data['emis_b11'])
+        
+        if partial_data['add_gain_bias']:
+            partial_data['gain_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].frames['input_lst_sw_gb_frame'].input_values['gain_b10'].get()
+            partial_data['bias_b10'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].frames['input_lst_sw_gb_frame'].input_values['bias_b10'].get()
+            partial_data['gain_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].frames['input_lst_sw_gb_frame'].input_values['gain_b11'].get()
+            partial_data['bias_b11'] = master.frames[self.frame_name].notebooks['input_notebook'].frames['input_lst_sw_frame'].frames['input_lst_sw_gb_frame'].input_values['bias_b11'].get()
+            
+            partial_data['gain_b10'] = self.convert_to_float(partial_data['gain_b10'])
+            partial_data['bias_b10'] = self.convert_to_float(partial_data['bias_b10'])
+            partial_data['gain_b11'] = self.convert_to_float(partial_data['gain_b11'])
+            partial_data['bias_b11'] = self.convert_to_float(partial_data['bias_b11'])
+        else:
+            partial_data['gain_b10'] = 0
+            partial_data['bias_b10'] = 0
+            partial_data['gain_b11'] = 0
+            partial_data['bias_b11'] = 0
+        
+        # Check if the scene id is valid
+        if (scene_id != None):
+            if not menu.is_valid_id(scene_id):
+                
+                error_list['scene_id'] = scene_id
+        
+        # Check if the latitude is valid
+        if (partial_data['lat'] != None):
+            if not menu.is_valid_latitude(partial_data['lat']):
+                
+                error_list['lat'] = partial_data['lat']
+                
+        # Check if the longtitude is valid
+        if (partial_data['lon'] != None):
+            if not menu.is_valid_longtitude(partial_data['lon']):
+                    
+                error_list['lon'] = partial_data['lon']
+        
+        # Check if the emissivity for band 10 is valid
+        if (partial_data['emis_b10'] != None):
+            if False:
+                error_list['emis_b10'] = partial_data['emis_b10']
+                
+        # Check if the emissivity for band 11 is valid
+        if (partial_data['emis_b11'] != None):
+            if False:
+                error_list['emis_b11'] = partial_data['emis_b11']
+                
+        if len(error_list) == 0:
+            
+            # Create a status logger instance
+            self.path_dictionary['statusfile_name'] = "Split_Window_" + str(self.current_datetime) + ".status"
+
+            # Create a output logger instance
+            self.path_dictionary['outputfile_name'] = "Split_Window_" + str(self.current_datetime) + ".output"
+        
+            self.build_paths(master)
+            
+            # Create a progress bar to show activity
+            self.progressbar = Progress_Bar(master, 'Processing... ')
+            self.progressbar.progressbar.config(mode = 'indeterminate')
+            
+            # Progressbar start and stop work with program loop, so manual loop is required for progression
+            self.process_complete = False
+            
+            progressbar_thread = threading.Thread(target = self.step_progressbar)
+            progressbar_thread.start()
+                
+            # Launch single process job in own thread
+            cis_tarca_thread = threading.Thread(
+                    target = self.process_lst_sw, args = (
+                            [master,
+                             scene_id,
+                             False,
+                             partial_data, ]
+                    )
+            )
+                    
+            cis_tarca_thread.start()
+            
+        else:
+            
+            asterisk = '*'
+            nr_asterisks = 65
+            
+            space = ' '
+            nr_spaces = 5
+            
+            header1 = ''.join([char*nr_asterisks for char in asterisk])
+            header1 += '\n'
+            header2 = ''.join([char*nr_spaces for char in space])
+            header2 += '!!!   The following data you entered is incorrect.   !!!'
+            header2 += ''.join([char*nr_spaces for char in space])
+            header2 += '\n'
+            header3 = ''.join([char*nr_asterisks for char in asterisk])
+            
+            message_header = header1 + header2 + header3
+                            
+            message_body = ""
+            
+            for error in error_list:
+                
+                if error_list[error] == '':
+                    message_body += "You did not enter a value for %s\n" % error
+                else:
+                    message_body += "%s %s\n" % (error_list[error], error_message_list[error])
+           
+            Error_Window(master, "partial_single_error_window", "Data Input Errors", message_header, message_body)
+            
+            self.process_button.config(state = 'normal')

@@ -15,13 +15,19 @@ SQL_CONFIGURED = False
 DEFAULT_EMIS_B10 = 0.988
 DEFAULT_EMIS_B11 = 0.98644
 
+# Gain and Bias used in Split Window
+DEFAULT_GAIN_B10 = 1.0151
+DEFAULT_GAIN_B11 = 1.06644  
+DEFAULT_BIAS_B10 = -0.14774
+DEFAULT_BIAS_B11 = -0.46326
+
 # Define locations for default log files used by Gui
 DEFAULT_OUTPUT_LOG = 'logs/output/default.output'
 DEFAULT_STATUS_LOG = 'logs/status/default.status'
-DEFAULT_SINGLE_SAVE_FILE = 'output/single/results.txt'
-DEFAULT_PARTIAL_SINGLE_SAVE_FILE = 'output/partial_single/results.txt'
-DEFAULT_BATCH_SAVE_PATH = 'output/batches/data/'
-DEFAULT_PARTIAL_BATCH_SAVE_FILE = 'output/partial_batch/results.txt'
+DEFAULT_OUTPUT_PATH = 'output/'
+#DEFAULT_PARTIAL_SINGLE_SAVE_FILE = 'output/partial_single/results.txt'
+#DEFAULT_BATCH_SAVE_PATH = 'output/batches/data/'
+#DEFAULT_PARTIAL_BATCH_SAVE_FILE = 'output/partial_batch/results.txt'
 
 # static data used to make calculations
 STATIC = join(PACKAGE_BASE, 'data')

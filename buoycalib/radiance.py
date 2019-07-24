@@ -1,9 +1,9 @@
 import numpy
-
+import pdb
 from . import settings
 
 
-def calc_ltoa_spectral(wavelengths, upwell_rad, gnd_reflect, transmission, skin_temp, water_file=settings.WATER_TXT):
+def calc_ltoa_spectral(spec_ref, wavelengths, upwell_rad, gnd_reflect, transmission, skin_temp, water_file=settings.WATER_TXT):
     """
     Calculate modeled radiance for band 10 and 11.
 
@@ -23,9 +23,13 @@ def calc_ltoa_spectral(wavelengths, upwell_rad, gnd_reflect, transmission, skin_
 
     # Load Emissivity / Reflectivity
     spec_r_wvlens, spec_r = numpy.loadtxt(water_file, unpack=True, skiprows=3)
-    spec_ref = numpy.interp(wavelengths, spec_r_wvlens, spec_r)
+    
+    # If emmissivity is supplied, use the supplied value, alternatively use the data file
+    if spec_ref == None:
+        spec_ref = numpy.interp(wavelengths, spec_r_wvlens, spec_r)
+        
     spec_emis = 1 - spec_ref   # calculate emissivity
-
+    
     # calculate spectral top of atmosphere radiance
     # Ltoa = (Lbb(T) * tau * emis) + (gnd_ref * reflect) + pth_thermal
     # units: [W cm-2 sr-1 um-1] --> [W m-2 sr-1 um-1]

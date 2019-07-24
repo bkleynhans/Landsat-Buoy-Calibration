@@ -16,16 +16,19 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
+#from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
+from gui.forms.base_classes.gui_frame import Gui_Frame
 import pdb
 
 
-class Header_Frame(Gui_Label_Frame):
+#class Header_Frame(Gui_Label_Frame):
+class Header_Frame(Gui_Frame):
     
     # Header Frame constructor
     def __init__(self, master):
         
-        Gui_Label_Frame.__init__(self, master, "header_frame", "Header")
+#        Gui_Label_Frame.__init__(self, master, "header_frame", "Header")
+        Gui_Frame.__init__(self, master, "header_frame")
         self.create_header(master)
         
         
@@ -34,43 +37,80 @@ class Header_Frame(Gui_Label_Frame):
         
         # Add Radio Buttons to Header frame
         self.process_type = StringVar()
-        self.process_type.set('full')
+        self.process_type.set('buoy_sc')
         
+        # Tab 0 on input_frame
         ttk.Radiobutton(
                 master.frames[self.frame_name],
-                text = 'Full Process',
+                text = 'Buoy SC',
                 variable = self.process_type,
-                value = 'full',
+                value = 'buoy_sc',
+                width = 10,
                 command = lambda: self.change_tabs(master, self.process_type)).grid(
                         row = 0,
                         column = 0)
 
+        # Tab 1 on input_frame
         ttk.Radiobutton(
                 master.frames[self.frame_name],
-                text = 'Partial Process',
+                text = 'TOA SC',
                 variable = self.process_type,
-                value = 'partial',
+                value = 'toa_sc',
+                width = 10,
                 command = lambda: self.change_tabs(master, self.process_type)).grid(
                         row = 0,
                         column = 1)
         
-        master.frames[self.frame_name].pack(padx = 10, pady = (10, 0))
+        # Tab 2 on input_frame
+        ttk.Radiobutton(
+                master.frames[self.frame_name],
+                text = 'LST SW',
+                variable = self.process_type,
+                value = 'lst_sw',
+                width = 10,
+                command = lambda: self.change_tabs(master, self.process_type)).grid(
+                        row = 0,
+                        column = 2)
+        
+        master.frames[self.frame_name].pack(padx = 10, pady = (20, 0))
         
           
     # Function to change visible tables based on radio button selection
     def change_tabs(self, master, selection):
-                
-        if (selection.get() == 'full') :            
+        
+        # Tab 0 on input_frame
+        if (selection.get() == 'buoy_sc') :            
             
-            master.frames['input_frame'].notebooks['input_notebook'].tab(1, state = 'hidden')
             master.frames['input_frame'].notebooks['input_notebook'].tab(0, state = 'normal')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(1, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(2, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(3, state = 'normal')
             master.frames['input_frame'].notebooks['input_notebook'].select(0)
-            
-        elif (selection.get() == 'partial'):            
+        
+        # Tab 1 on input_frame
+        elif (selection.get() == 'toa_sc'):            
             
             master.frames['input_frame'].notebooks['input_notebook'].tab(0, state = 'hidden')
             master.frames['input_frame'].notebooks['input_notebook'].tab(1, state = 'normal')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(2, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(3, state = 'hidden')
             master.frames['input_frame'].notebooks['input_notebook'].select(1)
-             
             
-        master.frames['input_frame'].notebooks['input_notebook'].tab(2, state = 'normal')
+        # Tab 2 on input_frame
+        elif (selection.get() == 'lst_sw'):            
+            
+            master.frames['input_frame'].notebooks['input_notebook'].tab(0, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(1, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(2, state = 'normal')
+            master.frames['input_frame'].notebooks['input_notebook'].tab(3, state = 'hidden')
+            master.frames['input_frame'].notebooks['input_notebook'].select(2)
+        
+        self.clear_output_fields(master)
+        
+        
+    # Clean the output areas and disable the button
+    def clear_output_fields(self, master):        
+        
+        # Clear the output frames (output andn status)
+        master.frames['status_frame'].widgets['status_text'].delete('1.0', 'end')
+        master.frames['output_frame'].widgets['output_text'].delete('1.0', 'end')

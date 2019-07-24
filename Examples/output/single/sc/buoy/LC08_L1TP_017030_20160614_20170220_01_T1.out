@@ -1,0 +1,7 @@
+Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45012, 282.70652173913044, 281.88735880516657, 43.621, -77.399, 7.10126688858815, 6.762989009495315, 7.229785666666666, 6.8578582, 0.0355058687339751, 0.030705090681771387, success, None
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45139, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45142, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45155, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45159, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC08_L1TP_017030_20160614_20170220_01_T1, 2016/06/14, 45160, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period

@@ -1,0 +1,12 @@
+Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason
+LC80130322017332LGN00, 2017/11/28, 44017, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No Buoy Data
+LC80130322017332LGN00, 2017/11/28, 44022, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No Water Temperature Data
+LC80130322017332LGN00, 2017/11/28, 44025, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, Water mixing prerequisites not met
+LC80130322017332LGN00, 2017/11/28, 44039, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, Water mixing prerequisites not met
+LC80130322017332LGN00, 2017/11/28, 44040, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No Water Temperature Data
+LC80130322017332LGN00, 2017/11/28, 44060, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period
+LC80130322017332LGN00, 2017/11/28, 44065, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, Water mixing prerequisites not met
+LC80130322017332LGN00, 2017/11/28, 44066, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, Water mixing prerequisites not met
+LC80130322017332LGN00, 2017/11/28, 44069, 280.45, 280.2758088834564, 40.699, -73.087, 6.91731221571606, 6.605958683927703, 6.618942333333332, 6.329190933333332, 0.03491550861414998, 0.030216486186038758, success, None
+LC80130322017332LGN00, 2017/11/28, 44091, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No Buoy Data
+LC80130322017332LGN00, 2017/11/28, 44094, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, failed, No data file to download for this buoy for this period

@@ -28,7 +28,6 @@ from modules.core.landsat.landsat_single_sw_lst import Landsat_Single_Sw_Lst
 
 class Model:
     
-#    def __init__(self, caller, args):
     def __init__(self, caller, qty, algorithm, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):
         
         warnings.filterwarnings("ignore")

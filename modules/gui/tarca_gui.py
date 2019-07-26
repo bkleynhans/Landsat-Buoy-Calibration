@@ -72,7 +72,7 @@ def main(project_root):
             
     root = Tk()
     root.project_root = project_root
-#    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
+    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root))
     
     tarca_gui = Tarca_Gui(root)
     

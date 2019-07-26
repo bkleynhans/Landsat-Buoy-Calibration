@@ -39,18 +39,18 @@ class Menu_Bar():
     
         # Define the main menu options
         self.file_menu = Menu(self.menu_bar)
-        self.edit_menu = Menu(self.menu_bar)
+#        self.edit_menu = Menu(self.menu_bar)
         self.help_menu = Menu(self.menu_bar)
         
         self.menu_bar.add_cascade(menu = self.file_menu, label = 'File')
-        self.menu_bar.add_cascade(menu = self.edit_menu, label = 'Edit')
+#        self.menu_bar.add_cascade(menu = self.edit_menu, label = 'Edit')
         
          # Define the File menu options
         self.file_menu.add_command(label = 'Exit', command = lambda: tarca_gui.on_closing(master))
         self.file_menu.entryconfig('Exit', accelerator = 'Ctrl+Q')
     
         # Define the Edit menu options
-        self.edit_menu.add_command(label = 'Preferences', command = lambda: Settings_Window(master))
+#        self.edit_menu.add_command(label = 'Preferences', command = lambda: Settings_Window(master))
     
         # Define the Help menu options        
         self.menu_bar.add_command(

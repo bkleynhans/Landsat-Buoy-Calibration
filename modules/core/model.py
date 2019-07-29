@@ -180,33 +180,25 @@ class Model:
         for file_or_folder in os.listdir(directory):
             file_path = os.path.join(directory, file_or_folder)
             
-            log_text = (" Deleting %s..." % (file_or_folder))
+            log_text = (" Deleting %s data..." % (file_or_folder))
             
             try:
-                if self.get_size(file_path) > settings.FOLDER_SIZE_FOR_REPORTING:
-                    if os.path.isfile(file_path):                    
-                        if (self.args['caller'] != 'tarca_gui'):
-                            sys.stdout.write("\r" + log_text)
-                        else:
-                            status_logger.write(log_text)
+                if os.path.isfile(file_path):                    
+                    if (self.args['caller'] != 'tarca_gui'):
+                        sys.stdout.write("\r" + log_text)
+                    else:
+                        status_logger.write(log_text)                        
+                    
+                    os.unlink(file_path)
+                    
+                elif os.path.isdir(file_path):                    
+                    if (self.args['caller'] != 'tarca_gui'):
+                        sys.stdout.write("\r" + log_text)
+                    else:
+                        status_logger.write(log_text)                        
                         
-                        
-                        os.unlink(file_path)
-                        
-                    elif os.path.isdir(file_path):                    
-                        if (self.args['caller'] != 'tarca_gui'):
-                            sys.stdout.write("\r" + log_text)
-                        else:
-                            status_logger.write(log_text)
-                        
-                        
-                        shutil.rmtree(file_path)
-                else:
-                    if os.path.isfile(file_path):
-                        # unlink is ux version of delete for files
-                        os.unlink(file_path)
-                    elif os.path.isdir(file_path):
-                        shutil.rmtree(file_path)
+                    shutil.rmtree(file_path)
+
             except Exception as e:
                 print(e)
         

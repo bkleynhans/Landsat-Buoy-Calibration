@@ -27,6 +27,7 @@ class Landsat_Single_Sc_Buoy(Landsat_Base):
         
         super(Landsat_Single_Sc_Buoy, self).__init__(args)
         
+        self.args = args
         self.download_image(self.args['scene_id'])
         
         self.analyze_image()

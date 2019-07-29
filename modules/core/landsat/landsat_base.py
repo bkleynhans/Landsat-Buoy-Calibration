@@ -423,7 +423,7 @@ class Landsat_Base():
         
         # Erases all the downloaded data if configured
         if settings.CLEAN_FOLDER_ON_COMPLETION:
-                self.clear_downloads(self.args['status_logger'])
+                model.Model.clear_downloads(self, self.args['status_logger'])
                 
     def stop_spinners(self):
         

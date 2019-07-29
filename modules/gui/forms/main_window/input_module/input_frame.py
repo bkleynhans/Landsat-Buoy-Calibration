@@ -353,7 +353,8 @@ class Input_Frame(Gui_Label_Frame):
         
             if (menu.is_valid_id(scene_id)):
                 
-                show_images = self.ask_show_images()
+                #  !!! Temporarily disabled due to multithreading issues with GTK+ !!!
+                show_images = False #self.ask_show_images()
             
                 # Create a status logger instance
                 self.path_dictionary['statusfile_name'] = str(scene_id) + "_" + str(self.current_datetime) + ".status"
@@ -468,7 +469,8 @@ class Input_Frame(Gui_Label_Frame):
                 if (len(scenes) > 0):
                     
                     # Ask user if they want to display each image during processing
-                    show_images = self.ask_show_images()
+                    #  !!! Temporarily disabled due to multithreading issues with GTK+ !!!
+                    show_images = False #self.ask_show_images()
                     
                     # Define a status logger file
                     self.path_dictionary['statusfile_name'] = source_file[source_file.rfind('/') + 1:source_file.rfind('.')] + "_" + str(self.current_datetime) + ".status"

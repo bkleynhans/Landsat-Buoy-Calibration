@@ -72,15 +72,15 @@ class Input_Batch_Frame(Gui_Frame):
                         sticky = 'nsew'
                 )
         
-        master.frames[self.frame_name].input_values['batch_file'] = ttk.Entry(master.frames[self.frame_name], width = 30)
-        master.frames[self.frame_name].input_values['batch_file'].grid(row = 0, column = 1, columnspan = 2, padx = 10, pady = 10, sticky = 'nsew')
+        master.frames[self.frame_name].input_values['batch_file'] = ttk.Entry(master.frames[self.frame_name], width = 60)
+        master.frames[self.frame_name].input_values['batch_file'].grid(row = 0, column = 1, columnspan = 3, padx = 10, pady = 10, sticky = 'nsew')
         
         self.browse_button = ttk.Button(
                 master.frames[self.frame_name],
                 text = 'Browse',
                 command = lambda: self.display_file_dialog(master)).grid(
                         row = 0,
-                        column = 3,
+                        column = 4,
                         padx = 10,
                         pady = 10,
                         sticky = 'w'

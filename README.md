@@ -12,8 +12,16 @@ radiance as measured by a NOAA buoy using the Single Channel process. Based on w
 2) Calculates Top of Atmosphere radiance using user-entered parameters and LANDSAT scenes using the Single Channel proces. Based on work in theses by Frank Padula and Monica Cook at RIT (Rochester Institute of Technology).
 3) Calculates Land Surface Temperature using user-entered parameters and LANDSAT scenes  using the Split Window process.  Based on research currently in progress by Aaron Gerace at RIT (Rochester Institute of Technology).
 
-If you want to use this code, you should have a basic knowledge of python and/or basic coding. No warranty. Use it on one of the RIT CIS linux servers for best results.
+There are two documents included in this repository.
 
+# User Manual
+The User Manual is a basic manual containing all the data required by users to use the program.  There is no information pertaining to the design in this document.  For design information please refer to the design document located in the same directory.  No Python knowledge is required for program usage.
+
+# Design Document
+The Design Document is a fully detailed document containing all the information pertaining to the design and implementation of modules.  Any developer who wants to make changes or amendments to the program should reference the design document before making major changes.  A Basic to Intermediate level of Object Oriented Design and Python programming is suggested for anyone who wants to make changes to the program.
+
+This program was designed to be used on the RIT CIS linux servers as multiple programs and modules are included in the processing of data.
+[//]: # (
 # Table of Contents
 =================
 
@@ -238,5 +246,6 @@ Output for both the single as well as batch jobs are stored in the 'output' dire
   Graphs - /output/batches/graphs  
 
 ## Notes
+)
 
 

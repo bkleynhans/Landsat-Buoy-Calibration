@@ -125,13 +125,10 @@ Click the 'Process' button to the right immediately below the Input frame to beg
 
 <img src="manual_images/gui/000_process_button.png" alt="Process Button" />
 
-<<<<<<< HEAD
 If you provide an invalid scene ID/product ID, the system will display an error message indicating that there is an error with the ID.
 
 <img src="manual_images/gui/buoy_sc_single/005_invalid_scene_id.png" alt="Invalid ID" />
 
-=======
->>>>>>> 8c86cd2da113defedba55bad7b856d0e206717f9
 During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the scene id that was specified,
 
 <img src="manual_images/gui/buoy_sc_single/002_single_progress_bar.png" alt="Progress Bar" />
@@ -144,11 +141,8 @@ Once processing has completed, the progress bar will disappear, the 'Process' bu
 
 <img src="manual_images/gui/buoy_sc_single/004_single_process_complete.png" alt="Process Completed" />
 
-<<<<<<< HEAD
 To get details about the output files, please refer to the output section in this document.
 
-=======
->>>>>>> 8c86cd2da113defedba55bad7b856d0e206717f9
 #### GUI Buoy Batch Processing
 To process a batch of scenes you first have to copy the batch file into the appropriate directory.  Batches are automatically detected from the input/batches directory when clicking the 'Browse' button on the batch processing screen.  You can then select the required batch file from the structure.
 
@@ -164,11 +158,7 @@ Click on the 'Browse' button next to the text field, which will open a file brow
 
 Browse to your batch file, click the file and click on 'Open'.
 
-<<<<<<< HEAD
 <img src="manual_images/gui/buoy_sc_batch/003_buoy_sc_batch_browse_select.png" alt="Select Batch File" />
-=======
-<img src="manual_images/gui/buoy_sc_batch/003_buoy_sc_batch_browse.png" alt="Select Batch File" />
->>>>>>> 8c86cd2da113defedba55bad7b856d0e206717f9
 
 This will take you back to the main window and the path to your batch file will now be displayed in the 'Source File' field.
 
@@ -178,7 +168,6 @@ Click on the Process button to process the selected batch file.
 
 <img src="manual_images/gui/000_process_button.png" alt="Process Button" />
 
-<<<<<<< HEAD
 If any of the IDs in the provided batch file is of an invalid format (please note, this does not for EXISTING IDs, only that the IDs conform to the landsat naming conventions ), a warning will be displayed indicating both the invalid ID as well as the line in the batch file where it is located.
 
 <img src="manual_images/gui/buoy_sc_batch/007_batch_faulty.png" alt="Error in Batch file" />
@@ -261,22 +250,6 @@ Since the calculation is done only for a single set of lat/lon coordinates, the 
 
 To get details about the output files, please refer to the output section in this document.
 
-=======
-During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the batch file name that was specified,
-
-<img src="manual_images/gui/buoy_sc_batch/005_batch_progress_bar.png" alt="Progress Bar" />
-
-and the 'Status' frame at the bottom of the page will provide the user with feedback as the process continues.
-
-<img src="manual_images/gui/buoy_sc_batch/003_single_process_image_download.png" alt="Processing in Progress" />
-
-Once processing has completed, the progress bar will disappear, the 'Process' button will be enabled, and the output will be displayed in the Output frame.
-
-<img src="manual_images/gui/buoy_sc_batch/004_single_process_complete.png" alt="Process Completed" />
-
-### GUI Single Channel Top of Atmosphere
-### GUI Split Window Land Surface Temperature
->>>>>>> 8c86cd2da113defedba55bad7b856d0e206717f9
 # Terminal Interface
 ## Terminal Overview
 ## Launching the Terminal Interface

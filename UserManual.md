@@ -181,7 +181,7 @@ Click on the Process button to process the selected batch file.
 <<<<<<< HEAD
 If any of the IDs in the provided batch file is of an invalid format (please note, this does not for EXISTING IDs, only that the IDs conform to the landsat naming conventions ), a warning will be displayed indicating both the invalid ID as well as the line in the batch file where it is located.
 
-<img src="manual_images/gui/007_batch_faulty.png" alt="Error in Batch file" />
+<img src="manual_images/gui/buoy_sc_batch/007_batch_faulty.png" alt="Error in Batch file" />
 
 During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the batch file name that was specified.
 

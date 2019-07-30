@@ -173,7 +173,12 @@ class Model:
     
     def clear_downloads(self, status_logger=None):
     
-        print("\n\n  Cleaning up the downloaded items folder...")
+        log_text = ("\n\n  Cleaning up the downloaded items folder...")
+        
+        if (self.args['caller'] != 'tarca_gui'):
+            sys.stdout.write("\r" + log_text + "\n\n")
+        else:
+            status_logger.write(log_text)
         
         directory = settings.DATA_BASE
         
@@ -200,9 +205,12 @@ class Model:
                     shutil.rmtree(file_path)
 
             except Exception as e:
-                print(e)
+                # [Errno 39] Directory not empty is a known error associated with shutil.rmtree
+                # there is currently no solution (other than a workaround)
+#                print(e)
+                pass
         
-        log_text = "Cleanup completed!!!"
+        log_text = "Cleanup completed!!!            "
         
         if (self.args['caller'] != 'tarca_gui'):
             sys.stdout.write("\r" + log_text + "\n\n")

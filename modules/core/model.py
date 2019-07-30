@@ -171,7 +171,7 @@ class Model:
             pass
             
     
-    def clear_downloads(self, status_logger):
+    def clear_downloads(self, status_logger=None):
     
         print("\n\n  Cleaning up the downloaded items folder...")
         
@@ -206,8 +206,8 @@ class Model:
         
         if (self.args['caller'] != 'tarca_gui'):
             sys.stdout.write("\r" + log_text + "\n\n")
-    
-        status_logger.write(log_text)
+        else:
+            status_logger.write(log_text)
     
     
     # Convert error codes to error messages for user feedback    

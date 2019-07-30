@@ -421,9 +421,14 @@ class Landsat_Base():
     
     def clean_folders(self):
         
+        pdb.set_trace()
+        
         # Erases all the downloaded data if configured
         if settings.CLEAN_FOLDER_ON_COMPLETION:
+            if self.args['caller'] == 'tarca-gui':
                 model.Model.clear_downloads(self, self.args['status_logger'])
+            else:
+                model.Model.clear_downloads(self)
                 
     def stop_spinners(self):
         

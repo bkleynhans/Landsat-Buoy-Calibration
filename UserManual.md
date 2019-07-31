@@ -12,7 +12,7 @@ There is both a graphical user interface as well as a terminal interface to allo
     * [Get a Copy of the Program](#get-a-copy-of-the-program)
     * [Limitations](#limitations)
 * [Graphical User Interface](#graphical-user-interface)
-    * [Overview](#gui-overview)]
+    * [Overview](#gui-overview)
     * [Launching the GUI](#launching-the-gui)
     * [Interface](#gui-interface)
     * [Processing](#gui-processing)
@@ -22,24 +22,21 @@ There is both a graphical user interface as well as a terminal interface to allo
         * [Single Channel Top of Atmosphere](#gui-single-channel-top-of-atmosphere)
         * [Split Window Land Surface Temperature](#gui-split-window-land-surface-temperature)
 * [Terminal Interface](#original-version)
-    * [Terminal Overview](#terminal-overview)
+    * [Overview](#terminal-overview)
     * [Launching the Terminal Interface](#launching-the-terminal-interface)
-    * [Terminal Interface](#terminal-interface)
-    * [Terminal Processing](#terminal-processing)
-        * [Terminal Single Channel using Buoy Data](#terminal-single-channel-using-buoy-data)
-            * [Terminal Buoy Single Scene](#terminal-buoy-single-scene)
-            * [Terminal Buoy Batch Processing](#terminal-buoy-batch-processing)
-        * [Terminal Single Channel Top of Atmosphere](#terminal-single-channel-top-of-atmosphere)
-        * [Terminal Split Window Land Surface Temperature](#terminal-split-window-land-surface-temperature)
+    * [Interface](#terminal-interface)
+    * [Processing](#terminal-processing)
+        * [Single Channel using Buoy Data](#terminal-single-channel-using-buoy-data)
+            * [Buoy Single Scene](#terminal-buoy-single-scene)
+            * [Buoy Batch Processing](#terminal-buoy-batch-processing)
+        * [Single Channel Top of Atmosphere](#terminal-single-channel-top-of-atmosphere)
+        * [Split Window Land Surface Temperature](#terminal-split-window-land-surface-temperature)
 * [Output](#output)
 * [Notes](#notes)
 <!--te-->
 
-# Graphical User Interface
-## GUI Overview
-The GUI was built using the native tkinter library included in the Python programming language.  This allows the program to be launched remotely on a linux server and the GUI to be used on the local client machine.
-
-### Get a Copy of the Program
+# General Overview
+## Get a Copy of the Program
 To download a copy of the program, enter the following command in your home directory on the server
 
 ```
@@ -48,9 +45,8 @@ https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
 
 This will download a copy of the program in a directory named 'Landsat-Buoy-Calibration' in your home directory on the server.
 
-### Limitations
-
-There are some limitations in this type of implementation, most notibly because Copy and Paste functionality depends on the configuration of the host server (two servers with different operating systems can host the same program and the copy and paste functionality would be different between them).  As such it is important that the user not the different methods of copy and paste available.
+## Limitations
+There are some limitations in the GUI implementation, most notibly because Copy and Paste functionality depends on the configuration of the host server (two servers with different operating systems can host the same program and the copy and paste functionality would be different between them).  As such it is important that the user not the different methods of copy and paste available.
 
 1. Method 1
 > * Copy  : Ctrl + C
@@ -58,6 +54,10 @@ There are some limitations in this type of implementation, most notibly because 
 2. Method 2
 > * Copy  : Select the text with mouse, text will be copied on mouse button release
 > * Paste : Ctrl + Shift + Insert
+
+# Graphical User Interface
+## GUI Overview
+The GUI was built using the native tkinter library included in the Python programming language.  This allows the program to be launched remotely on a linux server and the GUI to be used on the local client machine.
 
 ## Launching the GUI
 Change into the Landsat-Buoy-Calibration directory
@@ -70,22 +70,22 @@ Launch the program
 ```
 
 ## GUI Interface
-When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch with them all being present.
+When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
 
-<img src="manual_images/gui/001_launch_test.png" alt="Source Test" />
+<img src="manual_images/000_launch_test.png" alt="Source Test" />
 
 Once it has been determined that all required sources are available
 
-<img src="manual_images/gui/002_test_successful.png" alt="Sources Available" />
+<img src="manual_images/001_test_successful.png" alt="Sources Available" />
 
 The program will launch
 
-<img src="manual_images/gui/003_program_launch.png" alt="Program Launch" />
+<img src="manual_images/gui/001_program_launch.png" alt="Program Launch" />
 
 ## GUI Processing
 The program itself consists of multiple sections as indicated with green numbers in the following image.
 
-<img src="manual_images/gui/004_program_launch.png" alt="Program Features" />
+<img src="manual_images/gui/002_program_launch.png" alt="Program Features" />
 
 1. Menu Bar
 > * File menu has Exit option which closes the program
@@ -252,8 +252,32 @@ To get details about the output files, please refer to the output section in thi
 
 # Terminal Interface
 ## Terminal Overview
+The console based interface is a basic text interface with menu options and user input sections.  Data validation is done during user input and since the program is text based it should run in any terminal emulator.
+
 ## Launching the Terminal Interface
+
+Change into the Landsat-Buoy-Calibration directory
+```
+cd Landsat-Buoy-Calibration
+```
+Launch the program
+```
+./cis-tarca.py -i terminal
+```
+
 ## Terminal Interface
+When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
+
+<img src="manual_images/000_launch_test.png" alt="Source Test" />
+
+Once it has been determined that all required sources are available
+
+<img src="manual_images/001_test_successful.png" alt="Sources Available" />
+
+the program will launch
+
+<img src="manual_images/terminal/000_program_launch.png" alt="Terminal Launch" />
+
 ## Terminal Processing
 ### Terminal Single Channel using Buoy Data
 #### Terminal Buoy Single Scene

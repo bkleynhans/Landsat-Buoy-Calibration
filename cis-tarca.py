@@ -146,6 +146,16 @@ def check_sources():
 
     return sources_available, missing_sources
 
+# Test if the terminal session allows export of display
+def export_display_available():
+    
+    returnValue = False
+    
+    if "DISPLAY" in os.environ:
+        returnValue = True
+    
+    return returnValue
+
 
 def parseArgs(args):
 
@@ -190,7 +200,15 @@ def main(args):
         launch = parseArgs(args)
 
         if launch.interface == 'gui':
-            tarca_gui.main(PROJECT_ROOT)
+            if export_display_available():
+                tarca_gui.main(PROJECT_ROOT)
+            else:
+                print("\n !!! Your terminal session does not support X-window graphics !!!" \
+                      "\n !!! Press Enter to start the terminal version of the program !!!")
+                
+                input("\n\n  Press Enter to continue...")
+                
+                menu.main(PROJECT_ROOT)
         else:
             menu.main(PROJECT_ROOT)
 

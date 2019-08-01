@@ -448,7 +448,7 @@ During program launch it creates a directory structure using a algorithm based h
 
 Below is an example of the output that was created during the creation of this manual
 
-<img src="manual_images/output/output_tree_structure.png" alt="Output Tree Structure" /><br>
+<img src="manual_images/output_images/output_tree_structure.png" alt="Output Tree Structure" /><br>
 
 When running any process that requires a Scene ID/Product ID, the output will be a file with the same name sa the ID supplied, in the associated directory.  If you run a batch, the output file will be in the batch directory structure with the name of the input batch file.
 

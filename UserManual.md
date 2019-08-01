@@ -46,7 +46,7 @@ https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
 This will download a copy of the program in a directory named 'Landsat-Buoy-Calibration' in your home directory on the server.
 
 ## Limitations
-There are some limitations in the GUI implementation, most notibly because Copy and Paste functionality depends on the configuration of the host server (two servers with different operating systems can host the same program and the copy and paste functionality would be different between them).  As such it is important that the user not the different methods of copy and paste available.
+There are some limitations in the GUI implementation, most notibly because Copy and Paste functionality depends on the configuration of the host server (two servers with different operating systems can host the same program and the copy and paste functionality would be different between them).  As such it is important that the user knows the different methods of copy and paste that are available.  Some common examples are: 
 
 1. Method 1
 > * Copy  : Ctrl + C
@@ -70,7 +70,7 @@ Launch the program
 ```
 
 ## GUI Interface
-When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
+When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data that is used to perform the required processing, the program will not launch without them all being present.
 
 <img src="manual_images/000_launch_test.png" alt="Source Test" /><br>
 
@@ -266,7 +266,7 @@ Launch the program
 ```
 
 ## Terminal Interface
-When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
+When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data that is used to perform the required processing, the program will not launch without them all being present.
 
 <img src="manual_images/000_launch_test.png" alt="Source Test" /><br>
 

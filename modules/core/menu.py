@@ -234,7 +234,7 @@ def model_single_sw_lst(project_root):
         if sceneId.upper() != 'X':
             
             # Get latitude from user
-            lat = input("\n Please enter the latitude for the supplied surface temperature (decimal range -90 to 90) : ")
+            lat = input("\n Please enter the latitude to use for processing (decimal range -90 to 90) : ")
             
             # Perform data validation        
             if not is_valid_latitude(lat):
@@ -246,7 +246,7 @@ def model_single_sw_lst(project_root):
             partial_data['lat'] = lat
             
             # Get longtitude from user
-            lon = input("\n Please enter the longtitude for the supplied surface temperature (decimal range -180  to 180) : ")
+            lon = input("\n Please enter the longtitude to use for processing (decimal range -180  to 180) : ")
             
             # Perform data validation
             if not is_valid_longtitude(lon):

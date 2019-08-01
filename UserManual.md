@@ -72,20 +72,20 @@ Launch the program
 ## GUI Interface
 When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
 
-<img src="manual_images/000_launch_test.png" alt="Source Test" />
+<img src="manual_images/000_launch_test.png" alt="Source Test" /><br>
 
 Once it has been determined that all required sources are available
 
-<img src="manual_images/001_test_successful.png" alt="Sources Available" />
+<img src="manual_images/001_test_successful.png" alt="Sources Available" /><br>
 
 The program will launch
 
-<img src="manual_images/gui/001_program_launch.png" alt="Program Launch" />
+<img src="manual_images/gui/001_program_launch.png" alt="Program Launch" /><br>
 
 ## GUI Processing
 The program itself consists of multiple sections as indicated with green numbers in the following image.
 
-<img src="manual_images/gui/002_program_launch.png" alt="Program Features" />
+<img src="manual_images/gui/002_program_launch.png" alt="Program Features" /><br>
 
 1. Menu Bar
 > * File menu has Exit option which closes the program
@@ -117,136 +117,136 @@ README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/READM
 The current version includes some corrections pertaining to bulk temperature, where additional parameters were including in the water mixing prerequisites to determine validity of raw data before performing calculations.  This mitigates instances where scenes were included or excluded with invalid bulk temperature condition restrictions.
 
 #### GUI Buoy Single Scene
-To process a single scene, copy a scene ID or Product Identifier and paste it into the ID field.
+To process a single scene, copy a Scene ID or Product ID and paste it into the ID field.
 
-<img src="manual_images/gui/buoy_sc_single/001_buoy_sc_single.png" alt="Single Buoy Single Channel" />
+<img src="manual_images/gui/buoy_sc_single/001_buoy_sc_single_entry.png" alt="Single Buoy Single Channel" /><br>
 
 Click the 'Process' button to the right immediately below the Input frame to begin processing.
 
-<img src="manual_images/gui/000_process_button.png" alt="Process Button" />
+<img src="manual_images/gui/000_process_button.png" alt="Process Button" /><br>
 
-If you provide an invalid scene ID/product ID, the system will display an error message indicating that there is an error with the ID.
+If you provide an invalid Scene ID/Product ID, the system will display an error message indicating that there is an error with the ID.
 
-<img src="manual_images/gui/buoy_sc_single/005_invalid_scene_id.png" alt="Invalid ID" />
+<img src="manual_images/gui/buoy_sc_single/005_buoy_sc_single_invalid_scene_id.png" alt="Invalid ID" /><br>
 
 During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the scene id that was specified,
 
-<img src="manual_images/gui/buoy_sc_single/002_single_progress_bar.png" alt="Progress Bar" />
+<img src="manual_images/gui/buoy_sc_single/002_buoy_sc_single_progress_bar.png" alt="Progress Bar" /><br>
 
 and the 'Status' frame at the bottom of the page will provide the user with feedback as the process continues.
 
-<img src="manual_images/gui/buoy_sc_single/003_single_process_image_download.png" alt="Processing in Progress" />
+<img src="manual_images/gui/buoy_sc_single/003_buoy_sc_single_process_image_download.png" alt="Processing in Progress" /><br>
 
 Once processing has completed, the progress bar will disappear, the 'Process' button will be enabled, and the output will be displayed in the Output frame.
 
-<img src="manual_images/gui/buoy_sc_single/004_single_process_complete.png" alt="Process Completed" />
+<img src="manual_images/gui/buoy_sc_single/004_buoy_sc_single_process_complete.png" alt="Process Completed" /><br>
 
 To get details about the output files, please refer to the output section in this document.
 
 #### GUI Buoy Batch Processing
 To process a batch of scenes you first have to copy the batch file into the appropriate directory.  Batches are automatically detected from the input/batches directory when clicking the 'Browse' button on the batch processing screen.  You can then select the required batch file from the structure.
 
-Batch files must be in the format of 1 scene id/product id per line, with no punctuation (no spaces, no breaks, no commas, no titles, etc.)  An example of a batch file is included in the Landsat-Buoy-Calibration/Examples/input/batches/ directory.  The examples include 1 working batch, one empty batch and one faulty batch.  Faulty scene ID/product ID's will be detected when the 'Process' button is pressed.
+Batch files must be in the format of 1 scene id/product id per line, with no punctuation (no spaces, no breaks, no commas, no titles, etc.)  An example of a batch file is included in the Landsat-Buoy-Calibration/Examples/input/batches/ directory.  The examples include 1 working batch, one empty batch and one faulty batch.  Faulty Scene ID/Product ID's will be detected when the 'Process' button is pressed.
 
 To upload your own batch, create the file using your favorite text editor (Notepad++ in Windows and Notepadqq in Linux are good options).  Connect to the server with a SFTP/SCP client, copy and paste the file in the input/batches directory.
 
-<img src="manual_images/gui/buoy_sc_batch/001_buoy_sc_batch.png" alt="Batch Buoy Single Channel" />
+<img src="manual_images/gui/buoy_sc_batch/001_buoy_sc_batch.png" alt="Batch Buoy Single Channel" /><br>
 
 Click on the 'Browse' button next to the text field, which will open a file browser.
 
-<img src="manual_images/gui/buoy_sc_batch/002_buoy_sc_batch_browse.png" alt="Browse for Batch File" />
+<img src="manual_images/gui/buoy_sc_batch/002_buoy_sc_batch_browse.png" alt="Browse for Batch File" /><br>
 
 Browse to your batch file, click the file and click on 'Open'.
 
-<img src="manual_images/gui/buoy_sc_batch/003_buoy_sc_batch_browse_select.png" alt="Select Batch File" />
+<img src="manual_images/gui/buoy_sc_batch/003_buoy_sc_batch_browse_select.png" alt="Select Batch File" /><br>
 
 This will take you back to the main window and the path to your batch file will now be displayed in the 'Source File' field.
 
-<img src="manual_images/gui/buoy_sc_batch/004_buoy_sc_batch_selected.png" alt="Source File" />
+<img src="manual_images/gui/buoy_sc_batch/004_buoy_sc_batch_selected.png" alt="Source File" /><br>
 
 Click on the Process button to process the selected batch file.
 
-<img src="manual_images/gui/000_process_button.png" alt="Process Button" />
+<img src="manual_images/gui/000_process_button.png" alt="Process Button" /><br>
 
 If any of the IDs in the provided batch file is of an invalid format (please note, this does not for EXISTING IDs, only that the IDs conform to the landsat naming conventions ), a warning will be displayed indicating both the invalid ID as well as the line in the batch file where it is located.
 
-<img src="manual_images/gui/buoy_sc_batch/007_batch_faulty.png" alt="Error in Batch file" />
+<img src="manual_images/gui/buoy_sc_batch/007_batch_faulty.png" alt="Error in Batch file" /><br>
 
 During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the batch file name that was specified.
 
-<img src="manual_images/gui/buoy_sc_batch/005_batch_progress_bar.png" alt="Progress Bar" />
+<img src="manual_images/gui/buoy_sc_batch/005_batch_progress_bar.png" alt="Progress Bar" /><br>
 
 The 'Status' frame at the bottom of the page will provide the user with feedback as the process continues.  The 'Output' frame is also continuously updated as each scene is finished processing.
 
-<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_001.png" alt="Batch Processing image 1" />
+<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_001.png" alt="Batch Processing image 1" /><br>
 
-<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_002.png" alt="Batch Processing image 2" />
+<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_002.png" alt="Batch Processing image 2" /><br>
 
-<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_003.png" alt="Batch Processing image 3" />
+<img src="manual_images/gui/buoy_sc_batch/006_batch_processing_003.png" alt="Batch Processing image 3" /><br>
 
 Once processing has completed, the progress bar will disappear, the 'Process' button will be enabled, and the output will be displayed in the Output frame.
 
 To get details about the output files, please refer to the output section in this document.
 
 ### GUI Single Channel Top of Atmosphere
-Modelling Top of Atmosphere using the Single Channel method without using buoy data is a little more involved.  For the Buoy process all the data is acquired either from the buoy data file, or from the landsat file.  Since we are not using buoys for data, the user has to provide the required information themselves.  A landsat scene with scene ID/product ID is still required for the area in question.
+Modelling Top of Atmosphere using the Single Channel method without using buoy data is a little more involved.  For the Buoy process all the data is acquired either from the buoy data file, or from the landsat file.  Since we are not using buoys for data, the user has to provide the required information themselves.  A landsat scene with Scene ID/Product ID is still required for the area in question.
 
-<img src="manual_images/gui/toa_sc/001_toa_sc.png" alt="Top of Atmosphere Single Channel Processing" />
+<img src="manual_images/gui/toa_sc/001_toa_sc.png" alt="Top of Atmosphere Single Channel Processing" /><br>
 
 Click the 'Process' button to the right immediately below the Input frame to begin processing.
 
-<img src="manual_images/gui/000_process_button.png" alt="Process Button" />
+<img src="manual_images/gui/000_process_button.png" alt="Process Button" /><br>
 
 If any of the supplied values are invalid, you will receive an error message indicating what errors need to be corrected
 
-<img src="manual_images/gui/toa_sc/002_toa_sc_invalid_input.png" alt="Input Errors" />
+<img src="manual_images/gui/toa_sc/002_toa_sc_invalid_input.png" alt="Input Errors" /><br>
 
-If all the data entered are within the valid ranges, the data will be processed.  During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the scene ID that was specified,
+If all the data entered are within the valid ranges, the data will be processed.  During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, indicating the Scene ID that was specified,
 
-<img src="manual_images/gui/toa_sc/003_toa_sc_progress_bar.png" alt="Progress Bar" />
+<img src="manual_images/gui/toa_sc/003_toa_sc_progress_bar.png" alt="Progress Bar" /><br>
 
 and the 'Status' frame at the bottom of the page will provide the user with feedback as the process continues.
 
-<img src="manual_images/gui/toa_sc/004_toa_sc_status.png" alt="Batch Processing image 1" />
+<img src="manual_images/gui/toa_sc/004_toa_sc_status.png" alt="Batch Processing image 1" /><br>
 
 Since the calculation is done only for a single set of lat/lon coordinates, the output will reflect only the data for a single point.
 
-<img src="manual_images/gui/toa_sc/005_toa_sc_output.png" alt="Progress Bar" />
+<img src="manual_images/gui/toa_sc/005_toa_sc_output.png" alt="Progress Bar" /><br>
 
 To get details about the output files, please refer to the output section in this document.
 
 ### GUI Split Window Land Surface Temperature
-Modelling Land Surface Temperature using the Split Window method is a little more involved.  For the Buoy process all the data is acquired either from the buoy data file, or from the landsat file.  Since we are not using buoys for data, the user has to provide the required information themselves.  A landsat scene with scene ID/product ID is still required for the area in question.
+Modelling Land Surface Temperature using the Split Window method is a little more involved.  For the Buoy process all the data is acquired either from the buoy data file, or from the landsat file.  Since we are not using buoys for data, the user has to provide the required information themselves.  A landsat scene with Scene ID/Product ID is still required for the area in question.
 
-<img src="manual_images/gui/lst_sw/001_lst_sw.png" alt="Land Surface Temperature Split Window Processing" />
+<img src="manual_images/gui/lst_sw/001_lst_sw.png" alt="Land Surface Temperature Split Window Processing" /><br>
 
 The Split Window process allows the user to add Gain and Bias for bands 10 and 11.  The default gain and bias is always populated, but they are not added to the calculation while the 'Add Gain and Bias to Calculation' checkbox is unchecked.
 
-<img src="manual_images/gui/lst_sw/003_lst_sw_no_gain_bias.png" alt="Don't add gain and bias" />
+<img src="manual_images/gui/lst_sw/003_lst_sw_no_gain_bias.png" alt="Don't add gain and bias" /><br>
 
 If the 'Add Gain and Bias to Calculation' checkbox is checked, they will be added to the calculation.  These default values in the textboxes can be changed by simply removing and overwriting them.
 
-<img src="manual_images/gui/lst_sw/004_lst_sw_with_gain_bias.png" alt="Add gain and bias" />
+<img src="manual_images/gui/lst_sw/004_lst_sw_with_gain_bias.png" alt="Add gain and bias" /><br>
 
 Click the 'Process' button to the right immediately below the Input frame to begin processing.
 
-<img src="manual_images/gui/000_process_button.png" alt="Process Button" />
+<img src="manual_images/gui/000_process_button.png" alt="Process Button" /><br>
 
 If any of the supplied values are invalid, you will receive an error message indicating what errors need to be corrected
 
-<img src="manual_images/gui/lst_sw/002_lst_sw_invalid_input.png" alt="Input Errors" />
+<img src="manual_images/gui/lst_sw/002_lst_sw_invalid_input.png" alt="Input Errors" /><br>
 
 If all the data entered are within the valid ranges, the data will be processed.  During processing, the 'Process' button is disabled.  A progress bar will be displayed on the screen, 
 
-<img src="manual_images/gui/lst_sw/005_lst_sw_progress_bar.png" alt="Progress Bar" />
+<img src="manual_images/gui/lst_sw/005_lst_sw_progress_bar.png" alt="Progress Bar" /><br>
 
 and the 'Status' frame at the bottom of the page will provide the user with feedback as the process continues.
 
-<img src="manual_images/gui/lst_sw/006_lst_sw_status.png" alt="Batch Processing image 1" />
+<img src="manual_images/gui/lst_sw/006_lst_sw_status.png" alt="Batch Processing image 1" /><br>
 
 Since the calculation is done only for a single set of lat/lon coordinates, the output will reflect only the data for a single point.
 
-<img src="manual_images/gui/lst_sw/007_lst_sw_output.png" alt="Output" />
+<img src="manual_images/gui/lst_sw/007_lst_sw_output.png" alt="Output" /><br>
 
 To get details about the output files, please refer to the output section in this document.
 
@@ -268,22 +268,222 @@ Launch the program
 ## Terminal Interface
 When launching the program, it starts by testing that all required data sources are available, this process is done for both the terminal and GUI interfaces.  Because the sources are required to download data required to perform the required processing, the program will not launch without them all being present.
 
-<img src="manual_images/000_launch_test.png" alt="Source Test" />
+<img src="manual_images/000_launch_test.png" alt="Source Test" /><br>
 
 Once it has been determined that all required sources are available
 
-<img src="manual_images/001_test_successful.png" alt="Sources Available" />
+<img src="manual_images/001_test_successful.png" alt="Sources Available" /><br>
 
 the program will launch
 
-<img src="manual_images/terminal/000_program_launch.png" alt="Terminal Launch" />
+<img src="manual_images/terminal/000_program_launch.png" alt="Terminal Launch" /><br>
 
 ## Terminal Processing
+All navigation within the terminal program is done by entering the corresponding number (1, 2, 3 or 5) to perform the associated action, or 'x' to exit the program.  Data input validation is performed for every entry made and is evaluated when you press `enter`.  Please note that the data validation only checks for correct format of Scene ID/Product ID, not if the ID actually exists.
+
 ### Terminal Single Channel using Buoy Data
+The original version of this module (no gui, just command line processing) was developed on Fedora x64 by Nathan Dileas (nid4986@g.rit.edu).  His original work is available at the links provided below.  
+
+Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.  
+README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md
+
+The current version includes some corrections pertaining to bulk temperature, where additional parameters were including in the water mixing prerequisites to determine validity of raw data before performing calculations.  This mitigates instances where scenes were included or excluded with invalid bulk temperature condition restrictions.
+
 #### Terminal Buoy Single Scene
+To process a single scene, press 1 on the keyboard and press enter
+
+<img src="manual_images/terminal/buoy_sc_single/000_buoy_sc_single_option1.png" alt="Option 1 - Buoy SC Process single scene" /><br>
+
+You will now be asked if you want to display each image as it is processed.  If you do not make a choice, the system will indicate that you haven't and continue to ask for a choice until one is made.
+
+<img src="manual_images/terminal/generic/000_invalid_display_image.png" alt="Invalid Image" /><br>
+
+Press y on the keyboard for yes and n, for no.  Press enter after making your decision to proceed.
+
+Now you may enter the Scene ID/Product ID to process.  It can be typed in, or copy and pasted.  I suggest copy and paste, since entering the IDs by hand is error-prone.  Press enter after supplying the ID.
+
+<img src="manual_images/terminal/buoy_sc_single/001_buoy_sc_single_scene_id_entered.png" alt="Single Scene" /><br>
+
+At this point the processing will start.  If the landsat image already exists in the download directory, the system will process without downloading.  If however the image doesn't exist, it will search through the available sources for the file and start the download.
+
+<img src="manual_images/terminal/buoy_sc_single/002_buoy_sc_single_download_progress.png" alt="Download Progress" /><br>
+
+Once the download has been completed, the system will extract the .tar.gz file and begin processing the buoys.
+
+<img src="manual_images/terminal/buoy_sc_single/003_buoy_sc_single_download_complete.png" alt="Download Complete" /><br>
+
+<img src="manual_images/terminal/generic/001_processing.png" alt="Buoy Processing" /><br>
+
+After processing has been completed, the output of the processing will be displayed on screen
+
+<img src="manual_images/terminal/generic/002_processing_complete.png" alt="Buoy Processing" /><br>
+
+The system will automatically delete all the files that were created for the download and the processing (other than the output files) if the option is set to auto delete (discussed later).  You can press enter to return to the main menu
+
+<img src="manual_images/terminal/buoy_sc_single/005_buoy_sc_single_cleanup_complete.png" alt="Cleanup complete" /><br>
+
+To get details about the output files, please refer to the output section in this document.
+
 #### Terminal Buoy Batch Processing
+To process a batch of scenes, press 5 on the keyboard and press enter
+
+<img src="manual_images/terminal/buoy_sc_batch/000_buoy_sc_batch_option5.png" alt="Option 5 - Buoy SC Process batch of scenes" /><br>
+
+You will now be asked if you want to display each image as it is processed.  If you do not make a choice, the system will indicate that you haven't and continue to ask for a choice until one is made.
+
+<img src="manual_images/terminal/generic/000_invalid_display_image.png" alt="Invalid Image" /><br>
+
+Press y on the keyboard for yes and n, for no.
+
+!!! PLEASE NOTE !!!
+
+If you choose yes at this point, the process will halt after each image until the image is closed, at which point the system will continue to the next image.  This was implemented so the network link, the terminal emulator and the screen don't get saturated with large batches (if you run a batch with 100 scenes, your computer, the server and the network would have to maintain 101 concurrent sessions, one for each image and one for the program).
+
+!!!!!!!!!!!!!!!!!!!
+
+Press enter after making your decision to proceed.
+
+Now you may enter the name of the batch file to process.  You only enter the filename and extension of the file you uploaded into the <em>/input/batches</em> directory. Press enter after supplying the ID.
+
+<img src="manual_images/terminal/buoy_sc_batch/001_buoy_sc_batch_file_entered.png" alt="Batch File" /><br>
+
+At this point the processing will start.  The batch processing section of the code differs from the single process in the sense that the proces downloads the first ID, processes it, displays the output to screen (and writes it to file) and continues to the next ID.
+
+If the landsat image already exists in the download directory, the system will process without downloading.  If however the image doesn't exist, it will search through the available sources for the file and start the download.
+
+<img src="manual_images/terminal/buoy_sc_batch/002_buoy_sc_batch_download_progress.png" alt="Download Progress" /><br>
+
+Once the download has been completed, the system will extract the .tar.gz file and begin processing the buoys.
+
+<img src="manual_images/terminal/buoy_sc_batch/003_buoy_sc_batch_download_complete.png" alt="Download Complete" /><br>
+
+<img src="manual_images/terminal/generic/001_processing.png" alt="Buoy Processing" /><br>
+
+After processing has been completed, the output of the processing will be displayed on screen.
+
+<img src="manual_images/terminal/generic/002_processing_complete.png" alt="Buoy Processing" /><br>
+
+The system will automatically delete all the files that were created for the download and the processing (other than the output files) if the option is set to auto delete (discussed later).  The system will then automatically start downloading and processing the next scene in the batch file.
+
+Once all the IDs in the batch file have been processed, 'Press Enter to contintue...' will be displayed at the bottom of the screen.  At this point you can press enter to return the main menu.
+
+<img src="manual_images/terminal/buoy_sc_batch/004_buoy_sc_batch_processing_complete.png" alt="Buoy Processing" /><br>
+
+To get details about the output files, please refer to the output section in this document.
+
 ### Terminal Single Channel Top of Atmosphere
+To perform a Single Channel operation with your own supplied surface temperature, choose option two.  Press 2 on the keyboard and then press Enter.
+
+<img src="manual_images/terminal/toa_sc/000_toa_sc_option2.png" alt="Top of Atmosphere Single Channel with supplied Surface Temperature" /><br>
+
+Now you may enter the Scene ID/Product ID which you want to use to extract and calcualte the Top of Atmosphere radiance which will be used for the process.  It can be typed in, or copy and pasted.  I suggest copy and paste, since entering the IDs by hand is error-prone.  Press enter after supplying the ID.
+
+<img src="manual_images/terminal/toa_sc/001_toa_sc_scene_id_entered.png" alt="Single Scene" /><br>
+
+Next you will be asked to supply the surface temperature you wish to use for the calculations.  The value has to fall within the valid range of 200 to 350 kelvin and the system will indicate if the supplied temperature does not fall within this range.
+
+<img src="manual_images/terminal/toa_sc/002_toa_sc_surface_temp.png" alt="Surface Temperature" /><br>
+
+Following the surface temperature, you need to provide the latitude and longtitude of the supplied surface temperature reading.
+
+The latitude has to fall within the valid range of -90 to +90.
+
+<img src="manual_images/terminal/generic/003_latitude.png" alt="Latitude" /><br>
+
+The longtitude has to fall within the valid range of -180 to +180.
+
+<img src="manual_images/terminal/generic/004_longtitude.png" alt="Longtitude" /><br>
+
+Next you need to supply the emissivities to be used for bands 10 and 11.  There are no normal ranges for these values but default values have been supplied.  You can press enter (without any input) to use the default values or enter your own preferred values.  There are no valid range restrictions for these values, therefore any value entered will be accepted.
+
+<img src="manual_images/terminal/generic/005_emmissivity.png" alt="Emmissivity" /><br>
+
+Once all the data has been supplied, the system will start processing.  If the image already exists in the downloads directory, the system will process immediate.  If however the image does not exist, the system will search for the appropriate scene at all the sources, download the scene and then process.
+
+<img src="manual_images/terminal/toa_sc/003_toa_sc_download_extract.png" alt="Emmissivity" /><br>
+
+Once the processing has been completed, the output will be displayed and the downloaded data cleaned.  At this point you can press enter to return to the main menu.
+
+<img src="manual_images/terminal/toa_sc/004_toa_sc_processing_complete.png" alt="Processing Complete" /><br>
+
 ### Terminal Split Window Land Surface Temperature
+To perform a Split Window operation choose option three.  Press 3 on the keyboard and then press Enter.
+
+<img src="manual_images/terminal/lst_sw/000_lst_sw_option3.png" alt="Land Surface Temperature using Split Window" /><br>
+
+Now you may enter the Scene ID/Product ID which you want to use to extract and calcualte the Top of Atmosphere radiance which will be used for the process.  It can be typed in, or copy and pasted.  I suggest copy and paste, since entering the IDs by hand is error-prone.  Press enter after supplying the ID.
+
+<img src="manual_images/terminal/lst_sw/001_lst_sw_scene_id_entered.png" alt="Single Scene" /><br>
+
+Following the Scene ID/Product ID, you need to provide the latitude and longtitude to be used for the proces.
+
+The latitude has to fall within the valid range of -90 to +90.
+
+<img src="manual_images/terminal/generic/003_latitude.png" alt="Latitude" /><br>
+
+The longtitude has to fall within the valid range of -180 to +180.
+
+<img src="manual_images/terminal/generic/004_longtitude.png" alt="Longtitude" /><br>
+
+Next you need to supply the emissivities to be used for bands 10 and 11.  There are no normal ranges for these values but default values have been supplied.  You can press enter (without any input) to use the default values or enter your own preferred values.  There are no valid range restrictions for these values, therefore any value entered will be accepted.
+
+<img src="manual_images/terminal/generic/005_emmissivity.png" alt="Emmissivity" /><br>
+
+The final set of data required is related to Gain and Bias.  If you do not wish you add gain and bias, you simply press 'n' and enter and the program will start the processing phase which includes downloading and extracting the file (if required) as well as performing the required processing.
+
+<img src="manual_images/terminal/lst_sw/002_lst_sw_processing_no_gain_bias.png" alt="Processing No Gain or Bias" /><br>
+
+If you wish to add Gain and Bias to the process, simply press enter at the question to use the default value (yes) after which you'll have an oportunity to enter gain and bias values.  Default values have already been supplied (which will be applied if you press enter at each entry without entering any value), alternatively you can supply your own values for processing.
+
+<img src="manual_images/terminal/lst_sw/003_lst_sw_processing_with_gain_bias.png" alt="Processing with Gain or Bias" /><br>
+
+Once all the data has been supplied, the system will start processing.  If the image already exists in the downloads directory, the system will process immediate.  If however the image does not exist, the system will search for the appropriate scene at all the sources, download the scene and then process.
+
+After the processing has been completed, the output will be displayed and the downloaded data cleaned.  At this point you can press enter to return to the main menu.
+
+<img src="manual_images/terminal/lst_sw/004_lst_sw_processing_complete.png" alt="Processing Complete" /><br>
+
 # Output
+During program launch it creates a directory structure using a algorithm based hierarchy. All output that is displayed in the GUI during operation, also creates an output file in the output directory in the appropriate directory structure location.
+
+Below is an example of the output that was created during the creation of this manual
+
+<img src="manual_images/output/output_tree_structure.png" alt="Output Tree Structure" /><br>
+
+When running any process that requires a Scene ID/Product ID, the output will be a file with the same name sa the ID supplied, in the associated directory.  If you run a batch, the output file will be in the batch directory structure with the name of the input batch file.
+
+!!! PLEASE NOTE !!!
+
+If you run a batch or single process for the same id, the original will be overwritten!
+
+!!!!!!!!!!!!!!!!!!!
 
 # Notes
+
+The settings file located at
+
+```~/Landsat-Buoy-Calibration/buoycalib/settings.py```
+
+contains multiple settings and configuration options.  !!! No values in this file should be changed unless you know exactly what you're doing !!!
+
+Some of the values more prone to changes are:
+
+1. Disk space maintenance
+> * CLEAN_FOLDER_ON_COMPLETION = <em>True</em>
+>> * This setting deletes all files that are downloaded or created during processing.  If you set this value to <em>False</em>, no data will be deleted.  Please note that this can use a large amount of disk space in a short period of time.
+2. SQL server support
+> * USE_MYSQL = <em>False</em> and 
+> * SQL_CONFIGURED = <em>False</em>
+>> * These properties are associated with a previous version of the program where output was written to an SQL database.  After the refactoring of the code, the SQL service has not yet been implemented, therefore these values should not be changed until the functionality is added back in a future revision of the program.
+3. Default Emmissivity values
+> * DEFAULT_EMIS_B10 = 0.988
+> * DEFAULT_EMIS_B11 = 0.98644
+>> * These are the default emmissivity values that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.
+4. Gain and Bias for bands 10 and 11 used for Split Window calculations
+> * DEFAULT_GAIN_B10 = 1.0151
+> * DEFAULT_GAIN_B11 = 1.06644
+> * DEFAULT_BIAS_B10 = -0.14774
+> * DEFAULT_BIAS_B11 = -0.46326
+>> * These are the default gain and bias values used for bands 10 and 11 that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.
+
+There are many other settings in this file, including the web addresses for files that are downloaded, but no other setting should require modification.

@@ -7,6 +7,7 @@ PACKAGE_BASE = abspath(join(__file__, '..'))
 CLEAN_FOLDER_ON_COMPLETION = True 
 FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
+# !!! THIS FUNCTIONALITY HAS NOT BEEN RE-IMPLIMENTED AFTER REFRACTORING !!!
 # Will the program be using MySQL?
 USE_MYSQL = False
 SQL_CONFIGURED = False
@@ -104,8 +105,8 @@ EARTH_EXPLORER_LOGIN = ('cisthermal','C15Th3rmal')  # https://ers.cr.usgs.gov/lo
 MERRA_LOGIN = ('cisthermal','C15Th3rmal')           # https://disc.gsfc.nasa.gov/
 
 # Database configuration details
-SQL_USER = ('cisthermal')           # https://disc.gsfc.nasa.gov/
-SQL_PASSWORD = ('C15Th3rmal')
-SQL_SERVER = ('kleynhans.mooo.com')
-SQL_PORT = ('33066')
-SQL_DATABASE = ('cis_tarca')
+SQL_USER = ('')           # https://disc.gsfc.nasa.gov/
+SQL_PASSWORD = ('')
+SQL_SERVER = ('')
+SQL_PORT = ('')
+SQL_DATABASE = ('')

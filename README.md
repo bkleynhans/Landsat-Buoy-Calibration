@@ -11,7 +11,12 @@ The current version of the program:
     <li>Calculates Land Surface Temperature using user-entered parameters and LANDSAT scenes  using the Split Window process.  Based on research currently in progress by Aaron Gerace at RIT (Rochester Institute of Technology).</li>
 </ol>
 
-There are two documents included in this repository.
+There are two help documents included in this repository.
+
+<ol>
+    <li>User Manual</li>
+    <li>Design Document</li>
+</ol>
 
 # Installation
 It is highly recommended that the software is run on one of the RIT CIS linux servers. There are a number of prerequisites required, some of which are challenging to install and others (like <a href="http://modtran.spectral.com/modtran_order">MODTRAN</a>) are quite expensive for individual use.

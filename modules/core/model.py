@@ -65,8 +65,8 @@ class Model:
         
         if self.args['caller'] == 'menu':            
             input("\n\n  Press Enter to continue...")
-    
-    
+
+
     # Create the data loggers for gui display
     def create_loggers(self):
         
@@ -80,8 +80,8 @@ class Model:
             self.output_logger = Process_Logger(settings.DEFAULT_OUTPUT_LOG)
         else:
             self.args['output_logger'] = Process_Logger(self.args['output_log'])
-    
-    
+
+
     def process_arguments(self):
         
         self.args['savefile'] = settings.DEFAULT_OUTPUT_PATH
@@ -112,7 +112,7 @@ class Model:
         elif self.args['qty'] == 'batch':
             
             self.analyze_batch()
-            
+
 
     # Builds the paths to the output files and stores them in args['savefile'] index
     def build_file_paths(self):
@@ -167,8 +167,8 @@ class Model:
             
         if (len(self.args['modis_scenes']) > 0):
             pass
-            
-    
+
+
     # Erases all data from the downloads directory to ensure we don't consume all the disk space
     # This option can be enabled and disabled in the buoycalib/settings.py file
     def clear_downloads(self, status_logger=None):
@@ -216,8 +216,8 @@ class Model:
             sys.stdout.write("\r" + log_text + "\n\n")
         else:
             status_logger.write(log_text)
-    
-    
+
+
     # Convert error codes to error messages for user feedback    
     def get_error_message(self, key):
         
@@ -237,8 +237,8 @@ class Model:
             error_message = key
         
         return error_message
-    
-    
+
+
     # Get the size of a file
     def get_size(self, start_path):
         
@@ -253,8 +253,8 @@ class Model:
         total_size = total_size / 1000000
         
         return total_size
-    
-    
+
+
     # Delete file either by relative or absolute path    
     def delete_file(self, filename):
         

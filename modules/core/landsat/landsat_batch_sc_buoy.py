@@ -3,14 +3,14 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Single Channel Batch process for landsat module
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 21, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : June 21, 2019
-# Filename            : landsat_batch.py
+# Filename            : landsat_batch_sc_buoy.py
 #
 ###
 
@@ -22,6 +22,7 @@ from modules.core import model
 
 class Landsat_Batch_Sc_Buoy(Landsat_Single_Sc_Buoy):
     
+    # Constructor
     def __init__(self, args):
         
         super(Landsat_Single_Sc_Buoy, self).__init__(args)
@@ -50,16 +51,7 @@ class Landsat_Batch_Sc_Buoy(Landsat_Single_Sc_Buoy):
             
             self.process_scene()
             self.finalize()
-        
-        
-#    def build_file_paths(self):
-#        
-#        # Build the output file path from the input file path
-#        batchfile_name = self.args['batch_file_name'][(self.args['batch_file_name'].rfind('/') + 1):]        
-#        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + batchfile_name[:batchfile_name.rfind('.')] + '.out'
-#        
-#        self.delete_file(self.args['savefile'])
-        
+
         
     def process_scene(self):
         

@@ -3,14 +3,14 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Single Channel Top of Atmosphere Radiance process for landsat module with user supplied data
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 26, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : June 26, 2019
-# Filename            : landsat_partial_single.py
+# Filename            : landsat_single_sc_toa.py
 #
 ###
 
@@ -18,12 +18,12 @@
 import sys, pdb
 from modules.core import model
 from modules.core.landsat.landsat_base import Landsat_Base
-#from modules.stp.sw.split_window import Split_Window
 from buoycalib import (sat, buoy, atmo, radiance, modtran, settings, download, display, error_bar)
 import numpy
 
 class Landsat_Single_Sc_Toa(Landsat_Base):
     
+    # Constructor
     def __init__(self, args):
         
         super(Landsat_Single_Sc_Toa, self).__init__(args)
@@ -43,7 +43,8 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         
         self.finalize()
         
-    
+
+    # Calculate atmosphere data
     def get_atmosphere(self):
         
         self.calculate_atmosphere(
@@ -52,8 +53,9 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
                 self.args['partial_data']['lat'],
                 self.args['partial_data']['lon']
             )
-        
-        
+
+
+    # Calculate MODTRAN data
     def get_modtran(self):
         modtran_output_file = '{0}'.format(self.args['scene_id'])
         
@@ -65,8 +67,9 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
                 self.image_data['overpass_date'],
                 self.args['partial_data']['skin_temp']
             )
-        
-        
+
+
+    # Calculate Top of Atmosphere Radiance data
     def get_ltoa(self):
         
         self.img_ltoa = {}
@@ -83,7 +86,8 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
                 self.args['partial_data']['lat'],
                 self.args['partial_data']['lon']
             )
-    
+
+
     # LTOA calcs
     def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa, skin_temp, lat, lon):
         
@@ -122,8 +126,9 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
             pass
             
         return img_ltoa, mod_ltoa
-            
-        
+
+
+    # Display the report headings
     def print_report_headings(self):
         
         # img1 / img2 - radiance from satellite image
@@ -133,8 +138,8 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         report_headings = "Scene_ID, Date, Skin_Temp, Lat, Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Emissivity_B10, Emissivity_B11, Status, Reason"
         
         self.log('output', report_headings)
-        
-    
+
+    # Display the output on screen and write it to file
     def print_and_save_output(self):
         
         error_message = None

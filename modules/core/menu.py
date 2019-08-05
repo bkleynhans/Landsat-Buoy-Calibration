@@ -110,8 +110,8 @@ def model_single_sc_buoy(project_root):
             
             # Launch single scene ID process job
             Model('menu', 'single', 'sc', 'buoy', sceneId, 'merra', display_images, project_root, False, None)
-            
-            
+
+
 # Request information to perform partial calculation
 # scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
 def model_single_sc_toa(project_root):
@@ -209,8 +209,8 @@ def model_single_sc_toa(project_root):
             
             # Launch single scene ID process job
             Model('menu', 'single', 'sc', 'toa', sceneId, 'merra', display_images, project_root, False, partial_data)
-            
-            
+
+
 # Request information to perform partial calculation
 # scene_id, latitude, lontitude, surface temperature, emissivity band 10, emissivity band 11
 def model_single_sw_lst(project_root):
@@ -383,7 +383,7 @@ def model_single_sw_lst(project_root):
             
             # Launch single scene ID process job
             Model('menu', 'single', 'sw', 'lst', sceneId, 'merra', display_images, project_root, False, partial_data)
-            
+
 
 # Checks to see if any data was entered into the variable supplied and returns true or false
 def data_entered(input_value):
@@ -394,6 +394,7 @@ def data_entered(input_value):
         returnValue = True
     
     return returnValue
+
 
 # Test if the supplied latitude is within the valid range
 def is_valid_latitude(input_value):
@@ -551,7 +552,7 @@ def testDb():
     print()
     
     return db_status
-    
+
 
 # Test if the terminal session allows export of display
 def export_display_available():
@@ -666,6 +667,7 @@ def menu():
     menuInput = menuInput.upper()
 
     return menuInput
+
 
 # This is the main entry to the menu
 def main(project_root):

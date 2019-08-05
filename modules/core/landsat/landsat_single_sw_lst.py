@@ -24,6 +24,7 @@ import numpy
 
 class Landsat_Single_Sw_Lst(Landsat_Base):
     
+    # Constructor
     def __init__(self, args):
         
         super(Landsat_Single_Sw_Lst, self).__init__(args)
@@ -49,8 +50,8 @@ class Landsat_Single_Sw_Lst(Landsat_Base):
         self.print_and_save_output()
         
         self.finalize()
-        
-        
+
+    # Calculate Top of Atmosphere Radiance
     def get_image_ltoa(self):
         
         self.img_ltoa = {}
@@ -86,8 +87,9 @@ class Landsat_Single_Sw_Lst(Landsat_Base):
             pass
             
         return img_ltoa
-    
-    
+
+
+    # Add gain and bias if required
     def add_gain_bias(self):
         
         self.adjusted_ltoa = {}
@@ -105,11 +107,13 @@ class Landsat_Single_Sw_Lst(Landsat_Base):
                 }
     
     
+    # Calculate split window
     def calculate_split_window(self, img_ltoa10, img_ltoa11, emis_b10, emis_b11):
         
         self.data[self.args['scene_id']] = Split_Window(img_ltoa10, img_ltoa11, emis_b10, emis_b11).data
         
-        
+    
+    # Print headings to scree and file
     def print_report_headings(self):
         
         report_headings = "Scene_ID, Date, Lat, Lon, Radiance_B10, Radiance_B11, Emissivity_B10, Emissivity_B11, LST_SW, Errors"
@@ -117,6 +121,7 @@ class Landsat_Single_Sw_Lst(Landsat_Base):
         self.log('output', report_headings)
         
     
+    # Print output to screen and save in file
     def print_and_save_output(self):
         
         error_message = None

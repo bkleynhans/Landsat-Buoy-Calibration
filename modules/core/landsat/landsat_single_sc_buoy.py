@@ -3,14 +3,14 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Single Channel Single Scene process for landsat module
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 21, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : June 21, 2019
-# Filename            : landsat_single.py
+# Filename            : landsat_single_sc_buoy.py
 #
 ###
 
@@ -23,6 +23,7 @@ import datetime
 
 class Landsat_Single_Sc_Buoy(Landsat_Base):
     
+    # Constructor
     def __init__(self, args):
         
         super(Landsat_Single_Sc_Buoy, self).__init__(args)
@@ -41,7 +42,8 @@ class Landsat_Single_Sc_Buoy(Landsat_Base):
         
         self.finalize()
         
-        
+    
+    # Analyze the individual image
     def analyze_image(self):
         
         if self.image_data['file_downloaded']:

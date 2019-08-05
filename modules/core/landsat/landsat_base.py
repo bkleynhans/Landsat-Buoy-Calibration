@@ -293,7 +293,8 @@ class Landsat_Base():
                         )
     
         return modtran_data
-    
+
+
     # LTOA calcs
     def run_ltoa(self, modtran_data, img_ltoa, mod_ltoa, skin_temp, lat, lon):
         
@@ -326,14 +327,14 @@ class Landsat_Base():
             
         return img_ltoa, mod_ltoa
 
-    
+
     # Write the report headings to screen or frame
     def print_report_headings(self):
         
         report_headings = "Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason"
         
         self.log('output', report_headings)
-        
+
 
     # Print the output to the scfeen and save it to file
     def print_and_save_output(self):
@@ -411,7 +412,7 @@ class Landsat_Base():
             if thread.THREAD_NAME == 'image':                
                 thread.display_image_thread.join()
 
-    
+
     # Clean the process folders
     def clean_folders(self):
         
@@ -422,6 +423,7 @@ class Landsat_Base():
             else:
                 model.Model.clear_downloads(self)
 
+
     # Stop the spinners
     def stop_spinners(self):
         
@@ -430,8 +432,8 @@ class Landsat_Base():
             for buoy_id in self.buoys:
                 if self.buoy_process_monitor[buoy_id].active:
                     self.buoy_process_monitor[buoy_id].stop_spinner()
-    
-    
+
+
     # Destructor.  Usually not needed but in this case required to get rid of threads        
     def __del__(self):
         

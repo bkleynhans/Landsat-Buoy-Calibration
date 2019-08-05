@@ -2,14 +2,15 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The frame that displays and accepts user input when a Split Window process is run
+#                       to calculate Land Surface Temperature using user supplied data and a landsat image.
 # Created By          : Benjamin Kleynhans
 # Creation Date       : July 16, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : July 16, 2019
-# Filename            : input_lst_sw.py
+# Filename            : input_lst_sw_frame.py
 #
 ###
 

@@ -2,7 +2,9 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The header frame class contains the conditions for the header of 
+#                       the program.  From here the user selects which algorithm they want
+#                       to calculate (SC - Single Channel; TOA - Top of Atmosphere;SW - Split Window)
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 23, 2019
 # Authors             : Benjamin Kleynhans
@@ -16,18 +18,14 @@
 # Imports
 from tkinter import *
 from tkinter import ttk
-#from gui.forms.base_classes.gui_label_frame import Gui_Label_Frame
 from gui.forms.base_classes.gui_frame import Gui_Frame
 import pdb
 
-
-#class Header_Frame(Gui_Label_Frame):
 class Header_Frame(Gui_Frame):
     
     # Header Frame constructor
     def __init__(self, master):
         
-#        Gui_Label_Frame.__init__(self, master, "header_frame", "Header")
         Gui_Frame.__init__(self, master, "header_frame")
         self.create_header(master)
         

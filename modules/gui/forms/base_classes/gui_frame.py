@@ -2,14 +2,14 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Base class for all Frames in the GUI
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 28, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : May 29, 2019
-# Filename            : input_frame.py
+# Filename            : gui_frame.py
 #
 ###
 
@@ -33,12 +33,15 @@ class Gui_Frame():
         
         self.gui_frame = ttk.Frame(master)
         
+        # Create notebook container to easily access notebooks from other areas in the gui
         self.notebooks = {}
         self.gui_frame.notebooks = self.notebooks
         
+        # Create frame container to easily access frames from other areas in the gui
         self.frames = {}
         self.gui_frame.frames = self.frames
         
+        # Create widgets container to easily access widgets from other areas in the gui
         self.widgets = {}
         self.gui_frame.widgets = self.widgets
         

@@ -2,7 +2,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Menu bar for the GUI of the Landsat Buoy Calibration program
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 23, 2019
 # Authors             : Benjamin Kleynhans
@@ -49,7 +49,7 @@ class Menu_Bar():
         self.file_menu.add_command(label = 'Exit', command = lambda: tarca_gui.on_closing(master))
         self.file_menu.entryconfig('Exit', accelerator = 'Ctrl+Q')
     
-        # Define the Edit menu options
+        # Define the Edit menu options - !!! The edit menu has been disabled as it has not been fully implemented
 #        self.edit_menu.add_command(label = 'Preferences', command = lambda: Settings_Window(master))
     
         # Define the Help menu options        

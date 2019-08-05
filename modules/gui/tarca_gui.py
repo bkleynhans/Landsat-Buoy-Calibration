@@ -3,7 +3,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : GUI master for the Landsat Buoy Calibration program
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 23, 2019
 # Authors             : Benjamin Kleynhans
@@ -36,16 +36,17 @@ class Tarca_Gui:
         master.resizable(False, False)
         #master.configure(background = '#FFFFFF')
         
+        # Ensure the master frame cannot be detached from the main program
         master.option_add('*tearOff', False)
         
         # Create the Menubar - accessed via master.menu_bar
         Menu_Bar(master)
         
-        # Create frame container
+        # Create frame container to easily access frames from other ares in the gui
         frames = {}
         master.frames = frames 
         
-        # Create window container
+        # Create window container to easily access windows from other ares in the gui
         windows = {}
         master.windows = windows
         
@@ -61,13 +62,15 @@ class Tarca_Gui:
         # Create the Input Frame - accessed via master.
         Status_Frame(master)
     
-    
+
+# Ask the user to confirm if they want to close the program
 def on_closing(root):
     
     if messagebox.askyesno("Quit", "Do you really wish to quit?"):
         root.destroy()
     
 
+# Main entry to the GUI program
 def main(project_root):
             
     root = Tk()

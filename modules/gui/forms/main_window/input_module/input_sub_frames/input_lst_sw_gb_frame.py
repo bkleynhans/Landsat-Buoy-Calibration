@@ -11,7 +11,7 @@
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : July 19, 2019
-# Filename            : input_lst_sw_gb_sf.py
+# Filename            : input_lst_sw_gb_frame.py
 #
 ###
 

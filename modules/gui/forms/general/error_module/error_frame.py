@@ -2,7 +2,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The error frame is contained in the error window and provides the user with error information
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 30, 2019
 # Authors             : Benjamin Kleynhans

@@ -2,7 +2,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Base class for all Notebooks in the GUI
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 28, 2019
 # Authors             : Benjamin Kleynhans
@@ -33,12 +33,15 @@ class Gui_Notebook():
         
         self.gui_notebook = ttk.Notebook(master)
         
+        # Create notebook container to easily access notebooks from other areas in the gui
         self.notebooks = {}
         self.gui_notebook.notebooks = self.notebooks
         
+        # Create frame container to easily access frames from other areas in the gui
         self.frames = {}
         self.gui_notebook.frames = self.frames
         
+        # Create widgets container to easily access widgets from other areas in the gui
         self.widgets = {}
         self.gui_notebook.widgets = self.widgets
         

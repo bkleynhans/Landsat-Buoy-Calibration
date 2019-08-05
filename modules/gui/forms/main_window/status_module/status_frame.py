@@ -2,7 +2,9 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The status frame displays the current status of a process.  It displays
+#                       data from text files which are created during output, and are monitored
+#                       by the gui/tools/event_processor.py and gui/tools/event_watcher.py modules.
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 28, 2019
 # Authors             : Benjamin Kleynhans

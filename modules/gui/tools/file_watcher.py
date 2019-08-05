@@ -2,7 +2,8 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Part of the event_processor.py module.  This module does the actual watching
+#                       of the output files and generates the events which are handles by the event_processor
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 7, 2019
 # Authors             : Benjamin Kleynhans

@@ -2,7 +2,8 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The output frame contains all the RESULTS from the program.  Whenever a
+#                       process has finished, its results will be displayed int he output frame
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 28, 2019
 # Authors             : Benjamin Kleynhans

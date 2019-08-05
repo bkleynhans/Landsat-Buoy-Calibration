@@ -2,14 +2,15 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : The frame that displays and accepts user input when a Single Channel process is run
+#                       to calculate Top of Atmosphere Radiance using user supplied data
 # Created By          : Benjamin Kleynhans
 # Creation Date       : May 30, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
 # Last Modified Date  : May 30, 2019
-# Filename            : input_full_single.py
+# Filename            : input_toa_sc_frame.py
 #
 ###
 

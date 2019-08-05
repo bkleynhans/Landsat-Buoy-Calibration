@@ -3,7 +3,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : Base module for entire landsat-based program
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 21, 2019
 # Authors             : Benjamin Kleynhans

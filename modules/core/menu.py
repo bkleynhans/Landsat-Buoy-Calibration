@@ -2,13 +2,13 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : Menu program for the Landsat Buoy Calibration program
+# Program Description : Terminal based menu for the Landsat Buoy Calibration program
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 11, 2018
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : August 6, 2018
+# Last Modified Date  : August 2, 2019
 # Filename            : menu.py
 #
 ###
@@ -23,6 +23,7 @@ import subprocess as sp
 from buoycalib import settings
 from modules.core.model import Model
 
+# Erases a line of output without adding a newline
 ERASE_LINE = '\x1b[2K'    
 
 # Request name of text file containing batch process scene IDs

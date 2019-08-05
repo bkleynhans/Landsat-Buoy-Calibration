@@ -3,13 +3,15 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : Menu program for the Landsat Buoy Calibration program
+# Program Description : This file creates the directory structure for the Landsat-Buoy-Calibration
+#                           program and launches either the terminal or gui version of the program
+#                           based on user selection and terminal interface capabilities
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 20, 2019
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : June 20, 2019
+# Last Modified Date  : August 1, 2019
 # Filename            : cis-tarca.py
 #
 ###
@@ -20,6 +22,7 @@ import time
 import subprocess as sp
 import ctypes
 
+# Erases a line of output without adding a newline
 ERASE_LINE = '\x1b[2K'
 
 PROJECT_ROOT = ''
@@ -67,6 +70,7 @@ def check_required_directories():
         'logs/output/batch'
     }
 
+    # Loop through the list of required directories and create any that don't exist
     for directory in required_directories:
         if not test_paths.main([directory, "-tdirectory"]):
             test_paths.createDirectory(directory)

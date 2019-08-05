@@ -304,8 +304,8 @@ def model_single_sw_lst(project_root):
         
                 # Perform data validation
                 if data_entered(gain_b10):
-                    if not is_valid_gain(gain_b10):
-                        while not is_valid_gain(gain_b10):
+                    if not is_number(gain_b10):
+                        while not is_number(gain_b10):
                             gain_b10 = input("\n The Gain you entered for Band 10 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_GAIN_B10)
                             
                             if not data_entered(gain_b10):
@@ -322,8 +322,8 @@ def model_single_sw_lst(project_root):
         
                 # Perform data validation
                 if data_entered(bias_b10):
-                    if not is_valid_bias(bias_b10):
-                        while not is_valid_bias(bias_b10):
+                    if not is_number(bias_b10):
+                        while not is_number(bias_b10):
                             bias_b10 = input("\n The Gain you entered for Band 10 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_BIAS_B10)
                             
                             if not data_entered(bias_b10):
@@ -340,8 +340,8 @@ def model_single_sw_lst(project_root):
         
                 # Perform data validation
                 if data_entered(gain_b11):
-                    if not is_valid_gain(gain_b11):
-                        while not is_valid_gain(gain_b11):
+                    if not is_number(gain_b11):
+                        while not is_number(gain_b11):
                             gain_b11 = input("\n The Gain you entered for Band 11 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_GAIN_B11)
                             
                             if not data_entered(gain_b11):
@@ -358,8 +358,8 @@ def model_single_sw_lst(project_root):
         
                 # Perform data validation
                 if data_entered(bias_b11):
-                    if not is_valid_bias(bias_b11):
-                        while not is_valid_bias(bias_b11):
+                    if not is_number(bias_b11):
+                        while not is_number(bias_b11):
                             bias_b11 = input("\n The Gain you entered for Band 11 is invalid, please try again (Press enter for default %s) : " % settings.DEFAULT_BIAS_B11)
                             
                             if not data_entered(bias_b11):
@@ -385,6 +385,7 @@ def model_single_sw_lst(project_root):
             Model('menu', 'single', 'sw', 'lst', sceneId, 'merra', display_images, project_root, False, partial_data)
             
 
+# Checks to see if any data was entered into the variable supplied and returns true or false
 def data_entered(input_value):
     
     returnValue = False
@@ -465,29 +466,19 @@ def is_valid_emissivity(input_value):
     return returnValue
 
 
-def is_valid_gain(input_value):
+# Test if the user provided a value of the correct data type
+def is_number(input_value):
     
     returnValue = False
     
     try:
+        float(input_value)
+        
         returnValue = True
-    
+        
     except ValueError:
         pass
-
-    return returnValue
-
-
-def is_valid_bias(input_value):
     
-    returnValue = False
-    
-    try:
-        returnValue = True
-    
-    except ValueError:
-        pass
-
     return returnValue
 
 
@@ -542,7 +533,7 @@ def is_valid_id(input_value):
     return returnValue
 
 
-# Test if the database server is avialable
+# Test if the database server is available
 def testDb():
 
     from modules.db import db_connection
@@ -676,7 +667,7 @@ def menu():
 
     return menuInput
 
-
+# This is the main entry to the menu
 def main(project_root):
     
     sp.call('clear', shell = True)

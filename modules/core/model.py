@@ -3,7 +3,7 @@
 #
 # CIS Top of Atmosphere Radiance Calibration
 #
-# Program Description : GUI for the Landsat Buoy Calibration program
+# Program Description : This is the base entry class for all models
 # Created By          : Benjamin Kleynhans
 # Creation Date       : June 21, 2019
 # Authors             : Benjamin Kleynhans
@@ -28,26 +28,28 @@ from modules.core.landsat.landsat_single_sw_lst import Landsat_Single_Sw_Lst
 
 class Model:
     
+    # Constructor
     def __init__(self, caller, qty, algorithm, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):
         
         warnings.filterwarnings("ignore")
         
+        # Build an arguments tree with all required data for processing
         self.args = {}
         
-        self.args['caller'] = caller
-        self.args['process'] = process
-        self.args['qty'] = qty
+        self.args['caller'] = caller                # Is this being called from the GUI or the terminal
+        self.args['process'] = process              # Is this a buoy, TOA or LST process
+        self.args['qty'] = qty                      # Are we processing a single element or a batch
         
-        if (qty == 'single'):
+        if (qty == 'single'):                       # If we are processing a single element, the source is the Scene ID
             if (algorithm == 'sc') or (algorithm == 'sw'):
                 self.args['scene_id'] = source
                 
-        elif (qty == 'batch'):
+        elif (qty == 'batch'):                      # If we are processing a batch, the source is the batch file name
             self.args['input_file'] = source
             input_filename = source[source.rfind('/') + 1:]
             self.args['batch_file_name'] = input_filename[:input_filename.rfind('.')]
         
-        self.args['algorithm'] = algorithm
+        self.args['algorithm'] = algorithm          # Only two algorithms have been implemented, (sc - single channel; sw - split window)
         self.args['atmo_source'] = atmo_source
         self.args['display_image'] = display_image
         self.args['project_root'] = project_root
@@ -57,11 +59,7 @@ class Model:
         self.args['status_log'] = status_log
         self.args['output_log'] = output_log
         
-        # Create an instance copy of arguments
-#        self.args = args
-        
-#        self.args['output_directory'] = os.path.join(project_root, 'output')
-        self.create_loggers()
+        self.create_loggers()                       # Are used to log to the GUI status frame
         
         self.process_arguments()
         
@@ -90,10 +88,8 @@ class Model:
         
         self.build_file_paths()
         
-        if self.args['qty'] == 'single':
-            
-            if self.args['process'] == 'buoy':
-        
+        if self.args['qty'] == 'single':            
+            if self.args['process'] == 'buoy':        
                 if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
                         
                     self.results = Landsat_Single_Sc_Buoy(self.args)
@@ -101,8 +97,7 @@ class Model:
                 elif self.args['scene_id'][0:3] == 'MOD':  # Modis Scene
                     pass
                 
-            elif self.args['process'] == 'toa':
-                
+            elif self.args['process'] == 'toa':                
                 if self.args['scene_id'][0:3] in ('LC8', 'LC0'):   # Landsat Scene
                     
                     self.results = Landsat_Single_Sc_Toa(self.args)
@@ -118,7 +113,8 @@ class Model:
             
             self.analyze_batch()
             
-        
+
+    # Builds the paths to the output files and stores them in args['savefile'] index
     def build_file_paths(self):
         
         default_output_path = self.args['savefile'][:self.args['savefile'].rfind('/')]
@@ -146,6 +142,8 @@ class Model:
         self.delete_file(self.args['savefile'])
 
 
+    # Analyzes the batch file and breaks it into landsat and modis lists.  Modis has not yet been 
+    # implemented.  Processes the lists.
     def analyze_batch(self):
         
         self.args['landsat_scenes'] = []
@@ -171,6 +169,8 @@ class Model:
             pass
             
     
+    # Erases all data from the downloads directory to ensure we don't consume all the disk space
+    # This option can be enabled and disabled in the buoycalib/settings.py file
     def clear_downloads(self, status_logger=None):
     
         log_text = ("\n\n  Cleaning up the downloaded items folder...")

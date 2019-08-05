@@ -86,6 +86,7 @@ class Landsat_Base():
         cv2.imwrite(absolute_image_path, self.image_data['image'])
         
 
+    # Perform required processing on each buoy in the list
     def process_buoys(self):
         
         self.buoy_process_monitor = dict.fromkeys(self.buoys, False)
@@ -100,7 +101,8 @@ class Landsat_Base():
             
             self.buoy_processor(buoy_id)
         
-#        # Process all buoys using threads
+#        # Process all buoys using threads !!! This section is WIP.  This section can be enabled with the previous section
+#            disabled, but it messes up the process output !!!
 #        buoy_threads = []
 #        
 #        for buoy_id in self.buoys:
@@ -131,11 +133,14 @@ class Landsat_Base():
                     
         sys.stdout.flush
     
-        
+    
+    # Processes the buoys, one at a time
     def buoy_processor(self, buoy_id):
-                    
+        
+        # Displays the number of the buoy that is being processed
         self.log('status', "    Processing buoy %s  " % (buoy_id))
         
+        # Displays a progress spinner behind the buoy if it was called from the menu
         if self.args['caller'] == 'menu':
             self.buoy_process_monitor[buoy_id].start_spinner()
         
@@ -253,7 +258,8 @@ class Landsat_Base():
         if self.args['caller'] == 'menu':
             self.buoy_process_monitor[buoy_id].stop_spinner()
         
-        
+    
+    # Calculates the atmosphere based on supplied data
     def calculate_atmosphere(self, source, overpass_date, lat, lon, verbose = False):
         
         # Atmosphere
@@ -267,14 +273,7 @@ class Landsat_Base():
                 )         
         elif source == 'narr':
             pass
-        # this code has not been updated
-#            self.atmosphere = atmo.narr.process(
-#                    overpass_date,
-#                    lat,
-#                    lon,
-#                    self.shared_args,
-#                    verbose
-#                 )
+        
         else:
             raise ValueError('atmo_source is not one of (narr, merra)')
             
@@ -282,7 +281,6 @@ class Landsat_Base():
      # MODTRAN
     def run_modtran(self, output_directory, output_file, lat, lon, overpass_date, skin_temp):
         
-#        modtran_directory = '{0}/{1}_{2}'.format(settings.MODTRAN_BASH_DIR, self.args['scene_id'], buoy_id)
         modtran_directory = '{0}/{1}'.format(output_directory, output_file)
         
         modtran_data = modtran.process(
@@ -327,24 +325,17 @@ class Landsat_Base():
             pass
             
         return img_ltoa, mod_ltoa
+
     
-    
-#    def build_single_file_path(self):
-#        
-#        pdb.set_trace()
-#        
-#        self.args['savefile'] = self.args['savefile'][:self.args['savefile'].rfind('/') + 1] + self.args['scene_id'] + '.txt'
-#        
-#        self.delete_file(self.args['savefile'])
-        
-        
+    # Write the report headings to screen or frame
     def print_report_headings(self):
         
         report_headings = "Scene_ID, Date, Buoy_ID, Bulk_Temp, Skin_Temp, Buoy_Lat, Buoy_Lon, Modelled_B10, Modelled_B11, Image_B10, Image_B11, Error_B10, Error_B11, Status, Reason"
         
         self.log('output', report_headings)
         
-        
+
+    # Print the output to the scfeen and save it to file
     def print_and_save_output(self):
         
         error_message = None
@@ -374,8 +365,9 @@ class Landsat_Base():
             
             self.log('output', log_text)
             self.save_output_to_file(log_text)
-            
-    
+
+
+    # Save the output to a file
     def save_output_to_file(self, current_line):
         
         self.output_file_created = False
@@ -405,8 +397,9 @@ class Landsat_Base():
                 output_file = open(self.args['savefile'], 'a+')
                 output_file.write("%s\n" % current_line)
                 output_file.close()
-            
-            
+
+
+    # Stop all the spinners and remove all the threads
     def finalize(self):
         
         if self.args['caller'] == 'menu':
@@ -417,8 +410,9 @@ class Landsat_Base():
         for thread in self.args['threads']:            
             if thread.THREAD_NAME == 'image':                
                 thread.display_image_thread.join()
-        
+
     
+    # Clean the process folders
     def clean_folders(self):
         
         # Erases all the downloaded data if configured
@@ -427,7 +421,8 @@ class Landsat_Base():
                 model.Model.clear_downloads(self, self.args['status_logger'])
             else:
                 model.Model.clear_downloads(self)
-                
+
+    # Stop the spinners
     def stop_spinners(self):
         
         # Stop all spinners that could still be running
@@ -435,14 +430,6 @@ class Landsat_Base():
             for buoy_id in self.buoys:
                 if self.buoy_process_monitor[buoy_id].active:
                     self.buoy_process_monitor[buoy_id].stop_spinner()
-        
-
-#    # Delete file either by relative or absolute path    
-#    def delete_file(self, filename):
-#        
-#        if os.path.isfile(filename):
-#            # unlink is ux version of delete for files
-#            os.unlink(filename)
     
     
     # Destructor.  Usually not needed but in this case required to get rid of threads        

@@ -44,7 +44,7 @@ It is highly recommended that the software is run on one of the RIT CIS linux se
 To download a copy of the program, enter the following command while in your home directory in a SSH session on the server.
 
 ```
-git pull https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
+git clone https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
 ```
 
 This will download a copy of the program in a directory named <strong>Landsat-Buoy-Calibration</strong> in your home directory on the server.

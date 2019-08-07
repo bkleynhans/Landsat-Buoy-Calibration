@@ -111,7 +111,7 @@ class Input_Buoy_Sc_Frame(Gui_Frame):
                 )
         
         self.scene_id = Text(master.frames[self.frame_name], height = 1, width = 50, borderwidth = 0)
-        self.scene_id.insert(1.0, "LC08_L1GT_029030_20151209_20160131_01_RT")
+        self.scene_id.insert(1.0, "LC08_L1TP_017030_20160614_20170220_01_T1")
         self.scene_id.configure(
                 state = 'disabled',
                 inactiveselectbackground = self.scene_id.cget('selectbackground'))

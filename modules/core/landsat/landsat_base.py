@@ -138,7 +138,7 @@ class Landsat_Base():
     def buoy_processor(self, buoy_id):
         
         # Displays the number of the buoy that is being processed
-        self.log('status', "    Processing buoy %s  " % (buoy_id))
+        self.log('status', "   Processing buoy %s  " % (buoy_id))
         
         # Displays a progress spinner behind the buoy if it was called from the menu
         if self.args['caller'] == 'menu':
@@ -200,7 +200,7 @@ class Landsat_Base():
             return
         
         # User status update
-        self.log('status', "     Calculating atmospheric data...")
+        self.log('status', "      Calculating atmospheric data...")
         
         # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
         self.calculate_atmosphere(
@@ -214,7 +214,7 @@ class Landsat_Base():
         modtran_output_file = '{0}_{1}'.format(self.args['scene_id'], buoy_id)
         
         # User status update
-        self.log('status', "     Calculating Top of Atmosphere Radiance using MODTRAN")
+        self.log('status', "      Calculating Top of Atmosphere Radiance using MODTRAN")
         
         # Pass in paramteres directly because run_modtran receives requests from other sources also
         modtran_data = self.run_modtran(

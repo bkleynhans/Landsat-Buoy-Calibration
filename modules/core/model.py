@@ -185,7 +185,7 @@ class Model:
         for file_or_folder in os.listdir(directory):
             file_path = os.path.join(directory, file_or_folder)
             
-            log_text = (" Deleting %s data..." % (file_or_folder))
+            log_text = ("   Deleting %s data..." % (file_or_folder))
             
             try:
                 if os.path.isfile(file_path):                    
@@ -210,7 +210,7 @@ class Model:
 #                print(e)
                 pass
         
-        log_text = "Cleanup completed!!!            "
+        log_text = "  Cleanup completed!!!            "
         
         if (self.args['caller'] != 'tarca_gui'):
             sys.stdout.write("\r" + log_text + "\n\n")

@@ -45,6 +45,9 @@ def download_http(url, filepath, shared_args, auth=None):
     """ download a http or https resource using requests. """
         
     with requests.Session() as session:
+        output_string = "    Opening session to %s" % (url[:url.find('/', 9, len(url))])
+        print_output(shared_args, output_string)
+            
         req = session.request('get', url)
 
         if auth:
@@ -54,6 +57,11 @@ def download_http(url, filepath, shared_args, auth=None):
                 error_string = '\n    url: {0} does not exist, trying other sources\n'.format(url)
                     
                 raise RemoteFileException(error_string)
+                
+            else:
+                output_string = "     Session opened successfully"
+                print_output(shared_args, output_string)
+        
         else:
             resource = session.get(req.url)
             
@@ -62,20 +70,29 @@ def download_http(url, filepath, shared_args, auth=None):
                     
                 raise RemoteFileException(error_string)
                 
+            else:
+                output_string = "     Session opened successfully"
+                print_output(shared_args, output_string)
+                
         with open(filepath, 'wb') as f:
-            output_string = "\n   Downloading %s \n" % (filepath[filepath.rfind('/') + 1:])
-            
-            if shared_args['caller'] == 'tarca_gui':
-                shared_args['log_status'].write(output_string, True)
-            elif shared_args['caller'] == 'menu':
-                sys.stdout.write(output_string)
-                sys.stdout.flush()
+            output_string = "    Downloading %s " % (filepath[filepath.rfind('/') + 1:])            
+            print_output(shared_args, output_string)
             
             f.write(resource.content)
             
-            print("\n Download completed...")
+            output_string = "     Download completed..."
+            print_output(shared_args, output_string)
 
     return filepath
+
+
+def print_output(shared_args, output_string):
+    
+    if shared_args['caller'] == 'tarca_gui':
+        shared_args['log_status'].write(output_string, True)
+    elif shared_args['caller'] == 'menu':
+        sys.stdout.write(output_string)
+        sys.stdout.flush()
 
 
 def download_ftp(url, filepath, shared_args):
@@ -95,25 +112,20 @@ def download_ftp(url, filepath, shared_args):
     downloaded = 0
     filename = filepath[len(filepath) - filepath[::-1].index('/'):]
 
-    with open(filepath, 'wb') as fileobj:
-        print()
-        
+    with open(filepath, 'wb') as fileobj:        
         while True:
-            output_string = "   Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
+            output_string = "    Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
             
-            if shared_args['caller'] == 'tarca_gui':
-                shared_args['log_status'].write(output_string, True)
-            elif shared_args['caller'] == 'menu':
-                sys.stdout.write(output_string)
-                sys.stdout.flush()
-            
+            print_output(shared_args, output_string)
+                        
             chunk = request.read(CHUNK)
             if not chunk:
                 break
             fileobj.write(chunk)
             downloaded += len(chunk)
 
-        print("\n Download completed...")
+        output_string = "     Download completed..."
+        print_output(shared_args, output_string)
         
 
     return filepath
@@ -215,13 +227,9 @@ def download_earthexplorer(url, filepath, shared_args):
             print()
             
             while True:
-                output_string = "   Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
+                output_string = "    Downloading %s - %.1fMB of %.1fMB\r" % (filename, (downloaded / 1000000), (total_size / 1000000))
                 
-                if shared_args['caller'] == 'tarca_gui':
-                    shared_args['log_status'].write(output_string, True)
-                elif shared_args['caller'] == 'menu':
-                    sys.stdout.write(output_string)
-                    sys.stdout.flush()
+                print_output(shared_args, output_string)
                     
                 chunk = req.read(CHUNK)
                 if not chunk: break

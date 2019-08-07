@@ -35,12 +35,7 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
         len(glob.glob('{0}/*_B11.TIF'.format(directory))) == 0):
         
         output_string = ("   The required files are not available and will now be downloaded")
-                
-        if shared_args['caller'] == 'tarca_gui':
-            shared_args['log_status'].write(output_string, True)
-        elif shared_args['caller'] == 'menu':
-            sys.stdout.write(output_string)
-            sys.stdout.flush()
+        print_output(shared_args, output_string)
         
         if test_paths.main([directory + "/" + scene_id + ".tar.gz", "-tfile"]):
             
@@ -48,12 +43,7 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
             
             try:
                 output_string = ("   Extracting {}.tar.gz\n".format(scene_id))
-                
-                if shared_args['caller'] == 'tarca_gui':
-                    shared_args['log_status'].write(output_string, True)
-                elif shared_args['caller'] == 'menu':
-                    sys.stdout.write(output_string)
-                    sys.stdout.flush()
+                print_output(shared_args, output_string)
                 
                 tarfile = ungzip(targzfile)
                 os.remove(targzfile)
@@ -65,14 +55,9 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
             except EOFError:
                 
                 file_downloaded = False
-    else:
+    else:        
         output_string = ("   The required files are available and do NOT need to be downloaded")
-                
-        if shared_args['caller'] == 'tarca_gui':
-            shared_args['log_status'].write(output_string, True)
-        elif shared_args['caller'] == 'menu':
-            sys.stdout.write(output_string)
-            sys.stdout.flush()
+        print_output(shared_args, output_string)
             
         file_downloaded = True
                 
@@ -103,12 +88,7 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
                         continue
                     
                     output_string = ("   Extracting {}\n".format(targzfile))
-                
-                    if shared_args['caller'] == 'tarca_gui':
-                        shared_args['log_status'].write(output_string, True)
-                    elif shared_args['caller'] == 'menu':
-                        sys.stdout.write(output_string)
-                        sys.stdout.flush()
+                    print_output(shared_args, output_string)
                     
                     tarfile = ungzip(targzfile)
                     os.remove(targzfile)
@@ -137,7 +117,15 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
         
     return metadata['date'], directory, metadata, file_downloaded
 
-
+def print_output(shared_args, output_string):
+    
+    if shared_args['caller'] == 'tarca_gui':
+        shared_args['log_status'].write(output_string, True)
+    elif shared_args['caller'] == 'menu':
+        sys.stdout.write(output_string)
+        sys.stdout.flush()
+        
+        
 def product2entityid(product_id, version='00'):
     """ convert product landsat ID to entity ID
 

@@ -73,6 +73,11 @@ The GUI was built using the native tkinter library included in the Python progra
 
 In order for the GUI to function, your server needs to be configured to export its X11 display, and the SSH client program needs to support X11 exported displays. Because some users may not know whether these services are available, the program will check if X11 display export is available during program launch.  If the service is not available, the program will inform the user and then launch the terminal version of the program.  For help on the terminal program, please refer to the [Text-Based Interface](#text-based-interface) documentation.
 
+<p>
+    <strong><font color='red'>PLEASE NOTE:  </font></strong>
+    The GUI opens in a 1024x768 resolution.  If your display is set to a lower resolution or you have desktop scaling enabled, the window may be too large for your display!
+</p>
+
 ## Launching the GUI
 Change into the <strong>Landsat-Buoy-Calibration</strong> directory
 ```

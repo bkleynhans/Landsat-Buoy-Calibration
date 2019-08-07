@@ -33,6 +33,15 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
     if (len(glob.glob('{0}/*_MTL.txt'.format(directory))) == 0 or
         len(glob.glob('{0}/*_B10.TIF'.format(directory))) == 0 or
         len(glob.glob('{0}/*_B11.TIF'.format(directory))) == 0):
+        
+        output_string = ("   The required files are not available and will now be downloaded")
+                
+        if shared_args['caller'] == 'tarca_gui':
+            shared_args['log_status'].write(output_string, True)
+        elif shared_args['caller'] == 'menu':
+            sys.stdout.write(output_string)
+            sys.stdout.flush()
+        
         if test_paths.main([directory + "/" + scene_id + ".tar.gz", "-tfile"]):
             
             targzfile = directory + "/" + scene_id + ".tar.gz"
@@ -57,6 +66,14 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
                 
                 file_downloaded = False
     else:
+        output_string = ("   The required files are available and do NOT need to be downloaded")
+                
+        if shared_args['caller'] == 'tarca_gui':
+            shared_args['log_status'].write(output_string, True)
+        elif shared_args['caller'] == 'menu':
+            sys.stdout.write(output_string)
+            sys.stdout.flush()
+            
         file_downloaded = True
                 
     if not file_downloaded:

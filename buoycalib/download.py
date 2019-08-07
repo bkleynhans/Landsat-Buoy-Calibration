@@ -72,6 +72,8 @@ def download_http(url, filepath, shared_args, auth=None):
                 sys.stdout.flush()
             
             f.write(resource.content)
+            
+            print("\n Download completed...")
 
     return filepath
 
@@ -111,10 +113,8 @@ def download_ftp(url, filepath, shared_args):
             fileobj.write(chunk)
             downloaded += len(chunk)
 
-        print("\n Downloading completed...")
+        print("\n Download completed...")
         
-        
-    print("\n")
 
     return filepath
 

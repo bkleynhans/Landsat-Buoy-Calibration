@@ -39,6 +39,8 @@ There is both a graphical user interface as well as a terminal interface to allo
 ## Installation
 It is highly recommended that the software is run on one of the RIT CIS linux servers. There are a number of prerequisites required, some of which are challenging to install and others (like <a href="http://modtran.spectral.com/modtran_order">MODTRAN</a>) are quite expensive for individual use.
 
+
+
 To download a copy of the program, enter the following command while in your home directory in a SSH session on the server.
 
 ```
@@ -98,44 +100,35 @@ The program itself consists of multiple sections as indicated with green numbers
 <img src="manual_images/gui/002_program_launch.png" alt="Program Features" /><br>
 
 <ol>
-    <li>Menu Bar</li>
-        <ul style="list-style-type:none;">
-            <li>File menu has an Exit option which closes the program</li>
-            <li>Help menu opens this help page in a browser (from the linux host).  <em>This is not recommended as the linux host-based browser can be slow. It is suggested that you open the help file directly from github.</em></li>
-        </ul>
-    <li>Process Selection Option Boxes</li>
-        <ul style="list-style-type:none;">
-            <li>Here you can select between the following options for processing</li>
-                <ul>
-                    <li>Buoy SC - Use NOAA buoy data along with a landsat scene to model Top of Atmosphere Radiance using the Single Channel algorithm.</li>
-                    <li>TOA SC - Use User supplied data along with a landsat scene to model Top of Atmosphere Radiance using the Single Channel algorithm.</li>
-                    <li>LST SW - Use user supplied data along with a landsat scene to model Land Surface Temperature using the Split Window algorithm.</li>
-                </ul>
-        </ul>
-    <li>Input Frame</li>
-        <ul style="list-style-type:none;">
+    <li>Menu Bar<ul style="list-style-type:none;">
+        <li>File menu has an Exit option which closes the program</li>
+        <li>Help menu opens this help page in a browser (from the linux host).  <em>This is not recommended as the linux host-based browser can be slow. It is suggested that you open the help file directly from github.</em></li>
+    </ul></li>
+    <li>Process Selection Option Boxes<ul style="list-style-type:none;">
+        <li>Here you can select between the following options for processing<ul>
+            <li>Buoy SC - Use NOAA buoy data along with a landsat scene to model Top of Atmosphere Radiance using the Single Channel algorithm.</li>
+            <li>TOA SC - Use User supplied data along with a landsat scene to model Top of Atmosphere Radiance using the Single Channel algorithm.</li>
+            <li>LST SW - Use user supplied data along with a landsat scene to model Land Surface Temperature using the Split Window algorithm.</li>
+        </ul></li>
+    </ul></li>
+    <li>Input Frame<ul style="list-style-type:none;">
             <li>The input frame is the only frame where user input is read from.</li>
-        </ul>
-    <li>Single / Batch</li>
-        <ul style="list-style-type:none;">
-            <li>Here users can choose to process a single landsat scene, or a batch of scenes.</li>
-        </ul>
-    <li>Example IDs</li>
-        <ul style="list-style-type:none;">
-            <li>The system currently accepts landsat scenes in the two supplied formats.  The scenes will be tested for validity when the Process button is pressed.</li>
-        </ul>
-    <li>Process Button</li>
-        <ul style="list-style-type:none;">
-            <li>Starts the actual calculation process.</li>
-        </ul>
-    <li>Output Frame</li>
-        <ul style="list-style-type:none;">
-            <li>After processing, the results will be displayed here.</li>
-        </ul>
-    <li>Status Frame</li>
-        <ul style="list-style-type:none;">
-            <li>This frame gets continually updated with the current process to indicate to the user what stage of the analysis the user is on.</li>
-        </ul>
+    </ul></li>
+    <li>Single / Batch<ul style="list-style-type:none;">
+        <li>Here users can choose to process a single landsat scene, or a batch of scenes.</li>
+    </ul></li>
+    <li>Example IDs<ul style="list-style-type:none;">
+        <li>The system currently accepts landsat scenes in the two supplied formats.  The scenes will be tested for validity when the Process button is pressed.</li>
+    </ul></li>
+    <li>Process Button<ul style="list-style-type:none;">
+        <li>Starts the actual calculation process.</li>
+    </ul></li>
+    <li>Output Frame<ul style="list-style-type:none;">
+        <li>After processing, the results will be displayed here.</li>
+    </ul></li>
+    <li>Status Frame<ul style="list-style-type:none;">
+        <li>This frame gets continually updated with the current process to indicate to the user what stage of the analysis the user is on.</li>
+    </ul></li>
 </ol>
 
 ### GUI Single Channel using Buoy Data
@@ -143,6 +136,8 @@ The original version of this module (no gui, just command line processing) was d
 
 Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.  
 README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md
+
+The algorithms used by Nathan in his original version, as well as the algorithms used in the current version are based on work done by Frank Pedula in his thesis <a href="https://www.cis.rit.edu/~cnspci/references/theses/masters/padula2008.pdf">Historic Thermal Calibration of Landsat 5 TM through an Improved Physics Based Approach</a>
 
 The current version includes some corrections pertaining to bulk temperature, where additional parameters were including in the water mixing prerequisites to determine validity of raw data before processing.  This mitigates instances where scenes were included or excluded with invalid bulk temperature condition restrictions.
 
@@ -544,35 +539,31 @@ The settings file located at ```<your chosen path>/Landsat-Buoy-Calibration/buoy
 Some of the values more prone to changes are:
 
 <ol>
-    <li>Disk Space Maintenance</li>
-        <ul style="list-style-type:none;">
-            <li>This setting deletes all files that are downloaded or created during processing.  If you set this value to <em>False</em>, no data will be deleted.  Please note that this can use a large amount of disk space in a short period of time.</li>
-            <li><code>CLEAN_FOLDER_ON_COMPLETION = <em>True</em></code><br></li>
-            <br>
-        </ul>
-    <li>SQL Server Support</li>
-        <ul style="list-style-type:none;">
-            <li>These properties are associated with a previous version of the program where output was written to an SQL database.  After the refactoring of the code, the SQL service has not yet been implemented, therefore these values should not be changed until the functionality is added back in a future revision of the program.</li>
-            <li><code>USE_MYSQL = <em>False</em></code><br></li>
-            <li><code>SQL_CONFIGURED = <em>False</em></code><br></li>
-            <br>
-        </ul>
-    <li>Default Emmissivity Values</li>
-        <ul style="list-style-type:none;">
-            <li>These are the default emmissivity values that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.</li>
-            <li><code>DEFAULT_EMIS_B10 = <em>0.988</em></code><br></li>
-            <li><code>DEFAULT_EMIS_B11 = <em>0.98644</em></code><br></li>
-            <br>
-        </ul>
-    <li>Default Gain and Bias Values for Band 10 and 11 used for Split Window Calculations</li>
-        <ul style="list-style-type:none;">
-            <li>These are the default gain and bias values used for bands 10 and 11 that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.</li>
-            <li><code>DEFAULT_GAIN_B10 = <em>1.0151</em></code><br></li>
-            <li><code>DEFAULT_GAIN_B11 = <em>1.06644</em></code><br></li>
-            <li><code>DEFAULT_BIAS_B10 = <em>-0.14774</em></code><br></li>
-            <li><code>DEFAULT_BIAS_B11 = <em>-0.46326</em></code><br></li>
-            <br>
-        </ul>
+    <li>Disk Space Maintenance<ul style="list-style-type:none;">
+        <li>This setting deletes all files that are downloaded or created during processing.  If you set this value to <em>False</em>, no data will be deleted.  Please note that this can use a large amount of disk space in a short period of time.</li>
+        <li><code>CLEAN_FOLDER_ON_COMPLETION = <em>True</em></code><br></li>
+        <br>
+    </ul></li>
+    <li>SQL Server Support<ul style="list-style-type:none;">
+        <li>These properties are associated with a previous version of the program where output was written to an SQL database.  After the refactoring of the code, the SQL service has not yet been implemented, therefore these values should not be changed until the functionality is added back in a future revision of the program.</li>
+        <li><code>USE_MYSQL = <em>False</em></code><br></li>
+        <li><code>SQL_CONFIGURED = <em>False</em></code><br></li>
+        <br>
+    </ul></li>
+    <li>Default Emmissivity Values<ul style="list-style-type:none;">
+        <li>These are the default emmissivity values that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.</li>
+        <li><code>DEFAULT_EMIS_B10 = <em>0.988</em></code><br></li>
+        <li><code>DEFAULT_EMIS_B11 = <em>0.98644</em></code><br></li>
+        <br>
+    </ul></li>
+    <li>Default Gain and Bias Values for Band 10 and 11 used for Split Window Calculations<ul style="list-style-type:none;">
+        <li>These are the default gain and bias values used for bands 10 and 11 that are displayed in the interfaces and used during processing.  They can be changed in the interface while processing, or if you want to permanently change them it can be done here.</li>
+        <li><code>DEFAULT_GAIN_B10 = <em>1.0151</em></code><br></li>
+        <li><code>DEFAULT_GAIN_B11 = <em>1.06644</em></code><br></li>
+        <li><code>DEFAULT_BIAS_B10 = <em>-0.14774</em></code><br></li>
+        <li><code>DEFAULT_BIAS_B11 = <em>-0.46326</em></code><br></li>
+        <br>
+    </ul></li>
 </ol>
 
 <strong>There are many other settings in this file, including the web addresses where source files are downloaded from, but no other setting should require modification.</strong>

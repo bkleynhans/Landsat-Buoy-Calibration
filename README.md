@@ -11,6 +11,8 @@ The current version of the program:
     <li>Calculates Land Surface Temperature using user-entered parameters and LANDSAT scenes  using the Split Window process.  Based on research currently in progress by Aaron Gerace at RIT (Rochester Institute of Technology).</li>
 </ol>
 
+Frank Pedulas Thesis: <a href="https://www.cis.rit.edu/~cnspci/references/theses/masters/padula2008.pdf">Historic Thermal Calibration of Landsat 5 TM through an Improved Physics Based Approach</a>
+
 There are two help documents included in this repository.
 
 <ol>

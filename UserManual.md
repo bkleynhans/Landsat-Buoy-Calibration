@@ -137,9 +137,11 @@ The original version of this module (no gui, just command line processing) was d
 Repository: https://github.com/natedileas/Landsat-Buoy-Calibration.  
 README: https://github.com/natedileas/Landsat-Buoy-Calibration/blob/master/README.md
 
-The algorithms used by Nathan in his original version, as well as the algorithms used in the current version are based on work done by Frank Pedula in his thesis <a href="https://www.cis.rit.edu/~cnspci/references/theses/masters/padula2008.pdf">Historic Thermal Calibration of Landsat 5 TM through an Improved Physics Based Approach</a>
-
 The current version includes some corrections pertaining to bulk temperature, where additional parameters were including in the water mixing prerequisites to determine validity of raw data before processing.  This mitigates instances where scenes were included or excluded with invalid bulk temperature condition restrictions.
+
+The algorithms used by Nathan in his original version, as well as the algorithms used in the current version are based on work done by Frank Pedula in his thesis: 
+
+<a href="https://www.cis.rit.edu/~cnspci/references/theses/masters/padula2008.pdf">Historic Thermal Calibration of Landsat 5 TM through an Improved Physics Based Approach</a>
 
 #### GUI Buoy Single Scene
 To process a single scene, copy a Scene ID or Product ID and paste it into the <strong>ID</strong> field.

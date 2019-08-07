@@ -26,7 +26,7 @@ To download a copy of the program, enter the following command while in your hom
 For detailed instructions on how to launch and use the program, please refer to the user manual.
 
 ```
-https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
+git pull https://github.com/bkleynhans/Landsat-Buoy-Calibration.git
 ```
 
 This will download a copy of the program in a directory named 'Landsat-Buoy-Calibration' in your home directory on the server.

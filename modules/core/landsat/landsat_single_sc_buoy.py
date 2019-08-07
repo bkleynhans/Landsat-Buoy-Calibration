@@ -53,7 +53,21 @@ class Landsat_Single_Sc_Buoy(Landsat_Base):
             self.buoys = buoy.datasets_in_corners(self.corners)
             
             if not self.buoys:
-                raise buoy.BuoyDataException('no buoys in scene')
+                self.image_data['overpass_date'] = datetime.datetime(1, 1, 1, 0, 0)
+                self.data[self.args['scene_id']][0] = (
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    {10:0,11:0},
+                    {10:0,11:0},
+                    {10:0,11:0},
+                    self.image_data['overpass_date'],
+                    'failed',
+                    'No Buoys in Scene'
+                )
+#                raise buoy.BuoyDataException('no buoys in scene')
                 
             self.process_buoys()
             

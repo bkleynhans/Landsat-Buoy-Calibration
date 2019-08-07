@@ -61,8 +61,16 @@ def download_http(url, filepath, shared_args, auth=None):
                 error_string = '\n    url: {0} does not exist, trying other sources\n'.format(url)
                     
                 raise RemoteFileException(error_string)
-            
+                
         with open(filepath, 'wb') as f:
+            output_string = "\n   Downloading %s \n" % (filepath[filepath.rfind('/') + 1:])
+            
+            if shared_args['caller'] == 'tarca_gui':
+                shared_args['log_status'].write(output_string, True)
+            elif shared_args['caller'] == 'menu':
+                sys.stdout.write(output_string)
+                sys.stdout.flush()
+            
             f.write(resource.content)
 
     return filepath
@@ -103,6 +111,9 @@ def download_ftp(url, filepath, shared_args):
             fileobj.write(chunk)
             downloaded += len(chunk)
 
+        print("\n Downloading completed...")
+        
+        
     print("\n")
 
     return filepath

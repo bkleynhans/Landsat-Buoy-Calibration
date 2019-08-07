@@ -145,7 +145,13 @@ class Landsat_Base():
             self.buoy_process_monitor[buoy_id].start_spinner()
         
         try :
+            # User status update
+            self.log('status', "     Downloading buoy data file")
+            
             self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'], self.shared_args)
+            
+            # User status update
+            self.log('status', "     Extracting buoy metadata for buoy %s  " % (buoy_id))
             
             self.buoy_data = buoy.info(buoy_id, self.buoy_file, self.image_data['overpass_date'])
             
@@ -193,6 +199,9 @@ class Landsat_Base():
             
             return
         
+        # User status update
+        self.log('status', "     Calculating atmospheric data...")
+        
         # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
         self.calculate_atmosphere(
                 self.args['atmo_source'],
@@ -203,6 +212,9 @@ class Landsat_Base():
             )
        
         modtran_output_file = '{0}_{1}'.format(self.args['scene_id'], buoy_id)
+        
+        # User status update
+        self.log('status', "     Calculating Top of Atmosphere Radiance using MODTRAN")
         
         # Pass in paramteres directly because run_modtran receives requests from other sources also
         modtran_data = self.run_modtran(

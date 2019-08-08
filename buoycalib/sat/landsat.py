@@ -122,7 +122,7 @@ def print_output(shared_args, output_string):
     if shared_args['caller'] == 'tarca_gui':
         shared_args['log_status'].write(output_string, True)
     elif shared_args['caller'] == 'menu':
-        sys.stdout.write(output_string)
+        sys.stdout.write(output_string + '\n')
         sys.stdout.flush()
         
         

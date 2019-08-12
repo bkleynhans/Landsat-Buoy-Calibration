@@ -146,7 +146,7 @@ class Landsat_Base():
         
         try :
             # User status update
-            self.log('status', "     Downloading buoy data file")
+            self.log('status', "     Downloading buoy data file...\n")
             
             self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'], self.shared_args)
             
@@ -200,7 +200,7 @@ class Landsat_Base():
             return
         
         # User status update
-        self.log('status', "      Calculating atmospheric data...")
+        self.log('status', "      Calculating atmospheric data...\n")
         
         # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
         self.calculate_atmosphere(

@@ -102,14 +102,14 @@ class Buoy(weather_stations.Weather_Stations):
     @staticmethod
     def _get_buoy_sensor_data(self):
         
-        pdb.set_trace()
+        #pdb.set_trace()
         
         pass
     
     @staticmethod
     def _get_buoy_data(self):
         
-        pdb.set_trace()
+        #pdb.set_trace()
 
         # TEMP FOR TESTING
         self._overpass_date = datetime.datetime.strptime(self._overpass_date, '%Y%m%d')
@@ -129,7 +129,7 @@ class Buoy(weather_stations.Weather_Stations):
     @staticmethod
     def _read_data_from_zip_file(self):
         
-        pdb.set_trace()
+        #pdb.set_trace()
         
         dates = []
         lines = []

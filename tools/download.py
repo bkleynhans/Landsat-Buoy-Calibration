@@ -246,7 +246,7 @@ def compare_files_from_http(args, output_file):
                 
             online_file_modified_date = remove_spaces(req.headers.get('Last-Modified', 'NULL'))
         except Exception as e:
-            pdb.set_trace()
+            #pdb.set_trace()
             print()
     
     local_file_size = os.path.getsize(output_file)
@@ -269,7 +269,7 @@ def get_online_file_size_http(req):
         else:
             online_file_size = int(remove_spaces(req.headers.get('Content-Length', 'NULL')))
     except Exception as e:
-            pdb.set_trace()
+            #pdb.set_trace()
             print()
             
     return online_file_size

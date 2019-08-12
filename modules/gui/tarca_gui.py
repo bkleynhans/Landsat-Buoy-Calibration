@@ -39,9 +39,6 @@ class Tarca_Gui:
         # Ensure the master frame cannot be detached from the main program
         master.option_add('*tearOff', False)
         
-        # Create the Menubar - accessed via master.menu_bar
-        Menu_Bar(master)
-        
         # Create frame container to easily access frames from other ares in the gui
         frames = {}
         master.frames = frames 
@@ -49,6 +46,9 @@ class Tarca_Gui:
         # Create window container to easily access windows from other ares in the gui
         windows = {}
         master.windows = windows
+                
+        # Create the Menubar - accessed via master.menu_bar
+        Menu_Bar(master)        
         
         # Create the Header - accessed via master.header_frame
         Header_Frame(master)

@@ -31,8 +31,12 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         self.download_image(self.args['scene_id'])
         
         self.get_atmosphere()
-        self.get_modtran()
-        self.get_ltoa()
+        
+        if not self.error_message:
+            self.get_modtran()
+            self.get_ltoa()
+        else:
+            self.populate_defaults()
         
         sys.stdout.write('\n')
         self.print_report_headings()
@@ -126,6 +130,17 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
             pass
             
         return img_ltoa, mod_ltoa
+    
+    # Populate default values if there was an error with the supplied lat/lon coordinates
+    def populate_defaults(self):
+        
+        self.img_ltoa = {}
+        self.mod_ltoa = {}
+        
+        self.mod_ltoa[10] = 0
+        self.mod_ltoa[11] = 0
+        self.img_ltoa[10] = 0
+        self.img_ltoa[11] = 0
 
 
     # Display the report headings
@@ -145,11 +160,11 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         error_message = None
         
         if self.image_data['file_downloaded']:
-            
-            error_message = None
-            
-        else:
-            
+            if self.error_message != '':
+                error_message = self.error_message
+            else:
+                error_message = None
+        else:            
             error_message = 'The source image could not be downloaded.'
             
         # Convert tuple to text and remove first and last parentheses

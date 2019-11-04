@@ -282,7 +282,11 @@ class Landsat_Base():
                     lon,
                     self.shared_args,
                     verbose
-                )         
+                )
+            
+            if self.atmosphere == False:
+                self.error_message = 'lat/lon out of range'
+            
         elif source == 'narr':
             pass
         

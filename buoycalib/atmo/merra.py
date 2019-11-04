@@ -31,6 +31,8 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     process atmospheric data, yield an atmosphere
     """
     
+    valid_data = True
+    
     filename = download(date, shared_args)
 
     atmo_data = data.open_netcdf4(filename)
@@ -55,26 +57,33 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
 
     press = numpy.array(atmo_data.variables['lev'][:])
 
-    # the .T on the end is a transpose
-    temp1 = numpy.diagonal(atmo_data.variables['T'][index1], axis1=1, axis2=2).T
-    temp2 = numpy.diagonal(atmo_data.variables['T'][index2], axis1=1, axis2=2).T
+    temp1 = numpy.empty
+    temp2 = numpy.empty
     
-    # From this line for the next 15 lines... modtran cannot calculate when
-    # there is a zero value for lowest atmospheric merra level, hence if there
-    # is a zero value, throw out the buoy
-    valid_data = True
-    buoys = 0
-    
-    while buoys < 4:
-        if temp1[buoys][0].data == 0:
-            valid_data = False
-            break
+    try:        
+        # the .T on the end is a transpose
+        temp1 = numpy.diagonal(atmo_data.variables['T'][index1], axis1=1, axis2=2).T
+        temp2 = numpy.diagonal(atmo_data.variables['T'][index2], axis1=1, axis2=2).T
         
-        if temp2[buoys][0].data == 0:
-            valid_data = False
-            break
+        # From this line for the next 15 lines... modtran cannot calculate when
+        # there is a zero value for lowest atmospheric merra level, hence if there
+        # is a zero value, throw out the buoy
         
-        buoys += 1
+        buoys = 0
+        
+        while buoys < 4:
+            if temp1[buoys][0].data == 0:
+                valid_data = False
+                break
+            
+            if temp2[buoys][0].data == 0:
+                valid_data = False
+                break
+            
+            buoys += 1
+            
+    except:
+        valid_data = False    
         
     if valid_data:
 

@@ -205,6 +205,8 @@ def main(args):
 
         if launch.interface == 'gui':
             if export_display_available():
+                #print("\n !!! the GUI has not yet been implemented, launching text interface !!!")
+                #menu.main(PROJECT_ROOT)
                 tarca_gui.main(PROJECT_ROOT)
             else:
                 print("\n !!! Your terminal session does not support X-window graphics !!!" \

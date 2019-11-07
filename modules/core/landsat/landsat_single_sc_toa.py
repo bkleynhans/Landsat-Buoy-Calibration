@@ -32,7 +32,7 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         
         self.get_atmosphere()
         
-        if not self.error_message:
+        if hasattr(self, 'error_message'):
             self.get_modtran()
             self.get_ltoa()
         else:
@@ -160,7 +160,7 @@ class Landsat_Single_Sc_Toa(Landsat_Base):
         error_message = None
         
         if self.image_data['file_downloaded']:
-            if self.error_message != '':
+            if hasattr(self, 'error_message'):
                 error_message = self.error_message
             else:
                 error_message = None

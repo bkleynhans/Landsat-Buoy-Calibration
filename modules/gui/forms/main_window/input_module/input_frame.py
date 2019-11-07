@@ -508,6 +508,8 @@ class Input_Frame(Gui_Label_Frame):
                     messagebox.showwarning(
                             title = "Invalid Input",
                             message = "The file you specified is empty, please select a non-empty file.")
+                    
+                    self.process_button.config(state = 'normal')
     
     
     # Define process for Top of Atmosphere Radiance data using Single Channel and manual input values

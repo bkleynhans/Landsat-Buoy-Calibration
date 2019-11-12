@@ -524,7 +524,7 @@ After the processing has been completed, the output will be displayed and the do
 # Output
 During program launch it creates a directory structure using a algorithm based hierarchy. All output that is displayed in the GUI during operation, also creates an output file in the output directory in the appropriate directory structure location.
 
-Below is an example of the output that was created during the creation of this manual
+Below is an example of the output that was created during the creation of this manual.
 
 <img src="manual_images/output_images/output_tree_structure.png" alt="Output Tree Structure" /><br>
 

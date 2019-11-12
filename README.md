@@ -44,4 +44,4 @@ The Design Document is a fully detailed document containing all the information 
 This program was designed to be used on the RIT CIS linux servers as multiple programs and modules are included in the processing of data.
 
 DesignDocument.md : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/DesignDocument.md
-
+cis-tarca_design_UML.pdf : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/cis-tarca_design_UML.pdf

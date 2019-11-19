@@ -15,7 +15,6 @@
 
 # Imports
 
-#import inspect
 import sys
 import os
 import cv2

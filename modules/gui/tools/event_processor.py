@@ -9,7 +9,7 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : June 7, 2019
+# Last Modified Date  : September 7, 2019
 # Filename            : event_processor.py
 #
 ###

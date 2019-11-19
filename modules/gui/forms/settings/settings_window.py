@@ -8,8 +8,8 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : May 30, 2019
-# Filename            : gui_window.py
+# Last Modified Date  : November 18, 2019
+# Filename            : settings_window.py
 #
 ###
 

@@ -9,7 +9,7 @@
 # Authors             : Benjamin Kleynhans
 #
 # Last Modified By    : Benjamin Kleynhans
-# Last Modified Date  : July 16, 2019
+# Last Modified Date  : August 25, 2019
 # Filename            : landsat_single_sw_lst.py
 #
 ###

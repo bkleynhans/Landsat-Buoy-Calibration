@@ -34,7 +34,12 @@ After the original project was completed in both the text-based and gui-based im
 <!--ts-->
 * [Table of Contents](#table-of-contents)
 * [Project Overview](#project-overview)
-* [Scripts and Classes](#Scripts and Classes)
+* [Scripts and Classes](#scripts-and-classes)
+  * [Original Code](#original-code-(classes-and-scripts))
+  * [New Code](#new-code)
+    * [Classes](#classes)
+    * [Scripts](#scripts)
+      * [display_image.py](#display_image.py)
 <!--te-->
 
 # Project Overview
@@ -56,3 +61,19 @@ The software also includes a reverse calibration process.  Instead of propagatin
 This software is used on an almost daily basis to help us generate the datasets that are used to provide NASA and USGS with quality assessments of the image products from their satellite sensors.
 
 # Scripts and Classes
+## Original Code (classes and scripts)
+The `./buoycalib/` and `./tools/` directories contain combinations of classes and scripts and were copied from the original version of the program that was created by Nate Dileas.  Please refer to the [first component](#first-component) for details pertaining to these directories.
+
+Some repairs were made to the code, however these are documented in detail (with references) in the associated files.
+
+## New Code
+### Classes
+All classes pertaining to the current version of the program are located in `./modules/`.  These are explained in detail below.
+
+
+
+### Scripts
+Some utility scripts were created in `./tools/` and are explained in detail below.
+
+#### display_image.py
+

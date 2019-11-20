@@ -33,7 +33,26 @@ After the original project was completed in both the text-based and gui-based im
 
 <!--ts-->
 * [Table of Contents](#table-of-contents)
-* [Project Background](#project-background)
+* [Project Overview](#project-overview)
+* [Scripts and Classes](#Scripts and Classes)
 <!--te-->
 
-# Project Background
+# Project Overview
+The software is used in the calibration of NASA/USGS Landsat satellite thermal infrared image data.  The calibration of the instrument involves converting the raw signal output from each pixel into an accurate radiance (energy or Watts) for the pixel so that the measured energy can in turn be related the temperature of the Earth’s surface.  As the satellite sensors age on-orbit, the calibration is constantly checked to ensure that it still meets accuracy requirements.  This process involves comparing the output of the sensor to a known Earth temperature (“ground reference”) and adjusting the sensor’s calibration so that the output matches the ground reference data.
+
+The calibration procedure involves the manual assembly of Landsat image data, atmospheric profile data, and ground temperature data (water temperatures from buoys).  Physics modeling software is then used to propagate the ground reference measurement through the atmosphere and predict the radiance that the sensor should see (known as “top-of-atmosphere”, TOA, radiance).  Any discrepancy between the modeled TOA radiance and the measured image radiance from the sensor is reported to NASA and USGS so the calibration may be adjusted.
+
+This software streamlines the process.  The user simply specifies an image (Earth scene) of interest and the software will automatically:
+
+- search the NOAA database for known ground reference data (buoys) within the geographic confines of the scene,
+- import atmospheric pressure, temperature, and humidity profile data from the NASA database and execute the US Air Force atmosphere propagation model (known as MODTRAN) to generate transmission values through the atmosphere,
+- calculate the TOA radiance from the bulk water measurement below the water surface to the skin temperature of the water and finally through the atmosphere,
+- download and ingest the Landsat scene image from USGS, determine the pixel containing the ground reference measurement, and compare it to the calculated TOA radiance to derive the delta between the two.
+
+The software also has a “bulk process” feature that allows one to specify a list of desired Landsat scenes to run in series.  This software also allows one to manually input a known ground temperature (instead of importing a buoy temperature) to calculate the TOA radiance.  This allows one to compare the Landsat calibration to ground targets other than the traditional water target.
+
+The software also includes a reverse calibration process.  Instead of propagating a known ground temperature to the top of atmosphere, the code can start with only the Landsat image data and calculate the ground temperature through an already established algorithm.  This algorithm will eventually be implemented into the Landsat ground system to generate a standard Earth temperature product for users.  Having this algorithm implemented in the software allows one to quickly test its accuracy on many different scenes and ground types so one can report to NASA and USGS on the effectiveness of the algorithm before it goes operational.
+
+This software is used on an almost daily basis to help us generate the datasets that are used to provide NASA and USGS with quality assessments of the image products from their satellite sensors.
+
+# Scripts and Classes

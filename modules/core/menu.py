@@ -158,13 +158,13 @@ def model_single_sc_toa(project_root):
             
             partial_data['lat'] = lat
             
-            # Get longtitude from user
-            lon = input("\n Please enter the longtitude for the supplied surface temperature (decimal range -180  to 180) : ")
+            # Get longitude from user
+            lon = input("\n Please enter the longitude for the supplied surface temperature (decimal range -180  to 180) : ")
             
             # Perform data validation
-            if not is_valid_longtitude(lon):
-                while not is_valid_longtitude(lon):
-                    lon = input("\n The Longtitude you entered is not in the valid range of -180 to 180, please try again : ")
+            if not is_valid_longitude(lon):
+                while not is_valid_longitude(lon):
+                    lon = input("\n The Longitude you entered is not in the valid range of -180 to 180, please try again : ")
             
             lon = float(lon)
         
@@ -245,13 +245,13 @@ def model_single_sw_lst(project_root):
             
             partial_data['lat'] = lat
             
-            # Get longtitude from user
-            lon = input("\n Please enter the longtitude to use for processing (decimal range -180  to 180) : ")
+            # Get longitude from user
+            lon = input("\n Please enter the longitude to use for processing (decimal range -180  to 180) : ")
             
             # Perform data validation
-            if not is_valid_longtitude(lon):
-                while not is_valid_longtitude(lon):
-                    lon = input("\n The Longtitude you entered is not in the valid range of -180 to 180, please try again : ")
+            if not is_valid_longitude(lon):
+                while not is_valid_longitude(lon):
+                    lon = input("\n The Longitude you entered is not in the valid range of -180 to 180, please try again : ")
             
             lon = float(lon)
         
@@ -413,8 +413,8 @@ def is_valid_latitude(input_value):
     return returnValue
 
 
-# Test if the supplied longtitude is within the valid range
-def is_valid_longtitude(input_value):
+# Test if the supplied longitude is within the valid range
+def is_valid_longitude(input_value):
     
     returnValue = False
     

@@ -38,8 +38,7 @@ After the original project was completed in both the text-based and gui-based im
   * [Original Code](#original-code-(classes-and-scripts))
   * [New Code](#new-code)
     * [Classes](#classes)
-    * [Scripts](#scripts)
-      * [display_image.py](#display_image.py)
+    * [Scripts](#scripts)      
 <!--te-->
 
 # Project Overview
@@ -70,10 +69,127 @@ Some repairs were made to the code, however these are documented in detail (with
 ### Classes
 All classes pertaining to the current version of the program are located in `./modules/`.  These are explained in detail below.
 
-
-
 ### Scripts
 Some utility scripts were created in `./tools/` and are explained in detail below.
 
-#### display_image.py
+#### `cis-tarca.py` of type: script
+The file contains a she-bang and is the expected launch file for the project and accepts a single parameter  *-i* which is used to specify the interface preferred and as the following options
+
+- **`cis-tarca.py` *`-i terminal`*** which launches the non-Gui version, and
+- **`cis-tarca.py` *`-i gui`*** which launches the Gui version of the program.
+
+If no option is specified, the system will determine whether the X-Window system is supported and then start either the Gui or the terminal based on the support of the session.
+
+Once the program launch has commenced, the system executes in the following order.
+
+1. Determine the relative path to the project and update the path variables for the specified user accordingly.
+2. Determines whether the online data sources (specified in `./buoycalib/settings.py`) are available.  If they are not, the program performs a graceful exit and informs the user which source is unavailable.
+3. Depending on the parameter passed and the X-Window capability of the system, the program launches either the text-based menu (`./modules/core/menu.py`) or the Tcl/Tk (Tkinter) based Gui (`./modules/gui/tarca_gui.py`).
+
+#### `menu.py` of type: script
+_This is the first file I ever created in python and it has expanded extensively.  There are some repetitions in the menu management that will be cleaned up in future versions._
+
+The menu is opened providing the user with five options.  Each of these options instantiates an object of the Model base class, which in turn creates an instance of one of the derived classes based on passed parameters..  The model class and derived classes are explained in the `model.py` section.
+
+Each of the menu options have multiple sub-options of which the most unconventional ones are explained blow.  For more information about each option please refer to the code-based comments in the relevant files.
+
+##### 1. Single Scene - Single Channel using Buoys (`model_single_sc_buoy(project_root)`)
+
+1. Ask the user if they want to see each satellite image after the data has been processed.
+2. Ask for a Scene ID for the image to analyze.
+3. Test the Scene ID to ensure it is valid (for landsat) using regular expressions in the function: `is_valid_id(scene)`.  The regex is explained in detail in the function.
+
+Create an instance of the Model class with the following command.  Details are explained in the `model.py` section.
+
+`Model('menu', 'single', 'sc', 'buoy', sceneId, 'merra', display_images, project_root, False, None)`
+
+##### 2. Single Scene - Single Channel using Supplied Surface Temp (`model_single_sc_toa(project_root)`)
+
+1. Ask the user to provide a Scene ID for the image to analyze.
+2. Test the Scene ID to ensure it is valid (for landsat) using regular expressions in the function: `is_valid_id(scene)`.  The regex is explained in detail in the function.
+3. Ask for a skin temperature and validate with `is_valid_temp(skin_temp)`.
+4. Ask for a latitude and validate with `is_valid_latitude(lat)`.
+5. Ask for a longitude and validate with `is_valid_longitude(lon)`.
+6. Ask for a band 10 emissivity value and validate with `is_valid_emissivity(emis_b10)`.
+7. Ask for a band 11 emissivity value and validate with `is_valid_emissivity(emis_b11)`.
+
+Create an instance of the Model class with the following command.  Details are explained in the `model.py` section.
+
+`Model('menu', 'single', 'sc', 'toa', sceneId, 'merra', display_images, project_root, False, partial_data)`
+
+##### 3. Single Scene - Split Window using Supplied values (`model_single_sw_lst(project_root)`)
+
+1. Ask the user to provide a Scene ID for the image to analyze.
+2. Test the Scene ID to ensure it is valid (for landsat) using regular expressions in the function: `is_valid_id(scene)`.  The regex is explained in detail in the function.
+3. Ask for a skin temperature and validate with `is_valid_temp(skin_temp)`.
+4. Ask for a latitude and validate with `is_valid_latitude(lat)`.
+5. Ask for a longitude and validate with `is_valid_longitude(lon)`.
+6. Ask for a band 10 emissivity value and validate with `is_valid_emissivity(emis_b10)`.
+7. Ask for a band 11 emissivity value and validate with `is_valid_emissivity(emis_b11)`.
+8. Ask for a band 10 gain and bias. These can be any values and cannot be validated.
+9. Ask for a band 11 gain and bias. These can be any values and cannot be validated.
+
+Create an instance of the Model class with the following command.  Details are explained in the `model.py` section.
+
+`Model('menu', 'single', 'sw', 'lst', sceneId, 'merra', display_images, project_root, False, partial_data)`
+
+##### 5. Batch Scenes - Single Channel using Buoys (`model_batch_sc_buoy(project_root)`)
+
+1. Import the `./tools/test_paths.py` module which is used to test the availability of files and directories.
+2. Ask the user if they want to see the images after they are processed.
+3. Ask for a batch file filename. (batch files are read from `./input/batches/`).
+4. Test if the specified batch file exists.
+5. Read the text file and test each scene id with `is_valid_id(scene)` which validates the Scene ID with regular expressions.  The regex is explained in detail in the function.
+6. If an error is found, the user receives output specifying which Scene ID in which line of the file needs to be reviewed.
+
+Create an instance of the Model class with the following command.  Details are explained in the `model.py` section.
+
+`Model('menu', 'batch', 'sc', 'buoy', batchFile, 'merra', display_images, project_root, False, None)`
+
+##### X. Exit
+The exit option takes the user back to the terminal
+
+##### _There is menu option D which creates SQL database tables on a remove server for data storage.  This feature is however still in development and is commented out even though the calling functions are present inside this file._
+
+#### `model.py` of type: class
+The `Model` class is the point-of-entry class for all processing in the program.  Both the terminal and the Gui create an instance of this class with the relevant parameters, which in turn fires any other object creation that is required.  All algorithmic processing classes are instantiated from this class.
+
+##### Class Constructor
+`def __init__(self, caller, qty, algorithm, process, source, atmo_source, display_image, project_root, verbose, partial_data=None, status_log=None, output_log=None):`
+
+###### `__init__`
+Default initialization method for constructor
+###### `self`
+This object (`self` in Python has the same significance as `this` in other languages)
+###### `caller`
+Is `Model` being called from the `menu` or the `gui`
+###### `qty`
+Is this a `single` or a `batch` process
+###### `algorithm`
+Are we performing a _single channel (`sc`)_ or a _split window (`sw`)_ operation?  These are the only two algorithms implemented currently, but there are plans for additional algorithms.
+###### `process`
+Is this a `buoy`, **_Top of Atmosphere (`toa`)_** or **_Land Surface Temperature (`lst`)_** process?
+###### `source`
+Depending on whether we are performing a single or a batch process, the **_source_** would be either a **_scene id_** or a **_batch filename_**.
+###### `atmo_source`
+Are we getting our atmospheric data from `merra` or `narr`
+###### `display_image`
+Are we going to display the image to the user after processing `true` or `false`
+###### `project_root`
+This is the absolute path to the root of the project.  It is determined in `cis-tarca.py` and brought forward.  It is found with:
+
+`PROJECT_ROOT = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))`
+###### `verbose`
+Provide additional terminal-based output `true` or `false`.  The default is `false`.
+###### `partial_data`
+This is a dictionary used to transfer the information gathered during the _menu phase of many quesitons_ to the rest of the program.  It is not required for the _single channel_ operation and therefore has a default value of `none`.
+###### `status_log`
+This is not used by the terminal-based program and has default value of `none`.  It is used by the Gui to provide status update information back to the user.
+###### `output_log`
+This is not used by the terminal-based program and has default value of `none`.  It is used by the Gui to provide output information back to the user.
+
+During the constructor phase the variables are assigned to the object into a dictionary called `args` which is passed to the subsections of the program.  After the variables have been created:
+
+1. A logger instance is created (see `./tools/process_logger.py` for details), and
+2. The passed-in arguments are processed.
 

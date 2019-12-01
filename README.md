@@ -36,12 +36,15 @@ This will download a copy of the program in a directory named 'Landsat-Buoy-Cali
 # User Manual
 The User Manual is a basic manual containing all the data required by users to use the program.  There is no information pertaining to the design in this document.  For design information please refer to the design document located in the same directory.  No Python knowledge is required for program usage.
 
-UserManual.md : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/UserManual.md
+`UserManual.md` : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/UserManual.md
 
-# Design Document (not yet released)
+# Design Document 
 The Design Document is a fully detailed document containing all the information pertaining to the design and implementation of modules.  Any developer who wants to make changes or amendments to the program should reference the design document before making major changes.  A Basic to Intermediate level of Object Oriented Design and Python programming is suggested for anyone who wants to make changes to the program.
 
 This program was designed to be used on the RIT CIS linux servers as multiple programs and modules are included in the processing of data.
 
-DesignDocument.md : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/DesignDocument.md
-cis-tarca_design_UML.pdf : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/cis-tarca_design_UML.pdf
+`DesignDocument.md` : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/DesignDocument.md
+
+`cis-tarca_design_UML.pdf` : https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/cis-tarca_design_UML.pdf
+
+`cis-tarca_activity_diagram.pdf`: https://github.com/bkleynhans/Landsat-Buoy-Calibration/blob/cis-tarca_v2.0/cis-tarca_activity_diagram.pdf

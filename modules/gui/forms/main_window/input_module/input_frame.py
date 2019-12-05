@@ -520,7 +520,7 @@ class Input_Frame(Gui_Label_Frame):
                 'scene_id': ' is not a valid Scene ID',
                 'skin_temp': ' does not fall within the range of 200 to 350 kelvin for a valid skin temperature',
                 'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
-                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
+                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longitude',
                 'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
                 'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
             }
@@ -566,9 +566,9 @@ class Input_Frame(Gui_Label_Frame):
                 
                 error_list['lat'] = partial_data['lat']
                 
-        # Check if the longtitude is valid
+        # Check if the longitude is valid
         if (partial_data['lon'] != None):
-            if not menu.is_valid_longtitude(partial_data['lon']):
+            if not menu.is_valid_longitude(partial_data['lon']):
                     
                 error_list['lon'] = partial_data['lon']
                 
@@ -658,7 +658,7 @@ class Input_Frame(Gui_Label_Frame):
         error_message_list = {
                 'scene_id': ' is not a valid Scene ID',
                 'lat': ' does not fall within the range of -90 to 90 degrees for a valid latitude',
-                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longtitude',
+                'lon': ' does not fall within the range of -180 to 180 degrees for a valid longitude',
                 'emis_b10': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity',
                 'emis_b11': ' does not fall within the range of 0.8 to 1.0 for a valid emissivity'
             }
@@ -716,9 +716,9 @@ class Input_Frame(Gui_Label_Frame):
                 
                 error_list['lat'] = partial_data['lat']
                 
-        # Check if the longtitude is valid
+        # Check if the longitude is valid
         if (partial_data['lon'] != None):
-            if not menu.is_valid_longtitude(partial_data['lon']):
+            if not menu.is_valid_longitude(partial_data['lon']):
                     
                 error_list['lon'] = partial_data['lon']
         

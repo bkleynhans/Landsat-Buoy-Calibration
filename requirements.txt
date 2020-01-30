@@ -172,7 +172,7 @@ pykickstart==3.17
 pyliblzma==0.5.3
 pylint==1.9.3
 PyOpenGL==3.1.0
-pyOpenSSL==0.13.1
+pyOpenSSL==17.5.0
 pyparsing==2.3.0
 pyparted==3.9
 pyperclip==1.7.0

@@ -45,7 +45,7 @@ def download_http(url, filepath, shared_args, auth=None):
     """ download a http or https resource using requests. """
         
     with requests.Session() as session:
-        output_string = "    Opening session to %s" % (url[:url.find('/', 9, len(url))])
+        output_string = "\n    Opening session to %s" % (url[:url.find('/', 9, len(url))])
         print_output(shared_args, output_string)
             
         req = session.request('get', url)

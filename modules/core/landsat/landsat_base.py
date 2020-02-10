@@ -93,7 +93,7 @@ class Landsat_Base():
         
         # Process one buoy at a time
         for buoy_id in self.buoys:
-            
+
             if self.args['caller'] == 'menu':
                 self.buoy_process_monitor[buoy_id] = Spinner()
                 
@@ -101,6 +101,7 @@ class Landsat_Base():
             
             self.buoy_processor(buoy_id)
         
+# -->> NOT THIS
 #        # Process all buoys using threads !!! This section is WIP.  This section can be enabled with the previous section
 #            disabled, but it messes up the process output !!!
 #        buoy_threads = []
@@ -114,7 +115,7 @@ class Landsat_Base():
 #            
 #        for thread in buoy_threads:
 #            thread.join()
-    
+# -->> NOT THIS
     
     # Add to log for functions that are part of this OOP design
     def log(self, log_type, log_text, add_newline = True):
@@ -138,7 +139,7 @@ class Landsat_Base():
     def buoy_processor(self, buoy_id):
         
         # Displays the number of the buoy that is being processed
-        self.log('status', "   Processing buoy %s  " % (buoy_id))
+        self.log('status', "\n   Processing buoy %s  " % (buoy_id))
         
         # Displays a progress spinner behind the buoy if it was called from the menu
         if self.args['caller'] == 'menu':
@@ -146,7 +147,7 @@ class Landsat_Base():
         
         try :
             # User status update
-            self.log('status', "     Downloading buoy data file...\n")
+            self.log('status', "     Downloading buoy data file... ")
             
             self.buoy_file = buoy.download(buoy_id, self.image_data['overpass_date'], self.shared_args)
             
@@ -214,7 +215,7 @@ class Landsat_Base():
         modtran_output_file = '{0}_{1}'.format(self.args['scene_id'], buoy_id)
         
         # User status update
-        self.log('status', "      Calculating Top of Atmosphere Radiance using MODTRAN")
+        self.log('status', "      Calculating Top of Atmosphere Radiance using MODTRAN ")
         
         # Pass in paramteres directly because run_modtran receives requests from other sources also
         modtran_data = self.run_modtran(
@@ -229,15 +230,33 @@ class Landsat_Base():
         img_ltoa = {}
         mod_ltoa = {}
         
-        # Pass in paramteres directly because run_ltao receives requests from other sources also
-        img_ltoa, mod_ltoa = self.run_ltoa(
-                modtran_data,
-                img_ltoa,
-                mod_ltoa,
-                self.buoy_data['skin_temp'],
-                self.buoy_data['buoy_lat'],
-                self.buoy_data['buoy_lon']
-            )
+        try:
+            # Pass in paramteres directly because run_ltao receives requests from other sources also
+            img_ltoa, mod_ltoa = self.run_ltoa(
+                    modtran_data,
+                    img_ltoa,
+                    mod_ltoa,
+                    self.buoy_data['skin_temp'],
+                    self.buoy_data['buoy_lat'],
+                    self.buoy_data['buoy_lon']
+                )
+            
+        except RuntimeError as e:
+            self.data[self.args['scene_id']][buoy_id] = (
+                    buoy_id,
+                     0,
+                     0,
+                     0,
+                     0,
+                     {10:0,11:0},
+                     {10:0,11:0},
+                     {10:0,11:0},
+                     self.image_data['overpass_date'],
+                     'failed',
+                     str(e)
+                )
+            
+            return
         
         error = error_bar.error_bar(
             None,
@@ -333,13 +352,14 @@ class Landsat_Base():
                                         lon,
                                         b
                                     )
-                mod_ltoa[b] = radiance.calc_ltoa(modtran_data['wavelengths'], mod_ltoa_spectral, RSR_wavelengths, RSR)
+                mod_ltoa[b] = radiance.calc_ltoa(
+                                        modtran_data['wavelengths'], 
+                                        mod_ltoa_spectral, 
+                                        RSR_wavelengths, RSR
+                                    )
                 
-        except RuntimeError:# as e:
-#                warnings.warn(str(e), RuntimeWarning)
-#                
-#                return
-            pass
+        except RuntimeError as e:            
+            raise RuntimeError(str(e))
             
         return img_ltoa, mod_ltoa
 
@@ -358,6 +378,7 @@ class Landsat_Base():
         error_message = None
                 
         for key in self.data[self.args['scene_id']].keys():
+            
             if(self.data[self.args['scene_id']][key][9] == "failed"):
                 error_message = model.Model.get_error_message(self, self.data[self.args['scene_id']][key][10])
             else:
@@ -446,13 +467,14 @@ class Landsat_Base():
         # Stop all spinners that could still be running
         if self.buoys != None:
             for buoy_id in self.buoys:
-                if self.buoy_process_monitor[buoy_id].active:
-                    self.buoy_process_monitor[buoy_id].stop_spinner()
+                if self.buoy_process_monitor[buoy_id] != False:
+                    if self.buoy_process_monitor[buoy_id].active:
+                        self.buoy_process_monitor[buoy_id].stop_spinner()
 
 
     # Destructor.  Usually not needed but in this case required to get rid of threads        
     def __del__(self):
-        
+            
         for thread in self.args['threads']:
             if thread.THREAD_NAME == 'spinner':
                 if thread.spinner_thread.isAlive():

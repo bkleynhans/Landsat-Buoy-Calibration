@@ -50,6 +50,6 @@ class Spinner():
     def stop_spinner(self):
         
         self.active = False
-        sys.stdout.write('\b >>>  done')
+        sys.stdout.write('\n\b >>>  done')
         sys.stdout.flush()
         

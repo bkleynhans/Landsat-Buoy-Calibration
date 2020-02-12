@@ -31,8 +31,6 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     process atmospheric data, yield an atmosphere
     """
     
-    valid_data = True
-    
     filename = download(date, shared_args)
 
     atmo_data = data.open_netcdf4(filename)
@@ -60,80 +58,59 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     temp1 = numpy.empty
     temp2 = numpy.empty
     
-    try:        
-        # the .T on the end is a transpose
-        temp1 = numpy.diagonal(atmo_data.variables['T'][index1], axis1=1, axis2=2).T
-        temp2 = numpy.diagonal(atmo_data.variables['T'][index2], axis1=1, axis2=2).T
-        
-        # From this line for the next 15 lines... modtran cannot calculate when
-        # there is a zero value for lowest atmospheric merra level, hence if there
-        # is a zero value, throw out the buoy
-        
-        buoys = 0
-        
-        while buoys < 4:
-            if temp1[buoys][0].data == 0:
-                valid_data = False
-                break
-            
-            if temp2[buoys][0].data == 0:
-                valid_data = False
-                break
-            
-            buoys += 1
-            
-    except:
-        valid_data = False    
-        
-    if valid_data:
+    temp1 = numpy.diagonal(atmo_data.variables['T'][index1], axis1=1, axis2=2).T
+    temp2 = numpy.diagonal(atmo_data.variables['T'][index2], axis1=1, axis2=2).T
 
-        rhum1 = numpy.diagonal(atmo_data.variables['RH'][index1], axis1=1, axis2=2).T   # relative humidity
-        rhum2 = numpy.diagonal(atmo_data.variables['RH'][index2], axis1=1, axis2=2).T
+    rhum1 = numpy.diagonal(atmo_data.variables['RH'][index1], axis1=1, axis2=2).T   # relative humidity
+    rhum2 = numpy.diagonal(atmo_data.variables['RH'][index2], axis1=1, axis2=2).T
+
+    height1 = numpy.diagonal(atmo_data.variables['H'][index1], axis1=1, axis2=2).T / 1000.0   # height
+    height2 = numpy.diagonal(atmo_data.variables['H'][index2], axis1=1, axis2=2).T / 1000.0
+
+    # interpolate in time, now they are shape (4, N)
+    t = interp.interp_time(date, temp1, temp2, t1_dt, t2_dt)
+    h = interp.interp_time(date, height1, height2, t1_dt, t2_dt)
+    rh = interp.interp_time(date, rhum1, rhum2, t1_dt, t2_dt)
     
-        height1 = numpy.diagonal(atmo_data.variables['H'][index1], axis1=1, axis2=2).T / 1000.0   # height
-        height2 = numpy.diagonal(atmo_data.variables['H'][index2], axis1=1, axis2=2).T / 1000.0
+    # interpolate in space, now they are shape (1, N)
+    height = interp.idw(h, data_coor, [lat_oi, lon_oi])
+    temp = interp.idw(t, data_coor, [lat_oi, lon_oi])
+    relhum = interp.idw(rh, data_coor, [lat_oi, lon_oi])
     
-        # interpolate in time, now they are shape (4, N)
-        t = interp.interp_time(date, temp1, temp2, t1_dt, t2_dt)
-        h = interp.interp_time(date, height1, height2, t1_dt, t2_dt)
-        rh = interp.interp_time(date, rhum1, rhum2, t1_dt, t2_dt)
+    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly
+    nr_of_nans = numpy.sum(temp1[0].mask)
+    
+    height = height[nr_of_nans:]
+    temp = temp[nr_of_nans:]
+    relhum = relhum[nr_of_nans:]
+    press = press[nr_of_nans:]
+
+    # load standard atmosphere for mid-lat summer
+    # TODO evaluate standard atmo validity, add different ones for different TOY?
+    stan_atmo = numpy.loadtxt(settings.STAN_ATMO, unpack=True)
+    stan_height, stan_press, stan_temp, stan_relhum = stan_atmo
+    # add standard atmo above cutoff index
+    
+    cutoff_idx = numpy.abs(stan_press - press[-1]).argmin()
+    height = numpy.append(height, stan_height[cutoff_idx:])
+    press = numpy.append(press, stan_press[cutoff_idx:])
+    temp = numpy.append(temp, stan_temp[cutoff_idx:])
+    relhum = numpy.append(relhum, stan_relhum[cutoff_idx:])
+
+    # TODO add buoy stuff to bottom of atmosphere
+
+    if verbose:
+        # send out plots and stuff
+        stuff = numpy.asarray([height, press, temp, relhum]).T
+        h = 'Height [km], Pressure[kPa], Temperature[k], Relative_Humidity[0-100]' + '\nCoordinates: {0} Buoy:{1}'.format(data_coor, buoy)
         
-        # interpolate in space, now they are shape (1, N)
-        height = interp.idw(h, data_coor, [lat_oi, lon_oi])
-        temp = interp.idw(t, data_coor, [lat_oi, lon_oi])
-        relhum = interp.idw(rh, data_coor, [lat_oi, lon_oi])
-    
-        # get rid of nans 
-        # TODO is this still necesary?
-        #cutoff = height[numpy.isnan(height)].shape[0]
-    
-        # load standard atmosphere for mid-lat summer
-        # TODO evaluate standard atmo validity, add different ones for different TOY?
-        stan_atmo = numpy.loadtxt(settings.STAN_ATMO, unpack=True)
-        stan_height, stan_press, stan_temp, stan_relhum = stan_atmo
-        # add standard atmo above cutoff index
-        cutoff_idx = numpy.abs(stan_press - press[-1]).argmin()
-        height = numpy.append(height, stan_height[cutoff_idx:])
-        press = numpy.append(press, stan_press[cutoff_idx:])
-        temp = numpy.append(temp, stan_temp[cutoff_idx:])
-        relhum = numpy.append(relhum, stan_relhum[cutoff_idx:])
-    
-        # TODO add buoy stuff to bottom of atmosphere
-    
-        if verbose:
-            # send out plots and stuff
-            stuff = numpy.asarray([height, press, temp, relhum]).T
-            h = 'Height [km], Pressure[kPa], Temperature[k], Relative_Humidity[0-100]' + '\nCoordinates: {0} Buoy:{1}'.format(data_coor, buoy)
-            
-            numpy.savetxt('atmosphere_{0}_{1}_{2}.txt'.format('merra', date.strftime('%Y%m%d'), buoy.id), stuff, fmt='%7.2f, %7.2f, %7.2f, %7.2f', header=h)
-    
-        return height, press, temp, relhum
-    
-    else:
-        return valid_data
+        numpy.savetxt('atmosphere_{0}_{1}_{2}.txt'.format('merra', date.strftime('%Y%m%d'), buoy.id), stuff, fmt='%7.2f, %7.2f, %7.2f, %7.2f', header=h)
+
+    return height, press, temp, relhum
     
 
 def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
+    
     filename = download(date, shared_args)
     atmo_data = data.open_netcdf4(filename)
 
@@ -174,12 +151,22 @@ def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
         atmos.append(append_standard_atmo(height1[i], press, temp1[i], rhum1[i]))
         atmos.append(append_standard_atmo(height2[i], press, temp2[i], rhum2[i]))
 
+    
     return atmos
 
 
 def append_standard_atmo(height, press, temp, relhum):
     # load standard atmosphere for mid-lat summer
     # TODO evaluate standard atmo validity, add different ones for different TOY?
+    
+    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly
+    nr_of_nans = numpy.sum(temp.mask)
+    
+    height = height[nr_of_nans:]
+    temp = temp[nr_of_nans:]
+    relhum = relhum[nr_of_nans:]
+    press = press[nr_of_nans:]
+    
     stan_atmo = numpy.loadtxt(settings.STAN_ATMO, unpack=True)
     stan_height, stan_press, stan_temp, stan_relhum = stan_atmo
     # add standard atmo above cutoff index

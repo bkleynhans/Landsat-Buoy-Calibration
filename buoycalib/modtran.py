@@ -1,6 +1,7 @@
 import datetime
 import os
 import subprocess
+import pdb
 
 import numpy
 
@@ -22,7 +23,7 @@ def process(atmosphere, lat, lon, date, directory, temperature):
     Returns:
         Relevant Modtran Outputs: spectral, units: [W cm-2 sr-1 um-1]
             upwell_rad, downwell_rad, wavelengths, transmission, gnd_reflect
-    """
+    """    
     make_tape5s(atmosphere, lat, lon, date, directory, temperature)
 
     run(directory)
@@ -54,7 +55,7 @@ def make_tape5s(profile, lat, lon, date, directory, temperature):
         directory: directory in which to run modtran and write the tape5
     """
     height, press, temp, relhum = profile
-
+    
     if lon < 0:
         lon = '%2.2f' % lon
     else:

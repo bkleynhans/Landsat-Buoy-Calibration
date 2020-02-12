@@ -203,14 +203,31 @@ class Landsat_Base():
         # User status update
         self.log('status', "      Calculating atmospheric data...\n")
         
-        # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
-        self.calculate_atmosphere(
-                self.args['atmo_source'],
-                self.image_data['overpass_date'],
-                self.buoy_data['buoy_lat'],
-                self.buoy_data['buoy_lon'],
-                self.args['verbose']
-            )
+        try:
+            # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
+            self.calculate_atmosphere(
+                    self.args['atmo_source'],
+                    self.image_data['overpass_date'],
+                    self.buoy_data['buoy_lat'],
+                    self.buoy_data['buoy_lon'],
+                    self.args['verbose']
+                )
+        except ValueError as e:
+            self.data[self.args['scene_id']][buoy_id] = (
+                    buoy_id,
+                     0,
+                     0,
+                     0,
+                     0,
+                     {10:0,11:0},
+                     {10:0,11:0},
+                     {10:0,11:0},
+                     self.image_data['overpass_date'],
+                     'failed',
+                     str(e)
+                )
+            
+            return
        
         modtran_output_file = '{0}_{1}'.format(self.args['scene_id'], buoy_id)
         
@@ -294,7 +311,7 @@ class Landsat_Base():
     def calculate_atmosphere(self, source, overpass_date, lat, lon, verbose = False):
         
         # Atmosphere
-        if source == 'merra':             
+        if source == 'merra':
             self.atmosphere = atmo.merra.process(
                     overpass_date,
                     lat,
@@ -304,7 +321,7 @@ class Landsat_Base():
                 )
             
             if self.atmosphere == False:
-                self.error_message = 'lat/lon out of range'
+                raise ValueError('lat/lon out of range')
             
         elif source == 'narr':
             pass

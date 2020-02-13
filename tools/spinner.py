@@ -45,7 +45,8 @@ class Spinner():
     def start_spinner(self):
         
         self.spinner_thread.start()
-        
+
+
     # Stop the spinner
     def stop_spinner(self):
         

@@ -162,9 +162,7 @@ def append_standard_atmo(height, press, temp, relhum):
     # TODO evaluate standard atmo validity, add different ones for different TOY?
     
     # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly   
-    nr_of_nans1 = numpy.sum(temp1[0].mask)
-    nr_of_nans2 = numpy.sum(temp2[0].mask)
-    nr_of_nans = max([nr_of_nans1,nr_of_nans2])
+    nr_of_nans = numpy.sum(temp[0].mask)
     
     height = height[nr_of_nans:]
     temp = temp[nr_of_nans:]

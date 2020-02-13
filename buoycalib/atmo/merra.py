@@ -78,7 +78,9 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     relhum = interp.idw(rh, data_coor, [lat_oi, lon_oi])
     
     # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly
-    nr_of_nans = numpy.sum(temp1[0].mask)
+    nr_of_nans1 = numpy.sum(temp1[0].mask)
+    nr_of_nans2 = numpy.sum(temp2[0].mask)
+    nr_of_nans = max([nr_of_nans1,nr_of_nans2])
     
     height = height[nr_of_nans:]
     temp = temp[nr_of_nans:]
@@ -159,8 +161,10 @@ def append_standard_atmo(height, press, temp, relhum):
     # load standard atmosphere for mid-lat summer
     # TODO evaluate standard atmo validity, add different ones for different TOY?
     
-    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly
-    nr_of_nans = numpy.sum(temp.mask)
+    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly   
+    nr_of_nans1 = numpy.sum(temp1[0].mask)
+    nr_of_nans2 = numpy.sum(temp2[0].mask)
+    nr_of_nans = max([nr_of_nans1,nr_of_nans2])
     
     height = height[nr_of_nans:]
     temp = temp[nr_of_nans:]

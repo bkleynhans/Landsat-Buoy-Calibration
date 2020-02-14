@@ -146,6 +146,19 @@ def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
 
     height1 = numpy.diagonal(atmo_data.variables['H'][index1], axis1=1, axis2=2).T / 1000.0   # height
     height2 = numpy.diagonal(atmo_data.variables['H'][index2], axis1=1, axis2=2).T / 1000.0
+    
+    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly
+    nr_of_nans1 = numpy.sum(temp1[0].mask)
+    nr_of_nans2 = numpy.sum(temp2[0].mask)
+    nr_of_nans = max([nr_of_nans1,nr_of_nans2])
+    
+    height1 = height1[nr_of_nans:]
+    height2 = height2[nr_of_nans:]
+    temp1 = temp1[nr_of_nans:]
+    temp2 = temp2[nr_of_nans:]
+    rhum1 = rhum1[nr_of_nans:]
+    rhum2 = rhum2[nr_of_nans:]
+    press = press[nr_of_nans:]
 
     atmos = []
 
@@ -160,14 +173,6 @@ def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
 def append_standard_atmo(height, press, temp, relhum):
     # load standard atmosphere for mid-lat summer
     # TODO evaluate standard atmo validity, add different ones for different TOY?
-    
-    # calculate the number of nan and zero values in the array and remove them, reducing the size of the array accordingly   
-    nr_of_nans = numpy.sum(temp[0].mask)
-    
-    height = height[nr_of_nans:]
-    temp = temp[nr_of_nans:]
-    relhum = relhum[nr_of_nans:]
-    press = press[nr_of_nans:]
     
     stan_atmo = numpy.loadtxt(settings.STAN_ATMO, unpack=True)
     stan_height, stan_press, stan_temp, stan_relhum = stan_atmo

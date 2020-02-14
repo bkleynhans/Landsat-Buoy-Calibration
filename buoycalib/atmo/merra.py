@@ -151,14 +151,25 @@ def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
     nr_of_nans1 = numpy.sum(temp1[0].mask)
     nr_of_nans2 = numpy.sum(temp2[0].mask)
     nr_of_nans = max([nr_of_nans1,nr_of_nans2])
+        
+    if height1.shape[0] == 4: 
     
-    height1 = height1[nr_of_nans:]
-    height2 = height2[nr_of_nans:]
-    temp1 = temp1[nr_of_nans:]
-    temp2 = temp2[nr_of_nans:]
-    rhum1 = rhum1[nr_of_nans:]
-    rhum2 = rhum2[nr_of_nans:]
-    press = press[nr_of_nans:]
+        height1 = height1[:,nr_of_nans:]
+        height2 = height2[:,nr_of_nans:]
+        temp1 = temp1[:,nr_of_nans:]
+        temp2 = temp2[:,nr_of_nans:]
+        rhum1 = rhum1[:,nr_of_nans:]
+        rhum2 = rhum2[:,nr_of_nans:]
+        press = press[nr_of_nans:]
+        
+    else:
+        height1 = height1[nr_of_nans:]
+        height2 = height2[nr_of_nans:]
+        temp1 = temp1[nr_of_nans:]
+        temp2 = temp2[nr_of_nans:]
+        rhum1 = rhum1[nr_of_nans:]
+        rhum2 = rhum2[nr_of_nans:]
+        press = press[nr_of_nans:]
 
     atmos = []
 

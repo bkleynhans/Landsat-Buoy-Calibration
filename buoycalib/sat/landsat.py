@@ -65,41 +65,50 @@ def download(scene_id, shared_args, directory_=settings.LANDSAT_DIR):
         if 'MTL' not in bands:
             bands.append('MTL')
     
-        try:   
-            for band in bands:
-                # get url for the band
-                url = amazon_s3_url(scene_id, band)   # amazon s3 only has stuff from 2017 on
-                fp = url_download(url, directory, shared_args)
-                file_downloaded = True
+        #### Remove Amazon Web services for testing - the Amazon data seems faulty
+#        try:   
+#            for band in bands:
+#                # get url for the band
+#                url = amazon_s3_url(scene_id, band)   # amazon s3 only has stuff from 2017 on
+#                
+#                try:
+#                    fp = url_download(url, directory, shared_args)
+#                    file_downloaded = True
+#                except:
+#                    pass
+#    
+#        except RemoteFileException:   # try to use EarthExplorer
     
-        except RemoteFileException:   # try to use EarthExplorer
-    
-            if connect_earthexplorer_no_proxy(*settings.EARTH_EXPLORER_LOGIN):
-                for version in landsat_versions:
-    
-                    entity_id = product2entityid(scene_id, version)
-                    url = earthexplorer_url(entity_id)
-                    
-                    try:
-                        targzfile = download_earthexplorer(url, directory+'/'+entity_id+'.tar.gz', shared_args)
-                        file_downloaded = True
-    
-                    except RemoteFileException:
-                        continue
-                    
-                    output_string = ("   Extracting {}\n".format(targzfile))
-                    print_output(shared_args, output_string)
-                    
-                    tarfile = ungzip(targzfile)
-                    os.remove(targzfile)
-                    directory, shared_args['scene_filename'] = untar(tarfile, directory)
-                    os.remove(tarfile)
-                    
-                    break
+        if connect_earthexplorer_no_proxy(*settings.EARTH_EXPLORER_LOGIN):
+            for version in landsat_versions:
+
+                entity_id = product2entityid(scene_id, version)
+                url = earthexplorer_url(entity_id)
                 
-            else:
-                raise RuntimeError('EarthExplorer Authentication Failed. Check username, \
-                    password, and if the site is up (https://earthexplorer.usgs.gov/).')
+                try:
+                    targzfile = download_earthexplorer(url, directory+'/'+entity_id+'.tar.gz', shared_args)
+                    file_downloaded = True
+
+                except RemoteFileException:
+                    continue
+                
+                output_string = ("   Extracting {}\n".format(targzfile))
+                print_output(shared_args, output_string)
+                
+                try:                        
+                    tarfile = ungzip(targzfile)
+                except EOFError:
+                    raise RuntimeError("The file source file for {} is corrupt".format(entity_id))
+                    
+                os.remove(targzfile)
+                directory, shared_args['scene_filename'] = untar(tarfile, directory)
+                os.remove(tarfile)
+                
+                break
+            
+        else:
+            raise RuntimeError('EarthExplorer Authentication Failed. Check username, \
+                password, and if the site is up (https://earthexplorer.usgs.gov/).')
 
     # Pull glob value from folder
     glob_value = glob.glob('{0}/*_MTL.txt'.format(directory))

@@ -4,7 +4,7 @@ PACKAGE_BASE = abspath(join(__file__, '..'))
 
 # Program properties
 # Constants for use in directory cleanup
-CLEAN_FOLDER_ON_COMPLETION = True 
+CLEAN_FOLDER_ON_COMPLETION = False 
 FOLDER_SIZE_FOR_REPORTING = 500 # IN MEGABYTE
 
 # !!! THIS FUNCTIONALITY HAS NOT BEEN RE-IMPLIMENTED AFTER REFRACTORING !!!

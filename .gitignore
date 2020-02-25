@@ -1,3 +1,6 @@
+# ignore the input directory
+input/
+
 # ignore the output directory
 output/
 

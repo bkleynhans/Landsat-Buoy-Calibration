@@ -15,7 +15,7 @@ backports.ssl-match-hostname==3.5.0.1
 backports.weakref==1.0.post1
 Beaker==1.10.0
 bkcharts==0.2
-bleach==1.5.0
+bleach==3.1.4
 blivet==0.61.15.74
 bokeh==1.0.2
 Brlapi==0.6.0

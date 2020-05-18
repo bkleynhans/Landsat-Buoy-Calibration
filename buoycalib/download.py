@@ -59,7 +59,7 @@ def download_http(url, filepath, shared_args, auth=None):
                 raise RemoteFileException(error_string)
                 
             else:
-                output_string = "     Session opened successfully"
+                output_string = "\n     Session opened successfully"
                 print_output(shared_args, output_string)
         
         else:
@@ -71,16 +71,16 @@ def download_http(url, filepath, shared_args, auth=None):
                 raise RemoteFileException(error_string)
                 
             else:
-                output_string = "     Session opened successfully"
+                output_string = "\n     Session opened successfully"
                 print_output(shared_args, output_string)
                 
         with open(filepath, 'wb') as f:
-            output_string = "    Downloading %s " % (filepath[filepath.rfind('/') + 1:])            
+            output_string = "\n    Downloading %s " % (filepath[filepath.rfind('/') + 1:])            
             print_output(shared_args, output_string)
             
             f.write(resource.content)
             
-            output_string = "     Download completed..."
+            output_string = "\n     Download completed..."
             print_output(shared_args, output_string)
 
     return filepath
@@ -88,10 +88,11 @@ def download_http(url, filepath, shared_args, auth=None):
 
 def print_output(shared_args, output_string):
     
-    if shared_args['caller'] == 'tarca_gui':
+    if shared_args['caller'] == 'tarca_gui':        
         shared_args['log_status'].write(output_string, True)
     elif shared_args['caller'] == 'menu':
-        sys.stdout.write(output_string + '\n')
+#        sys.stdout.write(output_string + '\n')
+        sys.stdout.write(output_string)
         sys.stdout.flush()
 
 
@@ -124,7 +125,7 @@ def download_ftp(url, filepath, shared_args):
             fileobj.write(chunk)
             downloaded += len(chunk)
 
-        output_string = "     Download completed..."
+        output_string = "\n     Download completed..."
         print_output(shared_args, output_string)
         
 
@@ -206,9 +207,10 @@ def download_earthexplorer(url, filepath, shared_args):
     """ 
     Slightly lower level downloading implemenation that handles earthexplorer's redirection.
     inspired by: https://github.com/olivierhagolle/LANDSAT-Download
-    """ 
+    """
 
     try:
+        
         req = urllib.request.urlopen(url)
     
         #if downloaded file is html
@@ -221,8 +223,12 @@ def download_earthexplorer(url, filepath, shared_args):
            raise RemoteFileException("Error: The file is too small to be a Landsat Image, url: {0}".format(url))
 
         downloaded = 0
+        directory = filepath[:filepath.rfind('/')]
         filename = filepath[len(filepath) - filepath[::-1].index('/'):]
         
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+            
         with open(filepath, 'wb') as fp:
             print()
             
@@ -235,6 +241,7 @@ def download_earthexplorer(url, filepath, shared_args):
                 if not chunk: break
                 fp.write(chunk)
                 downloaded += len(chunk)
+        
     except urllib.error.HTTPError as e:
         if e.code == 500:
             raise RemoteFileException("File doesn't exist url: {0}".format(url))

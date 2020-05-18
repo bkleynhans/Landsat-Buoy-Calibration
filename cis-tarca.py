@@ -67,7 +67,8 @@ def check_required_directories():
         'logs/status/batch',
         'logs/output',
         'logs/output/single',
-        'logs/output/batch'
+        'logs/output/batch',
+        'downloaded_data'
     }
 
     # Loop through the list of required directories and create any that don't exist

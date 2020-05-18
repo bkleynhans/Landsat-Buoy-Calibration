@@ -23,7 +23,8 @@ def process(atmosphere, lat, lon, date, directory, temperature):
     Returns:
         Relevant Modtran Outputs: spectral, units: [W cm-2 sr-1 um-1]
             upwell_rad, downwell_rad, wavelengths, transmission, gnd_reflect
-    """    
+    """
+    
     make_tape5s(atmosphere, lat, lon, date, directory, temperature)
 
     run(directory)
@@ -38,7 +39,6 @@ def process(atmosphere, lat, lon, date, directory, temperature):
                 'transmission': transmission
             }
 
-#    return wavelengths, upwell_rad, gnd_reflect, transmission
     return modtran_data
 
 

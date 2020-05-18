@@ -204,7 +204,7 @@ class Landsat_Base():
         self.log('status', "      Calculating atmospheric data...\n")
         
         try:
-            # Pass in paramteres directly because calculate_atmosphere receives requests from other sources also
+            # Pass in parameters directly because calculate_atmosphere receives requests from other sources also
             self.calculate_atmosphere(
                     self.args['atmo_source'],
                     self.image_data['overpass_date'],
@@ -248,7 +248,7 @@ class Landsat_Base():
         mod_ltoa = {}
         
         try:
-            # Pass in paramteres directly because run_ltao receives requests from other sources also
+            # Pass in parameters directly because run_ltao receives requests from other sources also
             img_ltoa, mod_ltoa = self.run_ltoa(
                     modtran_data,
                     img_ltoa,

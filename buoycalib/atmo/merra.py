@@ -98,6 +98,9 @@ def process(date, lat_oi, lon_oi, shared_args, verbose=False):
     press = numpy.append(press, stan_press[cutoff_idx:])
     temp = numpy.append(temp, stan_temp[cutoff_idx:])
     relhum = numpy.append(relhum, stan_relhum[cutoff_idx:])
+    
+    # Convert relative humidity to percentage for modtran
+    relhum = relhum * 100
 
     # TODO add buoy stuff to bottom of atmosphere
 
@@ -143,6 +146,10 @@ def error_bar_atmos(date, lat_oi, lon_oi, shared_args, verbose=False):
 
     rhum1 = numpy.diagonal(atmo_data.variables['RH'][index1], axis1=1, axis2=2).T   # relative humidity
     rhum2 = numpy.diagonal(atmo_data.variables['RH'][index2], axis1=1, axis2=2).T
+    
+    # Convert relative humidity to percentage for modtran
+    rhum1 = rhum1 * 100
+    rhum2 = rhum2 * 100
 
     height1 = numpy.diagonal(atmo_data.variables['H'][index1], axis1=1, axis2=2).T / 1000.0   # height
     height2 = numpy.diagonal(atmo_data.variables['H'][index2], axis1=1, axis2=2).T / 1000.0

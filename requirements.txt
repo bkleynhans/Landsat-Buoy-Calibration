@@ -32,7 +32,7 @@ commentjson==0.7.1
 configobj==4.7.2
 configparser==3.5.0
 coverage==4.5.2
-cryptography==2.4.2
+cryptography==3.2
 cupshelpers==1.0
 cycler==0.10.0
 Cython==0.29.2

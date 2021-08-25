@@ -244,7 +244,7 @@ syspurpose==1.24.13
 Tempita==0.5.2
 tensorboard==1.14.0
 tensorflow-estimator==1.14.0
-tensorflow-gpu==1.14.0
+tensorflow-gpu==2.5.1
 tensorlayer==1.11.1
 termcolor==1.1.0
 terminado==0.8.1

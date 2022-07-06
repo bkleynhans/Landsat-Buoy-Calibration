@@ -60,7 +60,7 @@ geos==0.2.1
 google-pasta==0.1.7
 grpcio==1.17.1
 h5py==2.8.0
-html5lib==0.9999999
+html5lib==0.999999999
 idna==2.8
 imageio==2.4.1
 imagesize==1.1.0
